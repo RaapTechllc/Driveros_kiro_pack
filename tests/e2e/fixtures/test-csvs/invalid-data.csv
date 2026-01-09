@@ -1,0 +1,7 @@
+title,why,owner_role,engine,eta_days,status,due_date
+,Missing title,Owner,Leadership,7,todo,2026-01-15
+Set weekly standup,Missing why,,Leadership,7,todo,2026-01-15
+Implement WIP limits,Reduces bottlenecks,InvalidRole,Operations,14,todo,2026-01-20
+Launch referral program,Increases leads,Sales,InvalidEngine,21,todo,2026-01-25
+Set up dashboard,Provides visibility,Finance,Finance,not_a_number,todo,2026-01-18
+Create assessment,Identifies needs,Owner,Personnel,14,invalid_status,invalid-date

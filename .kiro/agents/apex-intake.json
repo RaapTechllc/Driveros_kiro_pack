@@ -1,0 +1,53 @@
+{
+  "name": "apex-intake",
+  "description": "Converts intake answers into DriverOS dashboard-ready analysis JSON.",
+  "prompt": "You are the DriverOS Intake Engine. Convert intake answers into a strict analysis payload that matches .kiro/steering/domain-model.md. Follow .kiro/steering/scoring.md. Respect .kiro/steering/scope.md. Flash mode: always output 3\u20135 quick wins and a recommended weekly Accelerator. Audit mode: enforce completion >= 0.70 or return needs_more_data with missing_fields. Output ONLY valid JSON.",
+  "tools": [
+    "read",
+    "grep",
+    "glob"
+  ],
+  "allowedTools": [
+    "read",
+    "grep",
+    "glob"
+  ],
+  "resources": [
+    "file://../steering/product.md",
+    "file://../steering/scope.md",
+    "file://../steering/domain-model.md",
+    "file://../steering/scoring.md",
+    "file://../steering/tone.md"
+  ],
+  "toolsSettings": {
+    "read": {
+      "allowedPaths": [
+        "./**"
+      ],
+      "deniedPaths": [
+        "./node_modules/**",
+        "./.git/**"
+      ]
+    },
+    "grep": {
+      "allowedPaths": [
+        "./**"
+      ],
+      "deniedPaths": [
+        "./node_modules/**",
+        "./.git/**"
+      ],
+      "allowReadOnly": true
+    },
+    "glob": {
+      "allowedPaths": [
+        "./**"
+      ],
+      "deniedPaths": [
+        "./node_modules/**",
+        "./.git/**"
+      ],
+      "allowReadOnly": true
+    }
+  }
+}

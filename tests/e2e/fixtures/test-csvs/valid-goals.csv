@@ -1,0 +1,5 @@
+level,department,title,metric,current,target,due_date,alignment_statement
+north_star,,Reach $2M ARR by end of year,Annual Recurring Revenue,1200000,2000000,2026-12-31,
+department,Ops,Reduce delivery time to 14 days,Average delivery days,21,14,2026-06-30,Faster delivery increases capacity and revenue without hiring
+department,Sales/Marketing,Generate 50 qualified leads per month,Monthly qualified leads,25,50,2026-03-31,More qualified leads directly increases revenue pipeline
+department,Finance,Maintain 20% profit margin,Profit margin percentage,15,20,2026-12-31,Higher margins ensure sustainable growth and cash flow

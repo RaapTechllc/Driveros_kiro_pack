@@ -1,0 +1,11 @@
+title,why,owner_role,engine,eta_days,status,due_date
+Action 1,Reason 1,Owner,Leadership,7,todo,2026-01-15
+Action 2,Reason 2,Ops,Operations,7,todo,2026-01-16
+Action 3,Reason 3,Sales,Marketing & Sales,7,doing,2026-01-17
+Action 4,Reason 4,Finance,Finance,7,done,2026-01-18
+Action 5,Reason 5,Owner,Personnel,7,todo,2026-01-19
+Action 6,Reason 6,Ops,Leadership,7,todo,2026-01-20
+Action 7,Reason 7,Sales,Operations,7,doing,2026-01-21
+Action 8,Reason 8,Finance,Marketing & Sales,7,todo,2026-01-22
+Action 9,Reason 9,Owner,Finance,7,todo,2026-01-23
+Action 10,Reason 10,Ops,Personnel,7,done,2026-01-24

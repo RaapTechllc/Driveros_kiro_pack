@@ -1,0 +1,110 @@
+
+Running 6 tests using 1 worker
+
+[1A[2K[1/6] [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:6:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ complete user journey: Flash Scan ΓåÆ Full Audit ΓåÆ Dashboard ΓåÆ Export
+[1A[2K  1) [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:6:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ complete user journey: Flash Scan ΓåÆ Full Audit ΓåÆ Dashboard ΓåÆ Export 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveCount[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('[data-testid="quick-wins"]')
+    Expected: [32m4[39m
+    Received: [31m0[39m
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toHaveCount" with timeout 5000ms[22m
+    [2m  - waiting for locator('[data-testid="quick-wins"]')[22m
+    [2m    9 ├ù locator resolved to 0 elements[22m
+    [2m      - unexpected value "0"[22m
+
+
+      25 |     // 4. Verify Flash Scan results
+      26 |     await expect(page.getByText(expectedResults.flashScan.acceleratorKPI)).toBeVisible()
+    > 27 |     await expect(page.locator('[data-testid="quick-wins"]')).toHaveCount(expectedResults.flashScan.quickWinsCount)
+         |                                                              ^
+      28 |
+      29 |     // 5. Upgrade to Full Audit
+      30 |     await flashScanPage.upgradeToFullAudit()
+        at E:\kiro projects\driveros_kiro_pack\tests\e2e\complete-flow.spec.ts:27:62
+
+    Error Context: test-results\complete-flow-DriverOS-Com-82ec7--Audit-ΓåÆ-Dashboard-ΓåÆ-Export-chromium\error-context.md
+
+
+[1A[2K[2/6] [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:52:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ Flash Scan only path
+[1A[2K  2) [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:52:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ Flash Scan only path 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: 'Weekly Accelerator' })
+    Expected: visible
+    Error: strict mode violation: getByRole('heading', { name: 'Weekly Accelerator' }) resolved to 2 elements:
+        1) <h3 class="text-lg font-semibold mb-2">Weekly Accelerator</h3> aka getByRole('heading', { name: 'Weekly Accelerator', exact: true })
+        2) <h4 class="font-medium">Pick one weekly Accelerator metric</h4> aka getByRole('heading', { name: 'Pick one weekly Accelerator' })
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Weekly Accelerator' })[22m
+
+
+      62 |     // 2. Verify results without upgrade
+      63 |     await expect(page.getByText('Quick Wins')).toBeVisible()
+    > 64 |     await expect(page.getByRole('heading', { name: 'Weekly Accelerator' })).toBeVisible()
+         |                                                                             ^
+      65 |     await expect(flashScanPage.upgradeButton).toBeVisible()
+      66 |   })
+      67 |
+        at E:\kiro projects\driveros_kiro_pack\tests\e2e\complete-flow.spec.ts:64:77
+
+    Error Context: test-results\complete-flow-DriverOS-Complete-Flow-Flash-Scan-only-path-chromium\error-context.md
+
+
+[1A[2K[3/6] [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:68:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ Direct Full Audit path
+[1A[2K[4/6] [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:90:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ CSV import functionality
+[1A[2K  3) [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:90:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ CSV import functionality 
+
+    TimeoutError: page.waitForEvent: Timeout 10000ms exceeded while waiting for event "download"
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+       at helpers\page-objects.ts:175
+
+      173 |
+      174 |   async downloadTemplate() {
+    > 175 |     const downloadPromise = this.page.waitForEvent('download')
+          |                                       ^
+      176 |     await this.downloadTemplateButton.click()
+      177 |     return await downloadPromise
+      178 |   }
+        at ImportPage.downloadTemplate (E:\kiro projects\driveros_kiro_pack\tests\e2e\helpers\page-objects.ts:175:39)
+        at E:\kiro projects\driveros_kiro_pack\tests\e2e\complete-flow.spec.ts:120:39
+
+    TimeoutError: locator.click: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('button', { name: 'Download Template' }).first()[22m
+
+
+       at helpers\page-objects.ts:176
+
+      174 |   async downloadTemplate() {
+      175 |     const downloadPromise = this.page.waitForEvent('download')
+    > 176 |     await this.downloadTemplateButton.click()
+          |                                       ^
+      177 |     return await downloadPromise
+      178 |   }
+      179 |
+        at ImportPage.downloadTemplate (E:\kiro projects\driveros_kiro_pack\tests\e2e\helpers\page-objects.ts:176:39)
+        at E:\kiro projects\driveros_kiro_pack\tests\e2e\complete-flow.spec.ts:120:39
+
+    Error Context: test-results\complete-flow-DriverOS-Com-bd4bb-ow-CSV-import-functionality-chromium\error-context.md
+
+
+[1A[2K[5/6] [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:124:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ meeting templates integration
+[1A[2K[6/6] [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:155:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ Dashboard persistence
+[1A[2K  3 failed
+    [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:6:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ complete user journey: Flash Scan ΓåÆ Full Audit ΓåÆ Dashboard ΓåÆ Export 
+    [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:52:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ Flash Scan only path 
+    [chromium] ΓÇ║ tests\e2e\complete-flow.spec.ts:90:7 ΓÇ║ DriverOS Complete Flow ΓÇ║ CSV import functionality 
+  3 passed (44.1s)
+
+[36m  Serving HTML report at http://localhost:54942. Press Ctrl+C to quit.[39m

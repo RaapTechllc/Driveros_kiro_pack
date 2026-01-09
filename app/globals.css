@@ -1,0 +1,179 @@
+/* Racing-Inspired Typography System */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* --- Visual Design System: Base Neutrals --- */
+    --background-primary: 248 249 250; /* #f8f9fa */
+    --background-secondary: 255 255 255; /* #ffffff */
+    --background-tertiary: 241 243 245; /* #f1f3f5 */
+
+    --text-primary: 26 29 33; /* #1a1d21 */
+    --text-secondary: 108 117 125; /* #6c757d */
+    --text-muted: 173 181 189; /* #adb5bd */
+
+    --border: 233 236 239; /* #e9ecef */
+
+    /* ShadCN Standard Mappings (Light) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 14 100% 57%; /* Racing Orange #FF4713 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 48 100% 50%; /* Neon Yellow #FFCC00 */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 14 100% 57%;
+    --radius: 0.75rem;
+
+    /* --- Typography System (Racing) --- */
+    --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: 'Rajdhani', 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    
+    /* --- Spacing System (8px Grid) --- */
+    --space-1: 0.25rem; /* 4px */
+    --space-2: 0.5rem;  /* 8px */
+    --space-3: 0.75rem; /* 12px */
+    --space-4: 1rem;    /* 16px */
+    --space-5: 1.25rem; /* 20px */
+    --space-6: 1.5rem;  /* 24px */
+    --space-8: 2rem;    /* 32px */
+    --space-10: 2.5rem; /* 40px */
+    --space-12: 3rem;   /* 48px */
+    --space-16: 4rem;   /* 64px */
+    --space-20: 5rem;   /* 80px */
+
+    /* --- Border Radius System --- */
+    --radius-sm: 0.375rem; /* 6px */
+    --radius-md: 0.5rem;   /* 8px */
+    --radius-lg: 0.75rem;  /* 12px */
+    --radius-xl: 1rem;     /* 16px */
+    --radius-2xl: 1.5rem;  /* 24px */
+    --radius-full: 9999px;
+  }
+
+  .dark {
+    /* --- Base Neutrals (Dark) - Deep charcoal racing theme --- */
+    --background-primary: 220 13% 9%; /* #14161A */
+    --background-secondary: 220 13% 12%; /* #1A1D22 */
+    --background-tertiary: 220 13% 15%; /* #202329 */
+
+    --text-primary: 0 0% 98%; /* #FAFAFA */
+    --text-secondary: 0 0% 63%; /* #A1A1A1 */
+    --text-muted: 0 0% 45%; /* #737373 */
+
+    --border: 0 0% 20%; /* #333333 */
+
+    /* ShadCN Standard Mappings (Dark) - Racing Orange Theme */
+    --background: 220 13% 9%;
+    --foreground: 0 0% 98%;
+    --card: 220 13% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 14 100% 57%; /* Racing Orange #FF4713 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 63%;
+    --accent: 48 100% 50%; /* Neon Yellow #FFCC00 */
+    --accent-foreground: 220 13% 9%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 14 100% 57%;
+  }
+}
+
+/* --- Theme Support (Data Attributes) --- */
+
+/* 1. Default - "Professional Green" */
+[data-theme='default'] {
+  --primary: 142 76% 36%; /* #1a5a44 approx */
+  --primary-foreground: 355.7 100% 97.3%;
+}
+
+/* 2. Dusk - "Warm Amber" */
+[data-theme='dusk'] {
+  --primary: 34 33% 43%; /* #92734a */
+  --primary-foreground: 60 9.1% 97.8%;
+  --accent: 48 42% 71%; /* #d4c896 */
+}
+
+/* 3. Lime - "Energetic Purple" */
+[data-theme='lime'] {
+  --primary: 262 83% 58%; /* #7c3aed */
+  --primary-foreground: 210 40% 98%;
+  --accent: 271 91% 65%; /* #a855f7 */
+}
+
+/* 4. Ocean - "Calm Blue" */
+[data-theme='ocean'] {
+  --primary: 202 80% 24%; /* #0c4a6e */
+  --primary-foreground: 210 40% 98%;
+  --accent: 217 91% 60%; /* #3b82f6 */
+}
+
+/* 5. Retro - "Nostalgic Orange" */
+[data-theme='retro'] {
+  --primary: 18 89% 40%; /* #c2410c */
+  --primary-foreground: 210 40% 98%;
+  --accent: 25 95% 53%; /* #f97316 */
+}
+
+/* 6. Neo - "Cyberpunk Pink" */
+[data-theme='neo'] {
+  --primary: 335 78% 42%; /* #be185d */
+  --primary-foreground: 210 40% 98%;
+  --accent: 330 81% 60%; /* #ec4899 */
+}
+
+/* 7. Forest - "Natural Green" */
+[data-theme='forest'] {
+  --primary: 143 64% 24%; /* #166534 */
+  --primary-foreground: 210 40% 98%;
+  --accent: 142 71% 45%; /* #22c55e */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
