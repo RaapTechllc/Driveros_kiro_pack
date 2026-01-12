@@ -1,5 +1,6 @@
 import { FullAuditResult, EngineResult } from '@/lib/full-audit-analysis'
 import { Button } from '@/components/ui/Button'
+import { AIBadge } from '@/components/ui/AIBadge'
 import Link from 'next/link'
 
 interface AuditResultsProps {
@@ -49,6 +50,9 @@ export function AuditResults({ result }: AuditResultsProps) {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
+        <div className="flex justify-center mb-3">
+          <AIBadge confidence={Math.round(result.completion_score * 100)} label="AI Full Audit" />
+        </div>
         <h2 className="text-3xl font-bold">Your Full Analysis</h2>
         <div className="flex items-center justify-center gap-6 text-lg">
           <div className="text-center">

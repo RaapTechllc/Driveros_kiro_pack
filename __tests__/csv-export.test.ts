@@ -76,15 +76,15 @@ describe('CSV Export', () => {
       const result = exportActions(mockAuditResult)
       
       expect(result).toContain('title,why,owner_role,engine,eta_days,status,due_date,source')
-      expect(result).toContain('"Action 1","Reason 1",Owner,"Leadership",3,todo,,generated')
-      expect(result).toContain('"Action 2","Reason 2",Ops,"Operations",7,todo,,generated')
-      expect(result).toContain('"Imported Action","Imported reason",Owner,"Leadership",5,todo,2026-01-15,imported')
+      expect(result).toContain('"Action 1","Reason 1","Owner","Leadership",3,"todo","","generated"')
+      expect(result).toContain('"Action 2","Reason 2","Ops","Operations",7,"todo","","generated"')
+      expect(result).toContain('"Imported Action","Imported reason","Owner","Leadership",5,"todo","2026-01-15","imported"')
     })
 
     it('should export flash scan quick wins', () => {
       const result = exportActions(undefined, mockFlashResult)
       
-      expect(result).toContain('"Quick Win 1","Quick reason",Owner,"Leadership",1,todo,,generated')
+      expect(result).toContain('"Quick Win 1","Quick reason","Owner","Leadership",1,"todo","","generated"')
     })
 
     it('should handle empty data', () => {
@@ -100,9 +100,9 @@ describe('CSV Export', () => {
       const result = exportGoals(mockAuditResult)
       
       expect(result).toContain('level,department,title,metric,current,target,due_date,alignment_statement,source')
-      expect(result).toContain('north_star,,"Test North Star","Revenue",,,,,generated')
-      expect(result).toContain('department,Ops,"Ops Goal","Efficiency",,,,"Supports north star",generated')
-      expect(result).toContain('north_star,,"Imported North Star","Revenue",100000,200000,,"",imported')
+      expect(result).toContain('"north_star","","Test North Star","Revenue",,,"","","generated"')
+      expect(result).toContain('"department","Ops","Ops Goal","Efficiency",,,"","Supports north star","generated"')
+      expect(result).toContain('"north_star","","Imported North Star","Revenue",100000,200000,"","","imported"')
     })
 
     it('should handle empty audit result', () => {
@@ -118,9 +118,9 @@ describe('CSV Export', () => {
       const result = exportMeetingTemplates()
       
       expect(result).toContain('type,title,duration_min,agenda_item,description')
-      expect(result).toContain('warm_up,"Daily Warm-Up",10')
-      expect(result).toContain('pit_stop,"Weekly Pit Stop",30')
-      expect(result).toContain('full_tune_up,"Monthly Full Tune-Up",75')
+      expect(result).toContain('"warm_up","Daily Warm-Up",10')
+      expect(result).toContain('"pit_stop","Weekly Pit Stop",30')
+      expect(result).toContain('"full_tune_up","Monthly Full Tune-Up",75')
     })
   })
 

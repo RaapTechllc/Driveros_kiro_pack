@@ -1,11 +1,20 @@
+'use client'
+
+import { useState } from 'react'
 import { QuarterColumn } from './QuarterColumn'
+import { AddCardModal } from './AddCardModal'
 import { downloadYearBoardCSV } from '@/lib/year-board-csv'
+import { Button } from '@/components/ui/Button'
+import { Plus, Download } from 'lucide-react'
 
 interface YearBoardProps {
   onPlanChange: () => void
 }
 
 export function YearBoard({ onPlanChange }: YearBoardProps) {
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [showAddModal, setShowAddModal] = useState(false)
+
   const quarters = [1, 2, 3, 4] as const
   const departments = [
     { id: 'company', name: 'Company' },
@@ -18,9 +27,15 @@ export function YearBoard({ onPlanChange }: YearBoardProps) {
     downloadYearBoardCSV()
   }
 
-  const handleAddItem = () => {
-    // TODO: Implement in Slice 4
-    console.log('Add item clicked')
+  const handleCardMove = () => {
+    // Force all columns to refresh by changing the key
+    setRefreshKey(prev => prev + 1)
+    onPlanChange()
+  }
+
+  const handleAddCard = () => {
+    handleCardMove()
+    setShowAddModal(false)
   }
 
   return (
@@ -33,21 +48,31 @@ export function YearBoard({ onPlanChange }: YearBoardProps) {
             Drag cards between quarters and departments to organize your year
           </p>
         </div>
-        <div className="flex gap-2">
-          <button 
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleExportCSV}
-            className="text-sm text-muted-foreground hover:text-foreground"
           >
+            <Download className="w-4 h-4 mr-2" />
             Export CSV
-          </button>
-          <button 
-            onClick={handleAddItem}
-            className="text-sm text-muted-foreground hover:text-foreground"
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setShowAddModal(true)}
           >
+            <Plus className="w-4 h-4 mr-2" />
             Add Item
-          </button>
+          </Button>
         </div>
       </div>
+
+      {/* Add Card Modal */}
+      <AddCardModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onAdd={handleAddCard}
+      />
 
       {/* Year Board Grid */}
       <div className="bg-card border rounded-lg p-4">
@@ -73,10 +98,10 @@ export function YearBoard({ onPlanChange }: YearBoardProps) {
               {/* Quarter Columns */}
               {quarters.map(quarter => (
                 <QuarterColumn
-                  key={`${department.id}-${quarter}`}
+                  key={`${department.id}-${quarter}-${refreshKey}`}
                   quarter={quarter}
                   department={department.id as any}
-                  onCardMove={onPlanChange}
+                  onCardMove={handleCardMove}
                 />
               ))}
             </div>

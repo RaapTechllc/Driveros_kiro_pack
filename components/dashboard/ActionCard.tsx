@@ -14,10 +14,22 @@ interface ActionCardProps {
   source?: 'generated' | 'imported'
 }
 
-const statusStyles: Record<ActionStatus, { badge: string; text: string }> = {
-  todo: { badge: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', text: '' },
-  doing: { badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300', text: '' },
-  done: { badge: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', text: 'line-through opacity-60' }
+const statusStyles: Record<ActionStatus, { badge: string; text: string; cardBg: string }> = {
+  todo: { 
+    badge: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all duration-300', 
+    text: 'transition-all duration-300', 
+    cardBg: 'border-gray-200 dark:border-gray-700' 
+  },
+  doing: { 
+    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 transition-all duration-300 animate-racing-pulse', 
+    text: 'transition-all duration-300', 
+    cardBg: 'border-blue-200 dark:border-blue-700 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
+  },
+  done: { 
+    badge: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 transition-all duration-300', 
+    text: 'line-through opacity-60 transition-all duration-300', 
+    cardBg: 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10' 
+  }
 }
 
 export function ActionCard({ title, why, owner_role, eta_days, engine, source = 'generated' }: ActionCardProps) {
@@ -26,6 +38,7 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
   const [showAssign, setShowAssign] = useState(false)
   const [roster, setRoster] = useState<TeamMember[]>([])
   const [newName, setNewName] = useState('')
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
     setAssignee(getAssignedMember(title))
@@ -33,9 +46,15 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
   }, [title])
 
   const handleStatusClick = () => {
+    setIsTransitioning(true)
     const next = cycleStatus(status)
-    setStatus(next)
-    setActionStatus(title, next)
+    
+    // Add a small delay to show the transition animation
+    setTimeout(() => {
+      setStatus(next)
+      setActionStatus(title, next)
+      setIsTransitioning(false)
+    }, 200)
   }
 
   const handleAssign = (memberId: string) => {
@@ -57,14 +76,26 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
   const style = statusStyles[status]
 
   return (
-    <div className={`relative overflow-hidden border-2 rounded-2xl p-4 space-y-2 transition-all duration-200 hover:translate-x-1 hover:shadow-[0_0_20px_rgba(255,71,19,0.15)] ${status === 'done' ? 'opacity-70' : ''}`}>
+    <div className={`relative overflow-hidden border-2 rounded-2xl p-4 space-y-2 transition-all duration-300 hover:translate-x-1 hover:shadow-[0_0_20px_rgba(255,71,19,0.15)] ${style.cardBg} ${status === 'done' ? 'opacity-70' : ''} group`}>
       {/* Racing stripe accent */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      {/* Completion celebration effect */}
+      {status === 'done' && (
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-2 right-2 text-green-500 animate-slide-in">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      )}
+      
       <div className="flex items-start justify-between gap-2">
         <div className={`font-medium flex-1 ${style.text}`}>{title}</div>
         <button
           onClick={handleStatusClick}
-          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer hover:ring-2 hover:ring-offset-1 ${style.badge}`}
+          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer hover:ring-2 hover:ring-offset-1 transform transition-all duration-200 hover:scale-105 active:scale-95 ${style.badge} ${isTransitioning ? 'animate-status-morph' : ''}`}
         >
           {status}
         </button>

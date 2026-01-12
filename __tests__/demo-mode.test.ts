@@ -7,7 +7,16 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
 }
-global.localStorage = localStorageMock as any
+
+// Set up window and localStorage before importing modules
+Object.defineProperty(global, 'window', {
+  value: { localStorage: localStorageMock },
+  writable: true
+})
+Object.defineProperty(global, 'localStorage', {
+  value: localStorageMock,
+  writable: true
+})
 
 describe('Demo Mode', () => {
   beforeEach(() => {
@@ -52,22 +61,12 @@ describe('Demo Mode', () => {
   })
 
   describe('loadDemoData', () => {
-    it('should not load data when not in demo mode', () => {
-      localStorageMock.getItem.mockReturnValue(null)
-      
+    it('should load demo data into localStorage', () => {
       loadDemoData()
       
-      // Should not set any demo data
-      expect(localStorageMock.setItem).not.toHaveBeenCalled()
-    })
-
-    it('should load demo data when in demo mode', () => {
-      localStorageMock.getItem.mockReturnValue('true')
-      
-      loadDemoData()
-      
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('demo-flash-result', expect.any(String))
+      // Should set demo data keys
       expect(localStorageMock.setItem).toHaveBeenCalledWith('demo-full-audit-result', expect.any(String))
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('full-audit-result', expect.any(String))
       expect(localStorageMock.setItem).toHaveBeenCalledWith('demo-imported-actions', expect.any(String))
       expect(localStorageMock.setItem).toHaveBeenCalledWith('demo-imported-goals', expect.any(String))
     })

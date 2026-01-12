@@ -4,23 +4,23 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-// import { Button } from "@/components/ui/Button" // Not currently used but good to have
 import {
   LayoutDashboard,
-  Zap,
   Calendar,
   Upload,
   Target,
-  Gauge,
-  Users,
-  PieChart,
   Settings,
   HelpCircle,
-  LogOut
+  LogOut,
+  Activity,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  isOpen?: boolean; // For mobile toggle state if needed
+  isOpen?: boolean
+  isCollapsed?: boolean
+  onCollapsedChange?: (collapsed: boolean) => void
 }
 
 const mainNavItems = [
@@ -44,24 +44,11 @@ const mainNavItems = [
     href: "/import",
     icon: Upload,
   },
-  /* 
-  // Placeholder items until implemented
   {
-    title: "Tasks",
-    href: "/tasks",
-    icon: Zap,
+    title: "Performance",
+    href: "/performance",
+    icon: Activity,
   },
-  {
-    title: "Analytics",
-    href: "/analytics",
-    icon: PieChart,
-  },
-  {
-    title: "Team",
-    href: "/team",
-    icon: Users,
-  },
-  */
 ]
 
 const generalNavItems = [
@@ -78,26 +65,53 @@ const generalNavItems = [
 ]
 
 
-export function Sidebar({ className, isOpen, ...props }: SidebarProps) {
+export function Sidebar({ className, isOpen, isCollapsed = false, onCollapsedChange, ...props }: SidebarProps) {
   const pathname = usePathname()
 
   // Common classes for nav links
+  // Using text-foreground/80 for better contrast in all themes instead of text-secondary
   const navLinkClass = (isActive: boolean) => cn(
-    "flex items-center gap-3 px-4 py-2 text-sm font-medium transition-all duration-200 border-l-[3px]",
+    "flex items-center gap-3 py-2 text-sm font-medium transition-all duration-200 border-l-[3px]",
+    isCollapsed ? "px-3 justify-center" : "px-4",
     isActive
       ? "bg-primary/10 text-primary border-primary font-semibold"
-      : "text-secondary border-transparent hover:bg-muted hover:text-foreground"
+      : "text-foreground/80 border-transparent hover:bg-muted hover:text-foreground"
   )
 
   return (
-    <div className={cn("pb-12 w-64 border-r border-border bg-background min-h-[calc(100vh-64px)]", className)} {...props}>
+    <div 
+      className={cn(
+        "pb-12 border-r border-border bg-background min-h-[calc(100vh-64px)] transition-all duration-300 ease-in-out relative",
+        isCollapsed ? "w-16" : "w-64",
+        className
+      )} 
+      {...props}
+    >
+      {/* Collapse Toggle Button */}
+      <button
+        onClick={() => onCollapsedChange?.(!isCollapsed)}
+        className={cn(
+          "absolute -right-3 top-6 z-50 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-md hover:bg-muted transition-colors",
+          "text-muted-foreground hover:text-foreground"
+        )}
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {isCollapsed ? (
+          <ChevronRight className="h-4 w-4" />
+        ) : (
+          <ChevronLeft className="h-4 w-4" />
+        )}
+      </button>
+
       <div className="space-y-4 py-4">
 
         {/* MENU Section */}
         <div className="px-0">
-          <h3 className="mb-2 px-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Menu
-          </h3>
+          {!isCollapsed && (
+            <h3 className="mb-2 px-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Menu
+            </h3>
+          )}
           <div className="space-y-1">
             <nav className="grid gap-1">
               {mainNavItems.map((item) => {
@@ -108,9 +122,15 @@ export function Sidebar({ className, isOpen, ...props }: SidebarProps) {
                     key={item.href}
                     href={item.href}
                     className={navLinkClass(isActive)}
+                    title={isCollapsed ? item.title : undefined}
                   >
-                    <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
-                    {item.title}
+                    <Icon className={cn(
+                      "h-5 w-5 flex-shrink-0",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )} />
+                    {!isCollapsed && (
+                      <span className="truncate">{item.title}</span>
+                    )}
                   </Link>
                 )
               })}
@@ -120,9 +140,11 @@ export function Sidebar({ className, isOpen, ...props }: SidebarProps) {
 
         {/* GENERAL Section */}
         <div className="mt-6 px-0">
-          <h3 className="mb-2 px-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            General
-          </h3>
+          {!isCollapsed && (
+            <h3 className="mb-2 px-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              General
+            </h3>
+          )}
           <div className="space-y-1">
             <nav className="grid gap-1">
               {generalNavItems.map((item) => {
@@ -133,19 +155,26 @@ export function Sidebar({ className, isOpen, ...props }: SidebarProps) {
                     key={item.href}
                     href={item.href}
                     className={navLinkClass(isActive)}
+                    title={isCollapsed ? item.title : undefined}
                   >
-                    <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
-                    {item.title}
+                    <Icon className={cn(
+                      "h-5 w-5 flex-shrink-0",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )} />
+                    {!isCollapsed && (
+                      <span className="truncate">{item.title}</span>
+                    )}
                   </Link>
                 )
               })}
 
               <button
-                className={navLinkClass(false) + " w-full text-left"}
-                onClick={() => console.log("Logout clicked")}
+                className={cn(navLinkClass(false), "w-full text-left")}
+                onClick={() => {/* Logout functionality - not implemented for hackathon */}}
+                title={isCollapsed ? "Logout" : undefined}
               >
-                <LogOut className="h-5 w-5 text-muted-foreground" />
-                Logout
+                <LogOut className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                {!isCollapsed && <span className="truncate">Logout</span>}
               </button>
 
             </nav>

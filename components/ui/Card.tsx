@@ -11,6 +11,7 @@ const Card = React.forwardRef<
     className={cn(
       "group relative overflow-hidden rounded-2xl border-2 border-border bg-card text-card-foreground shadow-xl",
       "hover:border-gray-700 dark:hover:border-gray-600 hover:shadow-[0_0_30px_rgba(255,71,19,0.1)] transition-all duration-300",
+      "hover:-translate-y-1 transform-gpu",
       "before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.02] before:to-transparent before:opacity-0 before:hover:opacity-100 before:transition-opacity before:pointer-events-none",
       className
     )}

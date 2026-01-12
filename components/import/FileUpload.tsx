@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
 
 interface FileUploadProps {
@@ -55,6 +55,7 @@ export function FileUpload({ onFileSelect, accept, label, description }: FileUpl
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileSizeInfo, setFileSizeInfo] = useState<FileSizeInfo | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -127,17 +128,20 @@ export function FileUpload({ onFileSelect, accept, label, description }: FileUpl
               <p className="text-sm text-muted-foreground">or click to browse</p>
             </div>
             <input
+              ref={fileInputRef}
               type="file"
               accept={accept}
               onChange={handleFileInput}
               className="hidden"
               id={`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
             />
-            <label htmlFor={`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}>
-              <Button type="button" variant="outline">
-                Choose File
-              </Button>
-            </label>
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Choose File
+            </Button>
           </div>
         </div>
       ) : (

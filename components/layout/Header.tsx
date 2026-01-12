@@ -12,7 +12,10 @@ import {
   Sun,
   Monitor,
   Gauge,
-  Menu
+  Menu,
+  Palette,
+  Sparkles,
+  Sunrise
 } from "lucide-react" // Import Menu for mobile trigger
 import {
   DropdownMenu,
@@ -49,6 +52,7 @@ function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuLabel className="text-xs text-muted-foreground">Mode</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           <Sun className="mr-2 h-4 w-4" /> Light
         </DropdownMenuItem>
@@ -57,6 +61,17 @@ function ThemeToggle() {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           <Monitor className="mr-2 h-4 w-4" /> System
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="text-xs text-muted-foreground">Theme Palettes</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => handleThemeChange("midnight-racing")}>
+          <Sparkles className="mr-2 h-4 w-4 text-blue-400" /> Midnight Racing
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleThemeChange("sunrise")}>
+          <Sunrise className="mr-2 h-4 w-4 text-orange-400" /> Sunrise
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleThemeChange("sunrise-dark")}>
+          <Sunrise className="mr-2 h-4 w-4 text-amber-500" /> Sunrise Dark
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -81,7 +96,13 @@ function ThemePaletteSelector() {
 }
 
 
-export function Header({ onMobileMenuClick }: { onMobileMenuClick?: () => void }) {
+interface HeaderProps {
+  onMobileMenuClick?: () => void
+  onSidebarToggle?: () => void
+  isSidebarCollapsed?: boolean
+}
+
+export function Header({ onMobileMenuClick, onSidebarToggle, isSidebarCollapsed }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center mx-auto max-w-7xl px-4">

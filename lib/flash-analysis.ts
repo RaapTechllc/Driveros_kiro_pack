@@ -1,5 +1,5 @@
 import { FlashScanData, FlashScanResult, QuickWin, VALID_ROLES, type OwnerRole } from './types'
-import { trackAnalysisOperation } from './performance-monitor'
+import { performanceMonitor } from './performance-monitor'
 
 /**
  * Flash Scan Analysis Engine
@@ -135,7 +135,7 @@ function estimateGear(sizeband: string, constraint: string): { number: number, l
  * })
  */
 export function analyzeFlashScan(data: FlashScanData): FlashScanResult {
-  return trackAnalysisOperation('flash-scan-analysis', () => {
+  return performanceMonitor.trackSync('flash-scan-analysis', () => {
     // Get accelerator recommendation
     const accelerator_kpi = ACCELERATOR_MAP[data.industry] || ACCELERATOR_MAP['Other']
     
@@ -174,5 +174,5 @@ export function analyzeFlashScan(data: FlashScanData): FlashScanResult {
       quick_wins: [role_win, ...quick_wins.slice(0, 3)],
       gear_estimate: estimateGear(data.size_band, data.top_constraint)
     }
-  }, Object.keys(data).length) as FlashScanResult
+  }, { inputSize: Object.keys(data).length }) as FlashScanResult
 }

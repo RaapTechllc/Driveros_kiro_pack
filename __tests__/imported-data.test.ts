@@ -7,7 +7,16 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
 }
-global.localStorage = localStorageMock as any
+
+// Set up window and localStorage before importing modules
+Object.defineProperty(global, 'window', {
+  value: { localStorage: localStorageMock },
+  writable: true
+})
+Object.defineProperty(global, 'localStorage', {
+  value: localStorageMock,
+  writable: true
+})
 
 // Mock demo-mode module
 jest.mock('../lib/demo-mode', () => ({

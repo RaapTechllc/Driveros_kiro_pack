@@ -834,16 +834,16 @@ export function generateTemplateCSV(type: 'actions' | 'goals'): string {
   if (type === 'actions') {
     return [
       'title,why,owner_role,engine,eta_days,status,due_date',
-      '"Set weekly team meeting","Improve communication and alignment",Owner,Leadership,7,todo,2026-01-15',
+      '"Set weekly team meeting","Improve communication and alignment",Owner,Leadership,7,todo,"2026-01-15"',
       '"Review Q4 financials","Understand cash flow trends",Finance,Finance,3,todo,',
-      '"Update website copy","Improve conversion rates",Sales,"Marketing & Sales",5,doing,2026-01-20'
+      '"Update website copy","Improve conversion rates",Sales,"Marketing & Sales",5,doing,"2026-01-20"'
     ].join('\n')
   } else {
     return [
       'level,department,title,metric,current,target,due_date,alignment_statement',
-      'north_star,,"Reach $2M ARR by end of year","Monthly Recurring Revenue",150000,166667,2026-12-31,',
-      'department,Ops,"Reduce customer support response time","Average Response Time (hours)",8,2,2026-06-30,"Faster support improves retention and reduces churn"',
-      'department,"Sales/Marketing","Increase qualified leads","Monthly Qualified Leads",50,100,2026-03-31,"More leads directly supports ARR growth target"'
+      'north_star,,"Reach $2M ARR by end of year","Monthly Recurring Revenue",150000,166667,"2026-12-31",',
+      'department,Ops,"Reduce customer support response time","Average Response Time (hours)",8,2,"2026-06-30","Faster support improves retention and reduces churn"',
+      'department,"Sales/Marketing","Increase qualified leads","Monthly Qualified Leads",50,100,"2026-03-31","More leads directly supports ARR growth target"'
     ].join('\n')
   }
 }

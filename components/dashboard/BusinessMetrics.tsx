@@ -89,6 +89,13 @@ const statusColors = {
   unknown: "bg-gray-100 text-gray-800 border-gray-200"
 }
 
+const statusGlow = {
+  green: "hover:shadow-[0_0_25px_rgba(34,197,94,0.25)]",
+  yellow: "hover:shadow-[0_0_25px_rgba(234,179,8,0.25)]",
+  red: "hover:shadow-[0_0_25px_rgba(239,68,68,0.25)]",
+  unknown: ""
+}
+
 const statusIcons = {
   green: CheckCircle,
   yellow: AlertTriangle,
@@ -106,10 +113,11 @@ const trendDisplay = {
 export function EngineCard({ engine, trend }: EngineCardProps) {
   const StatusIcon = statusIcons[engine.status]
   const statusColor = statusColors[engine.status]
+  const glowClass = statusGlow[engine.status]
   const trendInfo = trend ? trendDisplay[trend] : null
   
   return (
-    <Card className="h-full">
+    <Card className={`h-full ${glowClass}`}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{engine.name}</CardTitle>

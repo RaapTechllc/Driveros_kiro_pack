@@ -15,8 +15,8 @@ export function EmptyState({ onPlanCreated }: EmptyStateProps) {
   }
 
   const handleAddManually = () => {
-    // TODO: Implement manual item creation in Slice 4
-    console.log('Add manually clicked')
+    // Manual item creation - not implemented for hackathon MVP
+    // Would open a modal to create individual year items
   }
 
   return (

@@ -7,6 +7,7 @@ import { MeetingForm } from '@/components/meetings/MeetingForm'
 import { MeetingTemplate, QuickWin } from '@/lib/types'
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
+import { History } from 'lucide-react'
 
 export default function MeetingsPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<MeetingTemplate | null>(null)
@@ -116,7 +117,13 @@ export default function MeetingsPage() {
           ))}
         </div>
 
-        <div className="text-center">
+        <div className="flex justify-center gap-4">
+          <Link href="/meetings/history">
+            <Button variant="outline">
+              <History className="h-4 w-4 mr-2" />
+              Meeting History
+            </Button>
+          </Link>
           <Link href="/dashboard">
             <Button variant="outline">Back to Dashboard</Button>
           </Link>

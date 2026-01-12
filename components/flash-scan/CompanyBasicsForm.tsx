@@ -5,12 +5,16 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { FlashScanData } from '@/lib/types'
+import { Loader2, CheckCircle2, Sparkles } from 'lucide-react'
+import type { SubmitState } from '@/hooks/useFormSubmit'
 
 interface CompanyBasicsFormProps {
   onSubmit: (data: FlashScanData) => void
+  submitState?: SubmitState
+  progress?: number
 }
 
-export function CompanyBasicsForm({ onSubmit }: CompanyBasicsFormProps) {
+export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0 }: CompanyBasicsFormProps) {
   const [formData, setFormData] = useState<FlashScanData>({
     industry: '',
     size_band: '',
@@ -141,13 +145,52 @@ export function CompanyBasicsForm({ onSubmit }: CompanyBasicsFormProps) {
         </div>
       </div>
 
+      {/* Processing feedback */}
+      {submitState === 'processing' && (
+        <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center justify-center gap-2 text-primary">
+            <Sparkles className="w-5 h-5 animate-pulse" />
+            <span className="text-sm font-medium">AI analyzing your business...</span>
+          </div>
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground text-center">
+            Processing {Math.round(progress)}% complete
+          </p>
+        </div>
+      )}
+
+      {/* Success feedback */}
+      {submitState === 'success' && (
+        <div className="flex items-center justify-center gap-2 text-green-600 animate-in fade-in zoom-in-95">
+          <CheckCircle2 className="w-5 h-5" />
+          <span className="text-sm font-medium">Analysis complete!</span>
+        </div>
+      )}
+
       <Button
         type="submit"
         className="w-full"
         size="lg"
-        disabled={!isValid}
+        disabled={!isValid || submitState === 'processing'}
       >
-        Get Instant Analysis
+        {submitState === 'processing' ? (
+          <>
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            Analyzing...
+          </>
+        ) : submitState === 'success' ? (
+          <>
+            <CheckCircle2 className="w-5 h-5 mr-2" />
+            Complete
+          </>
+        ) : (
+          'Get Instant Analysis'
+        )}
       </Button>
     </form>
   )

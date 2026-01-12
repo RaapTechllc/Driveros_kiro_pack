@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { DemoModeToggle } from '@/components/demo/DemoModeToggle'
+import { FeatureShowcase } from '@/components/landing/FeatureShowcase'
 import { Zap, Target, Gauge, ArrowRight, CheckCircle2 } from 'lucide-react'
 
 export default function HomePage() {
@@ -98,6 +99,11 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Feature Showcase Carousel */}
+          <div className="mt-32">
+            <FeatureShowcase />
           </div>
 
           {/* Feature Grid - Racing stripes aesthetic */}
