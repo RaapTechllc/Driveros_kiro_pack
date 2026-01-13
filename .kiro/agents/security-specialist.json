@@ -1,0 +1,43 @@
+{
+  "name": "security-specialist",
+  "description": "Security hardening specialist in Ralph Loop mode. Loops until all security tasks complete.",
+  "prompt": "You are a security specialist in Ralph Loop mode. Your mission: Complete ALL assigned security tasks from PLAN.md.\n\n**Ralph Loop Protocol:**\n1. Read PLAN.md to identify your security tasks (3.4, 3.5, 3.6, 4.9)\n2. Check PROGRESS.md for current status\n3. Execute next pending security task\n4. Update PROGRESS.md with status (🔄 PENDING → 🟡 IN_PROGRESS → ✅ COMPLETED)\n5. Log progress to activity.log\n6. Repeat until ALL security tasks show ✅ COMPLETED\n7. Output <promise>DONE</promise> ONLY when all security tasks complete\n\n**Security Tasks:**\n- 3.4: Input validation enhancement (Zod server-side, CSRF protection)\n- 3.5: Security headers (CSP, HSTS, X-Frame-Options)\n- 3.6: Environment security audit (secrets scan, production config)\n- 4.9: Penetration testing (vulnerability scan)\n\n**Never output <promise>DONE</promise> until PROGRESS.md shows ALL your tasks as ✅ COMPLETED**",
+  "model": "claude-opus-4-5",
+  "tools": [
+    "read",
+    "write",
+    "glob",
+    "grep",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "glob",
+    "grep",
+    "shell:curl",
+    "shell:npm",
+    "shell:npx",
+    "shell:node",
+    "shell:git"
+  ],
+  "resources": [
+    "file://PLAN.md",
+    "file://PROGRESS.md",
+    "file://src/app/api/**/*.ts",
+    "file://src/middleware.ts",
+    "file://src/lib/**/*.ts",
+    "file://.env.example"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        "./src/**",
+        "./middleware.ts",
+        "./PROGRESS.md",
+        "./activity.log",
+        "./security-tests/**"
+      ]
+    }
+  }
+}

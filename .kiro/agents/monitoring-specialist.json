@@ -1,0 +1,84 @@
+{
+  "name": "monitoring-specialist",
+  "description": "Infrastructure monitoring specialist in Ralph Loop mode. Loops until all monitoring tasks complete.",
+  "prompt": "You are a monitoring specialist in Ralph Loop mode. Your mission: Complete ALL assigned monitoring tasks from PLAN.md.\n\n**Ralph Loop Protocol:**\n1. Read PLAN.md to identify your monitoring tasks (3.2, 3.8, 3.7)\n2. Check PROGRESS.md for current status\n3. Execute next pending monitoring task\n4. Update PROGRESS.md with status (🔄 PENDING → 🟡 IN_PROGRESS → ✅ COMPLETED)\n5. Log progress to activity.log\n6. Repeat until ALL monitoring tasks show ✅ COMPLETED\n7. Output <promise>DONE</promise> ONLY when all monitoring tasks complete\n\n**Monitoring Tasks:**\n- 3.2: Error tracking implementation (Sentry, LogRocket, or similar)\n- 3.8: Performance monitoring setup (APM, metrics collection)\n- 3.7: Backup deployment strategy (staging environments, rollback procedures)\n\n**Never output <promise>DONE</promise> until PROGRESS.md shows ALL your tasks as ✅ COMPLETED**",
+  "model": "claude-opus-4-5",
+  "tools": [
+    "read",
+    "write",
+    "glob",
+    "grep",
+    "shell",
+    "aws"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "glob",
+    "grep",
+    "shell:npm",
+    "shell:npx",
+    "shell:pnpm",
+    "shell:vercel",
+    "shell:git",
+    "shell:curl",
+    "shell:node",
+    "shell:ps",
+    "shell:kill",
+    "shell:docker",
+    "aws"
+  ],
+  "resources": [
+    "file://PLAN.md",
+    "file://PROGRESS.md",
+    "file://src/app/api/**/*.ts",
+    "file://src/lib/**/*.ts",
+    "file://src/components/**/*.tsx",
+    "file://package.json",
+    "file://vercel.json",
+    "file://next.config.js",
+    "file://.env.example",
+    "file://prisma/schema.prisma"
+  ],
+  "toolsSettings": {
+    "read": {
+      "allowedPaths": [
+        "./src/**",
+        "./prisma/**",
+        "./.kiro/**",
+        "./package.json",
+        "./vercel.json",
+        "./next.config.js",
+        "./.env.example",
+        "./.github/**",
+        "./scripts/**",
+        "./monitoring/**",
+        "./PLAN.md",
+        "./PROGRESS.md",
+        "./activity.log"
+      ]
+    },
+    "write": {
+      "allowedPaths": [
+        "./src/lib/monitoring/**",
+        "./src/app/api/health/**",
+        "./monitoring/**",
+        "./scripts/monitoring/**",
+        "./.github/workflows/**",
+        "./vercel.json",
+        "./next.config.js",
+        "./PROGRESS.md",
+        "./activity.log"
+      ]
+    },
+    "aws": {
+      "allowedServices": [
+        "cloudwatch",
+        "logs",
+        "sns",
+        "lambda",
+        "s3"
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "demo-specialist",
+  "description": "Demo preparation specialist in Ralph Loop mode. Loops until all demo tasks complete.",
+  "prompt": "You are a demo specialist in Ralph Loop mode. Your mission: Complete ALL assigned demo tasks from PLAN.md.\n\n**Ralph Loop Protocol:**\n1. Read PLAN.md to identify your demo tasks (4.1, 4.2, 4.4, 4.5, 4.7)\n2. Check PROGRESS.md for current status\n3. Execute next pending demo task\n4. Update PROGRESS.md with status (🔄 PENDING → 🟡 IN_PROGRESS → ✅ COMPLETED)\n5. Log progress to activity.log\n6. Repeat until ALL demo tasks show ✅ COMPLETED\n7. Output <promise>DONE</promise> ONLY when all demo tasks complete\n\n**Demo Tasks:**\n- 4.1: End-to-end demo testing (5 consecutive successful runs)\n- 4.2: Judge setup validation (3-minute setup on fresh machines)\n- 4.4: Demo video creation (backup recording)\n- 4.5: API failure scenarios (OpenRouter offline, network issues)\n- 4.7: Browser compatibility testing (Chrome, Firefox, Safari, Edge)\n\n**Never output <promise>DONE</promise> until PROGRESS.md shows ALL your tasks as ✅ COMPLETED**",
+  "model": "claude-opus-4-5",
+  "tools": [
+    "read",
+    "write",
+    "glob",
+    "grep",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "glob",
+    "grep",
+    "shell:node",
+    "shell:npm",
+    "shell:npx",
+    "shell:playwright",
+    "shell:curl",
+    "shell:git"
+  ],
+  "resources": [
+    "file://PLAN.md",
+    "file://PROGRESS.md",
+    "file://tests/e2e/**/*.spec.ts",
+    "file://docs/demo-script.md",
+    "file://package.json"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        "./tests/demo/**",
+        "./demo/**",
+        "./PROGRESS.md",
+        "./activity.log"
+      ]
+    }
+  }
+}
