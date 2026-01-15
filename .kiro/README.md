@@ -22,6 +22,14 @@ This template assumes agents work in isolated git worktrees to avoid conflicts.
 If you're using worktrees, run workflows from the active worktree and merge back
 only when a thread is complete.
 
+```bash
+# Create an isolated worktree for an agent thread
+./.kiro/workflows/worktree-manager.sh create frontend-designer
+
+# Merge the worktree branch back into your main branch
+./.kiro/workflows/worktree-manager.sh merge frontend-designer master
+```
+
 ## Hackathon Artifacts
 
 DriverOS hackathon docs live in `docs/hackathon/` at the repo root. We keep this
@@ -67,7 +75,10 @@ Know you're improving when you can:
 │   ├── ralph-kiro.sh        # P-thread parallel spawner
 │   ├── fusion.sh            # F-thread result fusion
 │   ├── chain-workflow.sh    # C-thread phase management
-│   └── metrics-tracker.sh   # Performance tracking
+│   ├── metrics-tracker.sh   # Performance tracking
+│   ├── dashboard.sh         # Metrics dashboard generator
+│   ├── worktree-manager.sh  # Worktree helper
+│   └── self-improve.sh      # Learning capture
 ├── steering/                 # Protocols and evolution
 │   ├── agent-evolution.md   # Self-improvement framework
 │   └── ralph-loop.md        # Validation methodology
@@ -97,6 +108,11 @@ Agents improve themselves using RBT (Roses, Buds, Thorns):
 - Automatic error diagnosis
 - Evolution logging
 - 1% better every session
+
+```bash
+# Capture a learning from a session
+./.kiro/workflows/self-improve.sh add correction "Use pnpm not npm" orchestrator
+```
 
 ## Available Agents
 

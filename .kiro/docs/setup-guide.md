@@ -117,6 +117,36 @@ kiro-cli --agent orchestrator
 ./.kiro/workflows/ralph-kiro.sh
 ```
 
+## Worktree Management (Recommended)
+
+```bash
+# Create an isolated worktree for an agent thread
+./.kiro/workflows/worktree-manager.sh create frontend-designer
+
+# Merge back into your main branch
+./.kiro/workflows/worktree-manager.sh merge frontend-designer master
+```
+
+Use the `WORKTREE_ROOT` environment variable to change where worktrees are created:
+
+```bash
+export WORKTREE_ROOT="../.worktrees/driveros"
+```
+
+## Self-Improvement Logging
+
+Capture learnings at the end of a session:
+
+```bash
+./.kiro/workflows/self-improve.sh add correction "Use pnpm not npm" orchestrator
+```
+
+Logs are stored under:
+
+```
+~/.kiro/evolution/
+```
+
 ## Customization
 
 ### Adding Project-Specific Agents
