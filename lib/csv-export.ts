@@ -1,6 +1,7 @@
 import { FullAuditResult } from './full-audit-analysis'
 import { FlashScanResult } from './types'
 import { loadImportedActions, loadImportedGoals } from './imported-data'
+import { getActionStatus } from './action-status'
 
 /**
  * Escapes a value for safe CSV export according to RFC 4180
@@ -35,7 +36,7 @@ export function exportActions(auditResult?: FullAuditResult, flashResult?: Flash
   const headers = ['title', 'why', 'owner_role', 'engine', 'eta_days', 'status', 'due_date', 'source']
   const rows = [headers.join(',')]
 
-  // Add generated actions
+  // Add generated actions (use persisted status from localStorage)
   if (auditResult) {
     auditResult.actions.do_now.forEach(action => {
       const row = [
@@ -44,7 +45,7 @@ export function exportActions(auditResult?: FullAuditResult, flashResult?: Flash
         escapeCSVValue(action.owner_role),
         escapeCSVValue(action.engine),
         action.eta_days.toString(),
-        escapeCSVValue('todo'),
+        escapeCSVValue(getActionStatus(action.title)),
         escapeCSVValue(''),
         escapeCSVValue('generated')
       ]
@@ -58,7 +59,7 @@ export function exportActions(auditResult?: FullAuditResult, flashResult?: Flash
         escapeCSVValue(action.owner_role),
         escapeCSVValue(action.engine),
         action.eta_days.toString(),
-        escapeCSVValue('todo'),
+        escapeCSVValue(getActionStatus(action.title)),
         escapeCSVValue(''),
         escapeCSVValue('generated')
       ]
@@ -74,7 +75,7 @@ export function exportActions(auditResult?: FullAuditResult, flashResult?: Flash
         escapeCSVValue(win.owner_role),
         escapeCSVValue(win.engine),
         win.eta_days.toString(),
-        escapeCSVValue('todo'),
+        escapeCSVValue(getActionStatus(win.title)),
         escapeCSVValue(''),
         escapeCSVValue('generated')
       ]

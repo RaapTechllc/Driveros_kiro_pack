@@ -1,67 +1,50 @@
----
-description: Session starter - Load project context and memory
----
+You are the DriverOS project primer. Load all project context and provide a comprehensive overview.
 
-# Prime: Load Context & Start Session
+## Non-negotiables
+- Do not start long-running processes (no `npm dev`, no `next dev`).
+- If runtime verification is needed, ask the user to run `npm dev` in a separate terminal.
 
-## Objective
-Load all available project memory and context to start a productive session.
+## Repository Health Check (CRITICAL - Run First)
+Before loading context, verify repository hygiene:
+1. **Check `.gitignore` exists** and contains:
+   - `/node_modules`
+   - `/.next/`
+   - `.env*.local`
+   - `/coverage`
+   - `*.tsbuildinfo`
+2. **If `.gitignore` is missing**: STOP and create it immediately
+3. **Check if `node_modules/` is committed**: Run `git ls-files | grep node_modules | head -5`
+   - If found: WARN USER IMMEDIATELY - this will cause GitHub push failures
+4. **Check for other common mistakes**:
+   - `.env` or `.env.local` committed (security risk)
+   - Build artifacts (`.next/`, `dist/`, `build/`) committed
 
-## Steps
+## Context Loading
+Review these key documents:
+- `.kiro/steering/product.md` - Product overview and goals
+- `.kiro/steering/tech.md` - Technical architecture
+- `.kiro/steering/structure.md` - Project organization
+- `README.md` - Project documentation
+- `DEVLOG.md` - Development timeline
 
-### 1) Initialize Memory System (if needed)
-If `memory/` directory doesn't exist, create basic structure:
-- Create `memory/` directory
-- Create `memory/project_brief.md` with template
-- Create `memory/active_state.md` with template  
-- Create `memory/system_patterns.md` with template
-- Create `memory/adr/` directory with `000-template.md`
+## Project Summary
+Provide a concise overview covering:
+1. **Purpose**: What DriverOS does - business operating system for finding North Star
+2. **Tech Stack**: Key technologies used
+3. **Current Status**: What's been completed
+4. **Next Steps**: Immediate development priorities
+5. **Key Constraints**: Max 3 departments, weekly cadence, 5-min Flash Scan
 
-### 2) Load Memory System (graceful)
-Read these files if they exist, skip if missing:
-- `memory/project_brief.md` (static context)
-- `memory/active_state.md` (current status)  
-- `memory/system_patterns.md` (standards & gotchas)
-- Recent ADRs in `memory/adr/` (scan directory, read recent ones)
+## Development Context
+- Focus on MVP features: Flash Scan, Full Audit, Dashboard, Year Board
+- Playwright tests protect demo scenarios
+- Mobile-responsive design required
 
-### 3) Load Steering Context (optional)
-Read steering files if they exist, skip if missing:
-- `.kiro/steering/product.md`
-- `.kiro/steering/scope.md` 
-- `.kiro/steering/domain-model.md`
-- `.kiro/steering/scoring.md`
-- Any other `.md` files in `.kiro/steering/`
+## Ready for Development
+After loading context, confirm you understand:
+- The 5-engine framework (Leadership, Operations, Marketing & Sales, Finance, Personnel)
+- The gear system (1-5 scale)
+- The technical architecture decisions
+- The MVP scope and priorities
 
-### 4) Load Project Context (fallback)
-If memory system is empty, scan project structure:
-- `README.md` (project overview)
-- `package.json` (tech stack)
-- `DEVLOG.md` or `CHANGELOG.md` (recent progress)
-
-## Output Format
-```
-✅ Context Loaded
-
-Project: [Name from project_brief or README]
-Memory System: [✅ Complete | 🟡 Partial | ⬜ New]
-Current Phase: [Phase from active_state or "Unknown"]
-Last Session: [What was accomplished or "First session"]
-Blockers: [Any critical issues or "None identified"]
-Next Priority: [Top item from Next Actions or "Define priorities"]
-
-Ready to work. What should we tackle first?
-```
-
-## Error Handling
-- If no memory files exist → Initialize new system
-- If files exist but are corrupted → Report issues, continue with available data
-- If no project context found → Ask user to provide basic project info
-- Always provide actionable next steps regardless of available context
-
-## Success Criteria
-After running @prime, I should be able to answer (or know what's missing):
-- What is this project's mission?
-- What's the current focus/priority?
-- What was done last session?
-- What are the "Do Not Forget" landmines?
-- What's next on the TODO list?
+Then ask: "What would you like to work on next?"

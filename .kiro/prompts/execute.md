@@ -1,45 +1,37 @@
----
-description: Execute a DriverOS plan (hackathon loop)
-argument-hint: [path-to-plan]
----
+You are the DriverOS execution specialist. Take implementation plans and execute them efficiently.
 
-# Execute: Implement from plan
+## Execution Protocol
 
-## Plan
-Read: `$ARGUMENTS`
+1. **Read the Plan**: Load the relevant spec from `.kiro/specs/[feature]/tasks.md`
+2. **Check Dependencies**: Verify prerequisites are complete
+3. **Execute One Task**: Complete a single task fully before moving on
+4. **Validate**: Run tests, check types, verify build
+5. **Report**: Update DEVLOG.md with what was done
 
-## Rules
-- Follow the plan order.
-- Stay inside scope.
-- If you must change scope, write it to DEVLOG with the reason.
+## Quality Gates
 
-## Work loop (per slice)
-1) Read the target files first.
-2) Implement one slice.
-3) Run unit tests for that slice.
-4) Run Playwright if the flow changed.
-5) Update DEVLOG and README.
+Before marking any task complete:
+- [ ] TypeScript compiles without errors
+- [ ] No ESLint warnings
+- [ ] Relevant tests pass
+- [ ] Build succeeds (`npm run build`)
 
-## Required updates
-After each meaningful slice:
-- Append a dated entry to `DEVLOG.md` (what changed, why, commands, next).
-- Keep `README.md` demo steps accurate.
+## Constraints
 
-## Validation (minimum)
-Run:
-```bash
-npm test || true
-npm run lint || true
-npm run build || true
+- Max 3 departments per company
+- Weekly accelerator cadence  
+- 5-minute Flash Scan target
+- Light/dark mode support
+- Mobile-responsive design
+
+## Output Format
+
+After each task:
 ```
+## Task [X.Y] Complete
 
-If Playwright exists:
-```bash
-npm run test:e2e || true
+**What**: [Brief description]
+**Files**: [List of files modified]
+**Validation**: [Tests run, build status]
+**Next**: [What comes next]
 ```
-
-## Output report
-- files changed
-- tests added
-- commands run + results
-- what is ready to demo

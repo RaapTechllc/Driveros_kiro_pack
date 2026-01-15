@@ -1,44 +1,49 @@
----
-description: DriverOS hackathon quickstart
----
+# Kiro CLI Quick Start Wizard (DriverOS)
 
-# Quickstart: DriverOS (hackathon)
+This wizard helps bootstrap new features for DriverOS.
 
-## Goal
-Get to a judge-ready demo fast.
-Keep scope tight.
+## Project Context
 
-## First checks
-Run:
+DriverOS is a business operating system with:
+- **Flash Scan**: 5-minute quick assessment
+- **Full Audit**: Comprehensive 5-engine analysis
+- **Dashboard**: Signal Board + Action Bay
+- **Year Board**: Annual planning
+- **Meetings**: Structured cadences
+
+## Quick Start Commands
+
 ```bash
-ls -la
-ls -la .kiro || true
-ls -la docs || true
+# Development
+npm install
+npm run dev
+
+# Testing
+npm test           # Unit tests
+npm run test:e2e   # E2E tests
+
+# Build
+npm run build
 ```
 
-Confirm you have:
-- `.kiro/steering/` (this pack)
-- `.kiro/prompts/` (this pack)
-- `docs/` with your PRD + questionnaire (if you have them)
+## Feature Development Flow
 
-## Recommended build loop
-1) `@prime`
-2) `@plan-feature` (one feature at a time)
-3) `@execute <plan-path>`
-4) `@code-review`
-5) `@devlog-update`
-6) `@readme-sync`
+1. **Plan**: Create spec in `.kiro/specs/[feature]/`
+2. **Design**: Define components and data models
+3. **Implement**: Build feature incrementally
+4. **Test**: Add unit and E2E tests
+5. **Document**: Update DEVLOG.md
 
-## Hackathon priorities
-- Flash Scan -> instant quick wins.
-- Upgrade -> Full Audit -> dashboard.
-- CSV import/export works.
+## Key Files
 
-## Hard bans
-- No external integrations.
-- No payments.
-- No complex auth.
+- `lib/types.ts` - TypeScript interfaces
+- `lib/flash-analysis.ts` - Flash Scan engine
+- `lib/full-audit-analysis.ts` - Full Audit engine
+- `app/dashboard/page.tsx` - Main dashboard
 
-## Next question to ask the user (only if needed)
-- “Where is the PRD file in this repo?”
-- “Where is the questionnaire file in this repo?”
+## Constraints
+
+- Max 3 departments
+- Weekly accelerator cadence
+- 5-minute Flash Scan
+- Light/dark mode support

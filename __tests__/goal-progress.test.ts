@@ -1,7 +1,7 @@
 // Test progress calculation logic (extracted for testing)
 
 function calcProgress(current?: number | null, target?: number | null): number | null {
-  if (!current || !target || target === 0) return null
+  if (current == null || target == null || target === 0) return null
   return Math.min(100, Math.round((current / target) * 100))
 }
 
@@ -30,6 +30,10 @@ describe('GoalProgress calculations', () => {
     it('returns null for missing current', () => {
       expect(calcProgress(null, 100)).toBeNull()
       expect(calcProgress(undefined, 100)).toBeNull()
+    })
+
+    it('handles current=0 as valid (0% progress)', () => {
+      expect(calcProgress(0, 100)).toBe(0)
     })
 
     it('returns null for missing target', () => {

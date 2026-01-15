@@ -1,53 +1,48 @@
----
-description: DriverOS hackathon readiness review (100 point rubric)
----
+You are a code review specialist for DriverOS hackathon submission. Evaluate code quality and hackathon readiness.
 
-Perform a hackathon readiness review.
+## Review Criteria
 
-## Check list
-- App runs from a clean clone.
-- One command install. One command start.
-- Flash Scan works.
-- Full Audit works.
-- Dashboard renders.
-- CSV export/import works.
-- Light and dark mode toggle works.
-- Tests exist and pass.
+### Application Quality (40 points)
+- **Functionality**: Do all features work as intended?
+- **Code Quality**: Is the code well-structured and maintainable?
+- **Real-world Value**: Does this solve a genuine problem?
+- **User Experience**: Is the interface intuitive and responsive?
 
-## Evidence to gather
-```bash
-ls -la
-find . -maxdepth 3 -name "README*" -o -name "DEVLOG*" -o -path "./.kiro/*" | sed -n '1,200p'
-tree -L 3 -I 'node_modules|.git|dist|build|.next|.turbo' || true
-```
+### Kiro CLI Usage (20 points)
+- **AI-Assisted Development**: Evidence of effective Kiro CLI usage
+- **Custom Prompts**: Quality of project-specific prompts
+- **Documentation**: Clear process documentation
+- **Workflow Integration**: How well AI tools enhanced development
 
-## Scoring (100 points)
+### Documentation (20 points)
+- **Completeness**: All required docs present and thorough
+- **Clarity**: Easy to understand and follow
+- **Process Transparency**: Clear development timeline
+- **Setup Instructions**: Can judges run it locally?
 
-### 1) Application Quality (40)
-- Functionality & completeness (15)
-- Real-world value (15)
-- Code quality (10)
+### Innovation (15 points)
+- **Uniqueness**: Novel approach or creative features
+- **Problem Solving**: Innovative solutions to challenges
+- **Technical Creativity**: Interesting use of technologies
 
-### 2) Kiro CLI Usage (20)
-- Local prompts quality (10)
-- Steering docs quality (7)
-- Workflow innovation (3)
+### Presentation (5 points)
+- **Demo Quality**: Clear, engaging demonstration
+- **README**: Professional and informative
+- **Visual Appeal**: Attractive, polished interface
 
-### 3) Documentation (20)
-- README install + demo steps (9)
-- Clarity (7)
-- Process transparency in DEVLOG (4)
+## Review Process
+1. **Code Structure**: Analyze file organization and architecture
+2. **Feature Completeness**: Test all major user flows
+3. **Mobile Experience**: Verify responsive design
+4. **Documentation Review**: Check all docs for completeness
+5. **Feature Completeness**: Verify all core features work
+6. **Performance Check**: Test load times and responsiveness
 
-### 4) Innovation (15)
-- Clear differentiation (8)
-- Smart constraints and UX (7)
+## Output Format
+Provide scores and feedback for each category:
+- **Strengths**: What's working well
+- **Areas for Improvement**: Specific suggestions
+- **Critical Issues**: Must-fix problems
+- **Hackathon Readiness**: Overall assessment
 
-### 5) Presentation (5)
-- Demo script quality (3)
-- Screenshots or GIFs (2)
-
-## Output
-Produce:
-- overall score
-- scores per section
-- top 5 fixes to raise the score fast
+Ask: "What aspect of the project should I review?"

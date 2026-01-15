@@ -41,12 +41,15 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           },
-          // Content Security Policy
+          // Content Security Policy (stricter in production)
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // unsafe-inline needed for Next.js
+              // unsafe-eval only needed in dev for Next.js hot reload
+              process.env.NODE_ENV === 'development'
+                ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+                : "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'", // unsafe-inline needed for Tailwind
               "img-src 'self' data: blob:",
               "font-src 'self' data:",

@@ -25,7 +25,7 @@ interface GoalProgressProps {
 }
 
 function calcProgress(current?: number | null, target?: number | null): number | null {
-  if (!current || !target || target === 0) return null
+  if (current == null || target == null || target === 0) return null
   return Math.min(100, Math.round((current / target) * 100))
 }
 

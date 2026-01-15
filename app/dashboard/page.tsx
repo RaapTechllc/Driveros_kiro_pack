@@ -183,7 +183,7 @@ export default function DashboardPage() {
           <div className="text-center space-y-6 max-w-md">
             <h1 className="text-3xl font-bold">Welcome to DriverOS</h1>
             <p className="text-muted-foreground">
-              Get instant business insights and actionable recommendations. Start with a quick Flash Scan to see your results here.
+              Get your bottleneck, your next three actions, and the one metric to move this week. Start with a 5-minute Flash Scan.
             </p>
             <div className="space-y-4">
               <Link href="/flash-scan">
@@ -198,7 +198,7 @@ export default function DashboardPage() {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              Flash Scan provides instant recommendations. Full Audit gives detailed engine analysis.
+              Flash Scan gives quick wins. Full Audit maps all 5 engines, risks, and priorities.
             </p>
           </div>
         </div>
@@ -241,7 +241,7 @@ export default function DashboardPage() {
             gear={isFullAudit ? auditResult!.gear.number : flashResult!.gear_estimate.number}
             phase={isFullAudit ? auditResult!.gear.label : flashResult!.gear_estimate.label}
             description={isFullAudit ? auditResult!.gear.reason : flashResult!.gear_estimate.reason}
-            progress={isFullAudit ? auditResult!.completion_score : flashResult!.confidence_score}
+            progress={Math.round((isFullAudit ? auditResult!.completion_score : flashResult!.confidence_score) * 100)}
           />
         </div>
 
@@ -532,14 +532,14 @@ export default function DashboardPage() {
         {!isFullAudit && (
           <Card className="text-center">
             <CardHeader>
-              <CardTitle>Want Complete Analysis?</CardTitle>
+              <CardTitle>Ready for the full diagnosis?</CardTitle>
               <CardDescription>
-                Get detailed engine scoring, risk assessment, and enhanced reporting
+                See your 5-engine scorecard, risk flags, and a prioritized action plan you can run next week.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/full-audit">
-                <Button size="lg">Upgrade to Full Audit</Button>
+                <Button size="lg">Unlock Full Audit</Button>
               </Link>
             </CardContent>
           </Card>

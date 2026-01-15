@@ -1,53 +1,74 @@
----
-description: Plan a DriverOS feature (hackathon scope)
----
+# Plan Feature
 
-# Plan a new task
+Start the spec-driven development workflow for a new feature.
 
-## Feature: $ARGUMENTS
+## Trigger Words
+- "plan [feature]"
+- "new feature [description]"  
+- "PRD for [feature]"
+- "spec [feature]"
 
-## Mission
-Create a plan that can be executed in one pass.
-Do not write code in this phase.
+## Workflow
 
-## Rules (must follow)
-- Respect `.kiro/steering/scope.md`.
-- No external integrations.
-- Max 3 departments.
-- Accelerator cadence is weekly.
-- One sentence rationale.
+### Phase 1: Requirements
+Create `.kiro/specs/[feature-name]/requirements.md` with:
 
-## Planning steps
+```markdown
+# Requirements - [Feature Name]
 
-### 1) Define outcome
-- What screen changes?
-- What data changes?
-- What is the acceptance test?
+## Overview
+[One paragraph describing the feature and its value]
 
-### 2) Read what matters
-- Read relevant steering docs.
-- Read the PRD and questionnaire files in docs/.
-- Grep for similar patterns in code.
+## User Stories
 
-### 3) Decide minimal design
-- Flash Scan vs Full Audit?
-- What objects are created?
-- What API routes exist?
-- What CSV headers are needed?
+### US-1: [Story Title]
+**As a** [user type]
+**I want** [capability]
+**So that** [benefit]
 
-### 4) Testing plan
-- Unit tests for scoring and validation.
-- Playwright flow if UI changes.
+**Acceptance Criteria (EARS):**
+- WHEN [trigger], THE SYSTEM SHALL [response]
+- IF [condition], THEN [behavior]
+- THE SYSTEM SHALL [capability] WITHIN [constraint]
 
-## Output format
-Write the plan as a markdown file.
-Include:
+### US-2: [Story Title]
+...
 
-1) Feature description (1 paragraph)
-2) User story (2 lines)
-3) Files to read first (paths)
-4) Files to create / modify (paths)
-5) Step-by-step tasks (numbered)
-6) Validation commands
-7) Test cases (unit + e2e)
-8) Demo steps (how a judge sees it)
+## Functional Requirements
+- FR-1: [Requirement]
+- FR-2: [Requirement]
+
+## Non-Functional Requirements
+- NFR-1: Performance - [constraint]
+- NFR-2: Security - [constraint]
+- NFR-3: Accessibility - [constraint]
+
+## Out of Scope
+- [What this feature does NOT include]
+
+## Open Questions
+- [ ] [Decision needed]
+```
+
+### Phase 2: Design (after approval)
+Create `.kiro/specs/[feature-name]/design.md`
+
+### Phase 3: Tasks (after design approval)
+Create `.kiro/specs/[feature-name]/tasks.md`
+
+### Phase 4: Implementation (task by task)
+Execute one task at a time with specialist delegation
+
+## Approval Gates
+
+Wait for explicit approval before each phase transition:
+- "requirements approved" → Design
+- "design approved" → Tasks  
+- "start task 1" → Implementation
+
+## Context Management
+
+- Start each phase with minimal context
+- Reference files instead of pasting content
+- Summarize completed phases
+- Load only task-specific files during implementation

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   Settings,
@@ -103,6 +104,8 @@ interface HeaderProps {
 }
 
 export function Header({ onMobileMenuClick, onSidebarToggle, isSidebarCollapsed }: HeaderProps) {
+  const router = useRouter()
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center mx-auto max-w-7xl px-4">
@@ -160,14 +163,30 @@ export function Header({ onMobileMenuClick, onSidebarToggle, isSidebarCollapsed 
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => router.push('/settings')}
+                className="cursor-pointer"
+              >
                 <User className="mr-2 h-4 w-4" /> Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => router.push('/settings')}
+                className="cursor-pointer"
+              >
                 <Settings className="mr-2 h-4 w-4" /> Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
+              <DropdownMenuItem 
+                className="text-destructive focus:text-destructive cursor-pointer"
+                onClick={() => {
+                  // In a real app, this would clear auth tokens and redirect to login
+                  // For now, just show a message
+                  if (confirm('Are you sure you want to log out?')) {
+                    // Clear any demo mode or local data if needed
+                    router.push('/')
+                  }
+                }}
+              >
                 <LogOut className="mr-2 h-4 w-4" /> Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

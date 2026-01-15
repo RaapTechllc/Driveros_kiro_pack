@@ -47,7 +47,8 @@ export default function HomePage() {
 
               <p className="text-muted-foreground text-xl leading-relaxed max-w-lg">
                 Turn your <span className="text-primary font-semibold">North Star</span> into
-                weekly wins with <span className="text-foreground font-semibold">instant</span> business insights.
+                weekly wins. In 5 minutes, know your biggest constraint, the metric to move,
+                and the first three actions that unlock momentum.
               </p>
 
               {/* CTA Buttons */}
@@ -78,7 +79,7 @@ export default function HomePage() {
 
               <p className="text-sm text-muted-foreground flex items-center gap-3">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
-                Free • No signup • Results in under 5 minutes
+                Free • No signup • Clear next steps in under 5 minutes
               </p>
             </div>
 
@@ -109,9 +110,9 @@ export default function HomePage() {
           {/* Feature Grid - Racing stripes aesthetic */}
           <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Zap, title: 'Flash Scan', desc: '5-minute assessment with instant recommendations', gear: '1-2' },
-              { icon: Target, title: 'Full Audit', desc: 'Complete engine analysis with risk assessment', gear: '3-4' },
-              { icon: Gauge, title: 'Dashboard', desc: 'Real-time tracking of your business velocity', gear: '5' }
+              { icon: Zap, title: 'Flash Scan', desc: 'Get your bottleneck, KPI, and 3 quick wins', gear: '1-2' },
+              { icon: Target, title: 'Full Audit', desc: '5-engine scorecard, risks, and prioritized actions', gear: '3-4' },
+              { icon: Gauge, title: 'Dashboard', desc: 'Track velocity and keep the plan moving weekly', gear: '5' }
             ].map((feature, i) => (
               <div
                 key={i}

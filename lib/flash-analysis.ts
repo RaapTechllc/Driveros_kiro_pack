@@ -1,5 +1,6 @@
 import { FlashScanData, FlashScanResult, QuickWin, VALID_ROLES, type OwnerRole } from './types'
 import { performanceMonitor } from './performance-monitor'
+import { getIndustryProfile, getConstraintSolutions, getPhaseRecommendations } from './industry-knowledge'
 
 /**
  * Flash Scan Analysis Engine
@@ -136,8 +137,20 @@ function estimateGear(sizeband: string, constraint: string): { number: number, l
  */
 export function analyzeFlashScan(data: FlashScanData): FlashScanResult {
   return performanceMonitor.trackSync('flash-scan-analysis', () => {
-    // Get accelerator recommendation
-    const accelerator_kpi = ACCELERATOR_MAP[data.industry] || ACCELERATOR_MAP['Other']
+    // Get industry profile for enhanced insights
+    const industryProfile = getIndustryProfile(data.industry)
+    const constraintSolution = getConstraintSolutions(data.top_constraint.toLowerCase())
+    
+    // Get accelerator recommendation (industry-specific if available)
+    let accelerator_kpi = ACCELERATOR_MAP[data.industry] || ACCELERATOR_MAP['Other']
+    let accelerator_notes = `Based on ${data.industry} industry focus`
+    
+    if (industryProfile) {
+      // Use industry-specific brick metric
+      accelerator_kpi = industryProfile.brickMetrics[0]
+      const phaseRec = getPhaseRecommendations(industryProfile.typicalPhase)
+      accelerator_notes = `${industryProfile.name} in ${industryProfile.typicalPhase} phase. Focus: ${phaseRec.focus}`
+    }
     
     // Get quick wins based on constraint
     const constraint_key = data.top_constraint.toLowerCase()
@@ -159,20 +172,48 @@ export function analyzeFlashScan(data: FlashScanData): FlashScanResult {
       engine: 'Leadership'
     }
     
-    // Calculate confidence (simple heuristic)
-    const confidence = data.north_star.length > 10 ? 85 : 65
+    // Add industry-specific win if available
+    const industry_wins: QuickWin[] = []
+    if (industryProfile && industryProfile.accelerationActions.length > 0) {
+      industry_wins.push({
+        title: industryProfile.accelerationActions[0],
+        why: `Top action for ${industryProfile.name} businesses`,
+        owner_role: toOwnerRole(data.role),
+        eta_days: 7,
+        engine: 'Operations'
+      })
+    }
+    
+    // Add constraint-specific insight
+    const constraint_win: QuickWin = {
+      title: constraintSolution.thirtyDayFix.split('.')[0],
+      why: `Root cause: ${constraintSolution.rootCause.split(' ').slice(0, 6).join(' ')}...`,
+      owner_role: 'Owner',
+      eta_days: 7,
+      engine: 'Operations'
+    }
+    
+    // Calculate confidence (higher with industry match)
+    const confidence = industryProfile ? 0.92 : (data.north_star.length > 10 ? 0.85 : 0.65)
     
     return {
       schema_version: '1.0',
-      confidence_score: 0.85, // High confidence for flash analysis
+      confidence_score: confidence,
       accelerator: {
         kpi: accelerator_kpi,
         cadence: 'weekly',
         recommended: true,
-        notes: `Based on ${data.industry} industry focus`
+        notes: accelerator_notes
       },
-      quick_wins: [role_win, ...quick_wins.slice(0, 3)],
-      gear_estimate: estimateGear(data.size_band, data.top_constraint)
+      quick_wins: [role_win, ...industry_wins, constraint_win, ...quick_wins.slice(0, 2)].slice(0, 5),
+      gear_estimate: estimateGear(data.size_band, data.top_constraint),
+      // Enhanced insights from knowledge base
+      industry_insights: industryProfile ? {
+        phase: industryProfile.typicalPhase,
+        ltvCacTarget: industryProfile.ltvCacTarget,
+        topConstraints: industryProfile.commonConstraints.slice(0, 3),
+        leadGenPriority: industryProfile.leadGenPriority[0]
+      } : undefined
     }
   }, { inputSize: Object.keys(data).length }) as FlashScanResult
 }

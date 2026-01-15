@@ -1,60 +1,38 @@
----
-description: DriverOS code review (pre-commit)
----
+# Code Review
 
-Review recently changed files.
-Focus on bugs, scope drift, and demo risk.
+Review recent code changes for quality, security, and maintainability.
 
-## Read first
-- `.kiro/steering/scope.md`
-- `.kiro/steering/domain-model.md`
-- `.kiro/steering/scoring.md`
+## Review Focus
 
-## Gather changes
-```bash
-git status || true
-git diff --stat HEAD || true
-git diff HEAD || true
-git ls-files --others --exclude-standard || true
-```
+1. **Code Quality**
+   - Readable and well-named variables/functions
+   - No duplicated logic
+   - Appropriate abstraction level
 
-## Check for these issues
+2. **Error Handling**
+   - Proper try/catch blocks
+   - Meaningful error messages
+   - Graceful degradation
 
-### 1) Scope drift (critical)
-- external integrations added
-- departments > 3
-- cadence not weekly
-- multi-step onboarding creep
+3. **Type Safety**
+   - No `any` types without justification
+   - Proper null/undefined handling
+   - Correct type assertions
 
-### 2) Data contract breaks (high)
-- analysis payload missing schema_version
-- enums inconsistent with domain-model.md
-- rationale longer than one sentence
+4. **Performance**
+   - No unnecessary re-renders
+   - Efficient data fetching
+   - Proper memoization
 
-### 3) Logic bugs (high)
-- completion threshold logic wrong
-- scoring normalization wrong
-- CSV import/export headers mismatch
+5. **Security**
+   - Input validation
+   - No exposed secrets
+   - Safe data handling
 
-### 4) UI demo risk (medium)
-- missing empty states
-- theme toggle broken
-- dashboard depends on non-seeded data
+## Workflow
 
-### 5) Quality (medium/low)
-- unclear naming
-- missing tests for new logic
-- dead code
+1. Run `git diff` to see recent changes
+2. Focus on modified files only
+3. Prioritize findings: Critical → Warnings → Suggestions
 
-## Output
-Write a report to:
-`.agents/code-reviews/driveros-review-<date>.md`
-
-Use this format:
-
-severity: critical|high|medium|low  
-file: path  
-line: N  
-issue: one line  
-detail: short explanation  
-suggestion: fix
+Provide actionable feedback with specific code suggestions.

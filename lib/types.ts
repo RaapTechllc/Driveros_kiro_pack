@@ -59,6 +59,13 @@ export interface FlashScanResult {
     label: string
     reason: string
   }
+  // Enhanced industry insights (optional)
+  industry_insights?: {
+    phase: string
+    ltvCacTarget: { min: number; ideal: number }
+    topConstraints: string[]
+    leadGenPriority: string
+  }
 }
 
 // Meeting types

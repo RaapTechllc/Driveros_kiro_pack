@@ -37,8 +37,9 @@ export const testData = {
 
 export const expectedResults = {
   flashScan: {
-    acceleratorKPI: 'Weekly Active Users',
-    quickWinsCount: 4, // 1 role-specific + 3 from demand constraint
+    // Now uses industry-specific KPI from knowledge base
+    acceleratorKPI: 'Monthly Recurring Revenue (MRR)',
+    quickWinsCount: 5, // Enhanced with industry-specific wins
     gearNumber: 2
   },
 

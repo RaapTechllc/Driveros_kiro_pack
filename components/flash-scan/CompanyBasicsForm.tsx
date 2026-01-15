@@ -38,7 +38,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
     <form onSubmit={handleSubmit} className="space-y-6 max-w-md mx-auto">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">DriverOS Flash Scan</h1>
-        <p className="text-muted-foreground">Get instant insights in under 5 minutes</p>
+        <p className="text-muted-foreground">Know your bottleneck, KPI, and next moves in under 5 minutes</p>
       </div>
 
       <div className="space-y-4">
@@ -113,7 +113,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
           <Input
             id="north-star"
             name="north_star"
-            placeholder="What's your main business goal this quarter?"
+            placeholder="e.g., Hit $2M ARR by Dec 31"
             value={formData.north_star}
             onChange={(e) => updateField('north_star', e.target.value)}
             required
@@ -132,7 +132,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
           <Input
             id="top-constraint"
             name="top_constraint"
-            placeholder="What's blocking you most right now?"
+            placeholder="e.g., Lead flow, cash, delivery, or team capacity"
             value={formData.top_constraint}
             onChange={(e) => updateField('top_constraint', e.target.value)}
             required
@@ -150,7 +150,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
         <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center justify-center gap-2 text-primary">
             <Sparkles className="w-5 h-5 animate-pulse" />
-            <span className="text-sm font-medium">AI analyzing your business...</span>
+            <span className="text-sm font-medium">Analyzing your bottleneck and next moves...</span>
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <div
@@ -189,7 +189,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
             Complete
           </>
         ) : (
-          'Get Instant Analysis'
+          'Get My Flash Scan'
         )}
       </Button>
     </form>

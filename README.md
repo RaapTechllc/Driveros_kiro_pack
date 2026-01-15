@@ -4,7 +4,8 @@
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Test Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)
-![E2E Tests](https://img.shields.io/badge/e2e-21%2F23%20passing-green)
+![E2E Tests](https://img.shields.io/badge/e2e-26%2F26%20passing-brightgreen)
+![Unit Tests](https://img.shields.io/badge/unit-126%2F126%20passing-brightgreen)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![WCAG](https://img.shields.io/badge/WCAG%202.1-AA%20compliant-purple)

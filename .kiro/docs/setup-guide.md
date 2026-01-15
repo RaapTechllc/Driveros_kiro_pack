@@ -31,6 +31,17 @@ git clone https://github.com/your-org/orchestrator-template.git
 cp -r orchestrator-template/.kiro /path/to/new/project/
 ```
 
+### Option 3: Worktree-Based Setup (Recommended)
+
+```bash
+# Create a worktree for agent execution
+git worktree add ../project-orchestrator
+cd ../project-orchestrator
+
+# Run orchestration in the worktree
+kiro-cli --agent orchestrator
+```
+
 ## Post-Installation Setup
 
 ### 1. Configure Project-Specific Paths

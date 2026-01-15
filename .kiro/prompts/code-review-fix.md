@@ -1,46 +1,46 @@
 ---
-description: Fix issues from DriverOS code review
-argument-hint: [path-to-review-report]
+description: "Implement fixes from a code review or hackathon review, with tests and doc sync"
 ---
 
-# Fix: Code review issues
+# Code Review Fix
 
-## Review report
-Read: `$ARGUMENTS`
+## Input: $ARGUMENTS
+Use one of:
+- a markdown file path containing findings
+- a short list of issues pasted into the prompt
 
 ## Mission
-Fix all critical and high priority issues from the code review.
-Focus on demo readiness and data contract compliance.
+Fix issues fast without breaking the demo path.
 
-## Rules
-- Fix critical issues first (data contract violations)
-- Then high priority (logic bugs, scope compliance)
-- Medium priority if time allows
-- Update tests for any logic changes
-- Maintain existing functionality
+## Non-negotiables
+- Fix one finding at a time.
+- Add or update a test for each fix.
+- Verify build still works: `npm run build`
+- Update DEVLOG.md after the fix set.
+- Update README.md only if setup/run/env/deploy changed.
 
-## Work approach
-1) Read the review report completely
-2) Fix issues in order of severity (critical → high → medium)
-3) Run tests after each fix to ensure no regressions
-4) Update documentation if interfaces change
+## Process
+1) Parse the findings and rank:
+- P0: breaks demo / data corruption / security risk
+- P1: correctness bugs / flaky tests
+- P2: cleanup
 
-## Required validation
-After each fix:
-```bash
-npm test || true
-npm run build || true
-```
+2) For each fix:
+- identify root cause in code
+- implement minimal patch
+- add tests (unit or Playwright)
+- run quick validation (build/type check only)
 
-## Output format
-For each issue fixed:
-- Issue: [brief description]
-- File: [path]
-- Fix: [what was changed]
-- Status: ✅ Fixed | ⚠️ Partial | ❌ Skipped
+3) Doc sync:
+- DEVLOG entry (UTC, what changed / what tested / what next)
+- README update if needed
 
-## Auto-trigger next step
-After completing fixes, automatically run devlog update:
-```
-Use prompt: devlog-update.md
-```
+## Output
+- Fixes applied (bullets)
+- Validation run (build/type check results only)
+- Any remaining risks
+- Recommended next steps (do not execute long-running tests)
+
+## Prompt Improvements (required when useful)
+If the review revealed a predictable gap (missing test type, missing doc step),
+patch the relevant prompt in `.kiro/prompts/` and log it.

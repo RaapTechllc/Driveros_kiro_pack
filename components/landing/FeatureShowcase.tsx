@@ -14,27 +14,27 @@ interface Showcase {
 const showcases: Showcase[] = [
   {
     title: 'Flash Scan Results',
-    description: 'Get instant business insights in under 5 minutes',
+    description: 'See your bottleneck, KPI, and next 3 moves in under 5 minutes',
     image: '/screenshots/flash-scan-results.png',
-    caption: 'Instant accelerator recommendations and quick wins'
+    caption: 'Accelerator metric + quick wins grounded in your constraint'
   },
   {
     title: 'Dashboard Overview',
-    description: 'Track your business velocity with the Signal Board',
+    description: 'Track velocity and keep the plan moving every week',
     image: '/screenshots/dashboard-overview.png',
-    caption: 'Real-time engine health and action prioritization'
+    caption: 'Engine health, trends, and prioritized actions in one view'
   },
   {
     title: 'Full Audit Analysis',
-    description: 'Complete 5-engine scoring with risk assessment',
+    description: 'Get the 5-engine scorecard and risk flags',
     image: '/screenshots/full-audit-results.png',
-    caption: 'Detailed analysis with brakes and do-now actions'
+    caption: 'Mechanism-first analysis with do-now priorities'
   },
   {
     title: 'Export & Integrate',
-    description: 'Download your data to Excel or Google Sheets',
+    description: 'Bring your plan into Excel, Sheets, or your ops stack',
     image: '/screenshots/export-csv.png',
-    caption: 'Complete data portability with CSV export'
+    caption: 'Own your data and keep momentum outside the app'
   }
 ]
 
@@ -76,7 +76,7 @@ export function FeatureShowcase() {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-3">See It In Action</h2>
         <p className="text-muted-foreground text-lg">
-          From assessment to actionable insights in minutes
+          From assessment to action in minutes, not weeks
         </p>
       </div>
 

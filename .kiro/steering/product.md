@@ -18,7 +18,7 @@ Inputs (minimal):
 Outputs:
 - recommended weekly Accelerator (user can override)
 - 3–5 quick wins (small moves with clear owners)
-- “what to answer next” checklist to unlock Full Audit
+- "what to answer next" checklist to unlock Full Audit
 
 ### 2) Full Audit (upgrade)
 Goal: accurate scoring + aligned goals.

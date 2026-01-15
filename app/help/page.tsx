@@ -29,12 +29,12 @@ const faqs: FAQItem[] = [
   {
     category: 'Getting Started',
     question: 'What is the difference between Flash Scan and Full Audit?',
-    answer: 'Flash Scan is a quick 5-minute assessment that gives you instant recommendations and a gear estimate. Full Audit is a comprehensive 15-minute analysis that scores all 5 business engines, provides detailed risk assessment, and generates prioritized action items.'
+    answer: 'Flash Scan is a 5-minute snapshot that shows your bottleneck, your KPI, and your next 3 quick wins. Full Audit is a 15-minute deep dive that scores all 5 business engines, flags risks, and generates a prioritized action plan you can run this week.'
   },
   {
     category: 'Getting Started',
     question: 'How do I start using DriverOS?',
-    answer: 'Start with a Flash Scan to get quick insights about your business. Click "Start Flash Scan" on the homepage, fill in 5 quick fields about your business, and receive instant recommendations. You can upgrade to Full Audit anytime for deeper analysis.'
+    answer: 'Start with a Flash Scan. Fill in 5 quick fields, get your bottleneck and KPI, then act on the first three wins. Upgrade to Full Audit anytime when you want the full engine scorecard and risk flags.'
   },
   {
     category: 'Getting Started',
