@@ -40,15 +40,10 @@ export class FlashScanPage {
     this.sizeSelect = page.locator('select[name="size_band"]')
     this.roleSelect = page.locator('select[name="role"]')
     this.northStarInput = page.locator('input[name="north_star"]')
-    this.constraintInput = page.locator('input[aria-label="Biggest Constraint"], input[placeholder*="blocking"]')
-    // Fallback if name attr is missing on input, component showed Input without name prop
-    // Actually Component code: <Input ... value={formData.top_constraint} ...>
-    // It doesn't have a name attribute!
-    // I should check the component code again or add name attribute.
-    // Component code: <Input placeholder="What's blocking you most right now?" ... />
-    // It has no name attribute. I'll rely on the placeholder.
-    this.submitButton = page.getByRole('button', { name: 'Get Instant Analysis' })
-    this.upgradeButton = page.getByRole('link', { name: 'Upgrade to Full Audit' })
+    // Input has name="top_constraint" attribute
+    this.constraintInput = page.locator('input[name="top_constraint"]')
+    this.submitButton = page.getByRole('button', { name: 'Get My Flash Scan' })
+    this.upgradeButton = page.getByRole('link', { name: 'Unlock Full Audit' })
   }
 
   async fillForm(data: {
