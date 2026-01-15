@@ -35,9 +35,9 @@ export function BusinessGearIndicator({
 
                 {/* Scanline effect overlay */}
                 <div className="absolute inset-0 opacity-5 dark:opacity-5 pointer-events-none"
-                     style={{
-                       backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, currentColor 2px, currentColor 4px)'
-                     }}
+                    style={{
+                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, currentColor 2px, currentColor 4px)'
+                    }}
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
@@ -50,21 +50,21 @@ export function BusinessGearIndicator({
                             <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                                 {/* Background track */}
                                 <circle
-                                  cx="50" cy="50" r="40"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  className="text-gray-800 dark:text-gray-800"
-                                  strokeWidth="8"
+                                    cx="50" cy="50" r="40"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    className="text-gray-800 dark:text-gray-800"
+                                    strokeWidth="8"
                                 />
                                 {/* Progress arc */}
                                 <circle
-                                  cx="50" cy="50" r="40"
-                                  fill="none"
-                                  stroke="url(#gearGradient)"
-                                  strokeWidth="8"
-                                  strokeLinecap="round"
-                                  strokeDasharray={`${progress * 2.51} 251`}
-                                  className="transition-all duration-1000 ease-out"
+                                    cx="50" cy="50" r="40"
+                                    fill="none"
+                                    stroke="url(#gearGradient)"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    strokeDasharray={`${progress * 2.51} 251`}
+                                    className="transition-all duration-1000 ease-out"
                                 />
                                 <defs>
                                     <linearGradient id="gearGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -114,20 +114,31 @@ export function BusinessGearIndicator({
                                 </span>
                             </div>
 
-                            {/* Custom styled progress bar */}
-                            <div className="relative h-3 bg-gray-900 dark:bg-gray-900 rounded-full overflow-hidden border border-border">
-                                <div
-                                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-600 to-yellow-400 rounded-full transition-all duration-1000 ease-out
-                                             shadow-[0_0_20px_rgba(255,71,19,0.6)]"
-                                  style={{ width: `${progress}%` }}
-                                />
-                                {/* Animated shine effect */}
-                                <div className="absolute inset-0 overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent
-                                                    animate-shimmer"
-                                         style={{ width: '50%' }}
-                                    />
-                                </div>
+                            {/* Traffic Light Status Bar */}
+                            <div className="flex gap-2 h-4 w-full">
+                                {/* Red / Stalled Segment */}
+                                <div className={cn(
+                                    "flex-1 rounded-l-full border transition-all duration-500",
+                                    progress > 0 || gear >= 1
+                                        ? "bg-red-600 border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)]"
+                                        : "bg-red-950/30 border-red-900/30"
+                                )} />
+
+                                {/* Yellow / Building Segment */}
+                                <div className={cn(
+                                    "flex-1 border transition-all duration-500",
+                                    (progress > 33 && gear >= 1) || gear >= 3
+                                        ? "bg-yellow-500 border-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.5)]"
+                                        : "bg-yellow-950/30 border-yellow-900/30"
+                                )} />
+
+                                {/* Green / Fast Segment */}
+                                <div className={cn(
+                                    "flex-1 rounded-r-full border transition-all duration-500",
+                                    (progress > 66 && gear >= 1) || gear >= 4
+                                        ? "bg-emerald-500 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                                        : "bg-emerald-950/30 border-emerald-900/30"
+                                )} />
                             </div>
                         </div>
 
