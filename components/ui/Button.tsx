@@ -10,6 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-500 hover:to-yellow-500 shadow-[0_0_20px_rgba(255,71,19,0.3)] hover:shadow-[0_0_30px_rgba(255,71,19,0.5)] active:shadow-[0_0_15px_rgba(255,71,19,0.6)]",
+        shimmer: "relative overflow-hidden bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 text-white shadow-[0_0_20px_rgba(255,71,19,0.4)] hover:shadow-[0_0_40px_rgba(255,71,19,0.6)] before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:animate-shimmer",
         destructive:
           "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
         outline:

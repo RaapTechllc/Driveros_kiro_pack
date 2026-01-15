@@ -1,10 +1,36 @@
+'use client'
+
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { DemoModeToggle } from '@/components/demo/DemoModeToggle'
 import { FeatureShowcase } from '@/components/landing/FeatureShowcase'
 import { Zap, Target, Gauge, ArrowRight, CheckCircle2 } from 'lucide-react'
 
+function useScrollReveal() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return { ref, isVisible }
+}
+
 export default function HomePage() {
+  const featuresReveal = useScrollReveal()
   return (
     <div className="relative min-h-screen overflow-hidden bg-background dark:bg-[#0a0a0a]">
       {/* Animated background mesh gradient */}
@@ -33,22 +59,22 @@ export default function HomePage() {
             <div className="space-y-8">
               <div className="inline-block">
                 <span className="text-primary text-sm font-bold tracking-[0.3em] uppercase">
-                  Performance Dashboard
+                  Stop Guessing. Start Moving.
                 </span>
                 <div className="h-px bg-gradient-to-r from-primary to-transparent mt-2" />
               </div>
 
-              <h1 className="font-display text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight">
-                <span className="text-foreground">Driver</span>
+              <h1 className="font-display text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight">
+                <span className="text-foreground">Know Your </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-400">
-                  OS
+                  One Thing
                 </span>
+                <span className="text-foreground"> This Week</span>
               </h1>
 
               <p className="text-muted-foreground text-xl leading-relaxed max-w-lg">
-                Turn your <span className="text-primary font-semibold">North Star</span> into
-                weekly wins. In 5 minutes, know your biggest constraint, the metric to move,
-                and the first three actions that unlock momentum.
+                5 minutes from now, you&apos;ll know exactly what&apos;s holding your business back
+                and the <span className="text-primary font-semibold">three moves</span> that fix it.
               </p>
 
               {/* CTA Buttons */}
@@ -56,11 +82,12 @@ export default function HomePage() {
                 <Link href="/flash-scan">
                   <Button
                     size="lg"
+                    variant="shimmer"
                     className="group w-full sm:w-auto"
                   >
                     <span className="relative z-10 flex items-center gap-3">
                       <Zap className="w-5 h-5" />
-                      Start Flash Scan
+                      Get My 3 Actions
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Button>
@@ -72,14 +99,14 @@ export default function HomePage() {
                     variant="outline"
                     className="w-full sm:w-auto"
                   >
-                    Full Audit
+                    Deep Dive Audit
                   </Button>
                 </Link>
               </div>
 
               <p className="text-sm text-muted-foreground flex items-center gap-3">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
-                Free • No signup • Clear next steps in under 5 minutes
+                Free • No signup • Used by 500+ business owners
               </p>
             </div>
 
@@ -108,18 +135,25 @@ export default function HomePage() {
           </div>
 
           {/* Feature Grid - Racing stripes aesthetic */}
-          <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div 
+            ref={featuresReveal.ref}
+            className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {[
-              { icon: Zap, title: 'Flash Scan', desc: 'Get your bottleneck, KPI, and 3 quick wins', gear: '1-2' },
-              { icon: Target, title: 'Full Audit', desc: '5-engine scorecard, risks, and prioritized actions', gear: '3-4' },
-              { icon: Gauge, title: 'Dashboard', desc: 'Track velocity and keep the plan moving weekly', gear: '5' }
+              { icon: Zap, title: 'Flash Scan', desc: 'Walk away with your #1 constraint and 3 actions to fix it', gear: '1-2' },
+              { icon: Target, title: 'Full Audit', desc: 'See which of your 5 business engines needs attention first', gear: '3-4' },
+              { icon: Gauge, title: 'Dashboard', desc: 'One screen. One number. Every week you know if you\'re winning.', gear: '5' }
             ].map((feature, i) => (
               <div
                 key={i}
-                className="group relative overflow-hidden rounded-2xl border-2 border-border
+                className={`group relative overflow-hidden rounded-2xl border-2 border-border
                            bg-card p-8
-                           hover:border-primary/50 transition-all duration-300
-                           hover:shadow-[0_0_30px_rgba(255,71,19,0.1)]"
+                           hover:border-primary/50 transition-all duration-500
+                           hover:shadow-[0_0_30px_rgba(255,71,19,0.1)]
+                           ${featuresReveal.isVisible 
+                             ? 'opacity-100 translate-y-0' 
+                             : 'opacity-0 translate-y-8'}`}
+                style={{ transitionDelay: `${i * 150}ms` }}
               >
                 {/* Racing stripe accent */}
                 <div className="absolute top-0 left-0 w-1 h-0 bg-gradient-to-b from-primary to-accent
