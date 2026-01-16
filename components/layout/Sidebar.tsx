@@ -14,7 +14,8 @@ import {
   LogOut,
   Activity,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Crown
 } from "lucide-react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -49,6 +50,11 @@ const mainNavItems = [
     href: "/performance",
     icon: Activity,
   },
+  {
+    title: "Admin Reviews",
+    href: "/admin/apex-reviews",
+    icon: Crown,
+  },
 ]
 
 const generalNavItems = [
@@ -79,12 +85,12 @@ export function Sidebar({ className, isOpen, isCollapsed = false, onCollapsedCha
   )
 
   return (
-    <div 
+    <div
       className={cn(
         "pb-12 border-r border-border bg-background min-h-[calc(100vh-64px)] transition-all duration-300 ease-in-out relative",
         isCollapsed ? "w-16" : "w-64",
         className
-      )} 
+      )}
       {...props}
     >
       {/* Collapse Toggle Button */}
@@ -170,7 +176,7 @@ export function Sidebar({ className, isOpen, isCollapsed = false, onCollapsedCha
 
               <button
                 className={cn(navLinkClass(false), "w-full text-left")}
-                onClick={() => {/* Logout functionality - not implemented for hackathon */}}
+                onClick={() => {/* Logout functionality - not implemented for hackathon */ }}
                 title={isCollapsed ? "Logout" : undefined}
               >
                 <LogOut className="h-5 w-5 flex-shrink-0 text-muted-foreground" />

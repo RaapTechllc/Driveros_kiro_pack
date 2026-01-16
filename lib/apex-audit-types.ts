@@ -32,6 +32,11 @@ export interface ApexAuditData {
   monthly_leads: number
   sales_team_size: number
   pipeline_value: number
+  conversion_rate: number
+  website_checkout_rate: number
+  cart_abandonment_rate: number
+  lead_to_customer_rate: number
+  marketing_channels: string
 
   // Section 4: Customers
   total_customers: number
@@ -41,18 +46,39 @@ export interface ApexAuditData {
   monthly_churn: number
   nps_score: number
   average_order_value: number
+  icp: string
+  customer_segments: string
+  primary_pain_points: string
+  top_decision_drivers: string
 
   // Section 5: Operations
   delivery_type: string
   tech_status: string
   team_structure: string
   biggest_constraint: string
+  customer_acquisition: string
+  customer_onboarding: string
+  product_service_delivery: string
+  primary_business_processes: string
+  secondary_business_processes: string
+  data_analytics: string
+  hr_recruiting: string
+  admin_operations: string
+  workflow_stages: string
+  operations_capacity: string
+  quality_metrics: string
+  vendor_dependencies: string
+  procurement_lead_times: string
+  scheduling_rules: string
 
   // Section 6: Growth Planning
   revenue_goal_12mo: number
   growth_channel: string
   exit_timeline: string
   exit_target: number
+  funding_needed: number
+  growth_strategy: string
+  growth_constraints: string
 
   // Section 7: Tech Stack
   tech_crm: string
@@ -60,14 +86,45 @@ export interface ApexAuditData {
   tech_marketing: string[]
   tech_analytics: string
   tech_communication: string
+  tech_other: string
+  common_tools: string
 
-  // Section 8: Additional Context
+  // Section 8: Compliance
+  licenses: string
+  ad_restrictions: string
+  utility_territories: string
+  permitting_jurisdictions: string
+
+  // Section 9: Brand
+  brand_voice: string
+  prohibited_terms: string
+  trust_signals: string
+
+  // Section 10: Experiments
+  experiment_history: string
+
+  // Section 11: Offer & Value (New)
   value_proposition: string
   differentiators: string
+  proof_assets: string
+  guarantees: string
+  promotions: string
+  offer_packages: string
+
+  // Section 12: Additional Context
   top_objections: string
   whats_working: string
   biggest_challenges: string
+  competitors: string
+  messaging_angles: string
+  creatives: string
+  follow_up_sla: string
+  product_lines: string
+  cash_flow_profile: string
+  dealer_fees: string
+  cancel_rate: number
 }
+
 
 export interface ApexAuditResult {
   // Executive Summary

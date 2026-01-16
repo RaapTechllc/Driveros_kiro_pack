@@ -3,38 +3,155 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ApexAuditForm } from '@/components/apex-audit/ApexAuditForm'
-import { ApexAuditResults } from '@/components/apex-audit/ApexAuditResults'
-import { ApexAuditData, ApexAuditResult } from '@/lib/apex-audit-types'
-import { analyzeApexAudit } from '@/lib/apex-audit-analysis'
+import { ApexAuditData } from '@/lib/apex-audit-types'
 import { AppLayout } from '@/components/layout/AppLayout'
-import { Crown, Clock, FileText } from 'lucide-react'
+import { Crown, Clock, FileText, CheckCircle2, TrendingUp } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { analyzeFlashScan } from '@/lib/flash-analysis'
+import { FlashScanData, FlashScanResult } from '@/lib/types'
+import { AcceleratorCard } from '@/components/flash-scan/AcceleratorCard'
+import { QuickWinsList } from '@/components/flash-scan/QuickWinsList'
+import { AIBadge } from '@/components/ui/AIBadge'
 
 export default function ApexAuditPage() {
   const router = useRouter()
-  const [result, setResult] = useState<ApexAuditResult | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [flashResult, setFlashResult] = useState<FlashScanResult | null>(null)
 
   const handleSubmit = async (data: ApexAuditData) => {
-    setIsAnalyzing(true)
-    
-    // Simulate analysis time for premium feel
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    const analysisResult = analyzeApexAudit(data)
-    
-    // Store in localStorage
-    localStorage.setItem('apex_audit_data', JSON.stringify(data))
-    localStorage.setItem('apex_audit_result', JSON.stringify(analysisResult))
-    
-    setResult(analysisResult)
-    setIsAnalyzing(false)
+    setIsSubmitting(true)
+
+    // Generate Flash Scan insights immediately
+    const flashData: FlashScanData = {
+      industry: data.industry,
+      size_band: data.employees,
+      role: 'Owner', // Default for Apex flow
+      north_star: `Revenue Goal: $${data.revenue_goal_12mo}`,
+      top_constraint: data.biggest_constraint
+    }
+
+    // Run instant analysis
+    const instantResult = analyzeFlashScan(flashData)
+    setFlashResult(instantResult)
+
+    // Simulate network delay for the "heavy lifting" submission
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    // Save to localStorage
+    const submissionId = crypto.randomUUID()
+    const submission = {
+      id: submissionId,
+      submittedAt: new Date().toISOString(),
+      status: 'pending_review',
+      data: data,
+      preliminary_insights: instantResult
+    }
+
+    const existing = JSON.parse(localStorage.getItem('apex_audit_submissions') || '[]')
+    localStorage.setItem('apex_audit_submissions', JSON.stringify([submission, ...existing]))
+
+    setIsSubmitting(false)
+    setIsSubmitted(true)
   }
 
-  const handleViewDashboard = () => {
-    router.push('/dashboard')
+  if (isSubmitted && flashResult) {
+    return (
+      <AppLayout>
+        <div className="max-w-4xl mx-auto pb-20">
+
+          {/* Success Banner */}
+          <div className="text-center space-y-4 py-8 mb-8 border-b border-border">
+            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8 text-green-500" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Audit Submitted for Expert Review</h2>
+              <p className="text-muted-foreground mt-2">
+                Your full strategic roadmap will be ready in 24-48 hours.
+              </p>
+            </div>
+
+            <div className="inline-flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-full text-sm">
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+                Status: <span className="font-medium text-yellow-500">Pending Review</span>
+              </span>
+              <span className="w-px h-4 bg-border" />
+              <span className="text-muted-foreground">Demo Mode: <span className="underline cursor-pointer hover:text-primary" onClick={() => router.push('/admin/apex-reviews')}>Review in Admin</span></span>
+            </div>
+          </div>
+
+          {/* Preliminary Insights */}
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold">Preliminary AI Insights</h3>
+                <p className="text-muted-foreground text-sm">Immediate findings based on your profile while you wait.</p>
+              </div>
+              <AIBadge confidence={flashResult.confidence_score} label="Instant Analysis" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Gear Panel */}
+              <div className="p-6 rounded-xl bg-card border border-border">
+                <h4 className="font-semibold mb-2">Business Phase Estimate</h4>
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="text-3xl font-bold text-primary">Gear {flashResult.gear_estimate.number}</span>
+                  <span className="text-lg font-medium text-foreground">{flashResult.gear_estimate.label}</span>
+                </div>
+                <p className="text-sm text-muted-foreground">{flashResult.gear_estimate.reason}</p>
+              </div>
+
+              {/* Industry Panel */}
+              {flashResult.industry_insights && (
+                <div className="p-6 rounded-xl bg-card border border-border">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-primary" />
+                    Industry Intelligence
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Typical Phase:</span>
+                      <span className="font-medium">{flashResult.industry_insights.phase}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">LTV:CAC Target:</span>
+                      <span className="font-medium">{flashResult.industry_insights.ltvCacTarget.min}:1 - {flashResult.industry_insights.ltvCacTarget.ideal}:1</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Wins */}
+            <div>
+              <h4 className="font-semibold mb-4">Immediate Actions</h4>
+              <QuickWinsList wins={flashResult.quick_wins} />
+            </div>
+
+            {/* Accelerator */}
+            <AcceleratorCard
+              kpi={flashResult.accelerator.kpi}
+              notes={flashResult.accelerator.notes}
+            />
+
+            <div className="flex justify-center pt-8">
+              <Button
+                variant="outline"
+                onClick={() => router.push('/dashboard')}
+                className="w-full max-w-sm"
+              >
+                Return to Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </AppLayout>
+    )
   }
 
-  if (isAnalyzing) {
+  if (isSubmitting) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -45,27 +162,10 @@ export default function ApexAuditPage() {
               <div className="absolute inset-8 rounded-full bg-primary/20 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Analyzing Your Business</h2>
-              <p className="text-muted-foreground mt-2">Running comprehensive analysis across all dimensions...</p>
+              <h2 className="text-2xl font-bold text-foreground">Submitting Data</h2>
+              <p className="text-muted-foreground mt-2">Securely transferring your business profile...</p>
             </div>
           </div>
-        </div>
-      </AppLayout>
-    )
-  }
-
-  if (result) {
-    return (
-      <AppLayout>
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <Crown className="w-8 h-8 text-yellow-500" />
-              <h1 className="text-3xl font-bold text-foreground">Apex Audit Results</h1>
-            </div>
-            <p className="text-muted-foreground">Your comprehensive business analysis is ready.</p>
-          </div>
-          <ApexAuditResults result={result} onViewDashboard={handleViewDashboard} />
         </div>
       </AppLayout>
     )
@@ -98,13 +198,13 @@ export default function ApexAuditPage() {
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/20 text-yellow-400 text-sm font-medium">
               <Crown className="w-4 h-4" />
-              <span>Executive-level insights</span>
+              <span>Expert Review</span>
             </div>
           </div>
         </div>
 
         {/* Form */}
-        <div className="p-6 rounded-2xl bg-card border-2 border-border">
+        <div className="p-6 rounded-2xl bg-card border-2 border-border mb-8">
           <ApexAuditForm onSubmit={handleSubmit} />
         </div>
       </div>
