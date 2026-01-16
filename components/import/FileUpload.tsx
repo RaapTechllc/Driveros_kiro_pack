@@ -1,11 +1,17 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
+import { MAX_CSV_FILE_SIZE, LARGE_FILE_WARNING_THRESHOLD, VERY_LARGE_FILE_WARNING_THRESHOLD } from '@/lib/constants'
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void
   accept: string
   label: string
   description: string
+}
+
+interface FileValidationError {
+  type: 'size' | 'format'
+  message: string
 }
 
 interface FileSizeInfo {
@@ -19,7 +25,7 @@ interface FileSizeInfo {
 function getFileSizeInfo(file: File): FileSizeInfo {
   const size = file.size
   const sizeInMB = size / (1024 * 1024)
-  
+
   let sizeFormatted: string
   if (size < 1024) {
     sizeFormatted = `${size} bytes`
@@ -28,20 +34,20 @@ function getFileSizeInfo(file: File): FileSizeInfo {
   } else {
     sizeFormatted = `${sizeInMB.toFixed(1)} MB`
   }
-  
+
   // Estimate processing time (rough calculation: 1MB = ~10 seconds)
   const estimatedSeconds = Math.max(1, Math.round(sizeInMB * 10))
-  const estimatedTime = estimatedSeconds < 60 
+  const estimatedTime = estimatedSeconds < 60
     ? `~${estimatedSeconds} seconds`
     : `~${Math.round(estimatedSeconds / 60)} minutes`
-  
-  const isLarge = sizeInMB > 1
-  const warning = sizeInMB > 5 
+
+  const isLarge = size > LARGE_FILE_WARNING_THRESHOLD
+  const warning = size > VERY_LARGE_FILE_WARNING_THRESHOLD
     ? 'Very large file - processing may take several minutes'
-    : isLarge 
+    : isLarge
     ? 'Large file detected - processing may take longer than usual'
     : undefined
-  
+
   return {
     size,
     sizeFormatted,
@@ -51,9 +57,31 @@ function getFileSizeInfo(file: File): FileSizeInfo {
   }
 }
 
+function validateFile(file: File): FileValidationError | null {
+  // Check file size limit
+  if (file.size > MAX_CSV_FILE_SIZE) {
+    const maxSizeMB = (MAX_CSV_FILE_SIZE / (1024 * 1024)).toFixed(0)
+    return {
+      type: 'size',
+      message: `File too large. Maximum size is ${maxSizeMB}MB. Please split your data into smaller files.`
+    }
+  }
+
+  // Check file extension
+  if (!file.name.toLowerCase().endsWith('.csv')) {
+    return {
+      type: 'format',
+      message: 'Invalid file format. Please upload a CSV file.'
+    }
+  }
+
+  return null
+}
+
 export function FileUpload({ onFileSelect, accept, label, description }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [validationError, setValidationError] = useState<FileValidationError | null>(null)
   const [fileSizeInfo, setFileSizeInfo] = useState<FileSizeInfo | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -84,6 +112,16 @@ export function FileUpload({ onFileSelect, accept, label, description }: FileUpl
   }
 
   const handleFileSelection = (file: File) => {
+    // Validate file before accepting
+    const error = validateFile(file)
+    if (error) {
+      setValidationError(error)
+      setSelectedFile(null)
+      setFileSizeInfo(null)
+      return
+    }
+
+    setValidationError(null)
     setSelectedFile(file)
     const sizeInfo = getFileSizeInfo(file)
     setFileSizeInfo(sizeInfo)
@@ -99,6 +137,7 @@ export function FileUpload({ onFileSelect, accept, label, description }: FileUpl
   const clearFile = () => {
     setSelectedFile(null)
     setFileSizeInfo(null)
+    setValidationError(null)
   }
 
   return (
@@ -108,11 +147,28 @@ export function FileUpload({ onFileSelect, accept, label, description }: FileUpl
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       
+      {/* Validation Error Display */}
+      {validationError && (
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <span className="text-red-500 text-lg">⚠️</span>
+            <div>
+              <p className="font-medium text-red-800 dark:text-red-200">
+                {validationError.type === 'size' ? 'File Too Large' : 'Invalid File'}
+              </p>
+              <p className="text-sm text-red-700 dark:text-red-300">{validationError.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {!selectedFile ? (
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragActive 
-              ? 'border-primary bg-primary/5' 
+            validationError
+              ? 'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10'
+              : dragActive
+              ? 'border-primary bg-primary/5'
               : 'border-muted-foreground/25 hover:border-primary/50'
           }`}
           onDragEnter={handleDrag}

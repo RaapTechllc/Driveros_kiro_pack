@@ -12,9 +12,9 @@ export interface CSVValidationError {
   value?: string
 }
 
-export interface CSVImportResult {
+export interface CSVImportResult<T = ImportedAction | ImportedGoal> {
   success: boolean
-  data?: any[]
+  data?: T[]
   errors: CSVValidationError[]
   totalRows: number
   validRows: number
@@ -107,7 +107,7 @@ export function validateActionsCSVSync(csvContent: string): CSVImportResult {
   
   dataRows.forEach((row, index) => {
     const rowNum = index + 2
-    const action: any = {}
+    const action: Record<string, string> = {}
     headers.forEach((header, colIndex) => {
       action[header] = row[colIndex]?.trim() || ''
     })
@@ -183,7 +183,7 @@ export function validateGoalsCSVSync(csvContent: string): CSVImportResult {
   
   dataRows.forEach((row, index) => {
     const rowNum = index + 2
-    const goal: any = {}
+    const goal: Record<string, string> = {}
     headers.forEach((header, colIndex) => {
       goal[header] = row[colIndex]?.trim() || ''
     })

@@ -1,5 +1,5 @@
 import { ActionStatus } from '@/lib/action-status'
-import { Filter, Users, Layers, XCircle } from 'lucide-react'
+import { Filter, Users, Layers, XCircle, LucideIcon } from 'lucide-react'
 
 export interface ActionFilters {
   engine: string
@@ -25,7 +25,7 @@ export function ActionFiltersBar({ filters, onChange }: ActionFiltersProps) {
     options,
     onChange: handleChange
   }: {
-    icon: any,
+    icon: LucideIcon,
     value: string,
     options: string[],
     onChange: (val: string) => void

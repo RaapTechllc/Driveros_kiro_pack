@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { ActionStatus, cycleStatus, getActionStatus, setActionStatus } from '@/lib/action-status'
 import { getTeamRoster, getAssignedMember, assignAction, addTeamMember, TeamMember } from '@/lib/team-roster'
-import { Clock, User, Zap, CheckCircle2, RotateCw, Plus } from 'lucide-react'
+import { Clock, User, Zap, CheckCircle2, RotateCw, Plus, LucideIcon } from 'lucide-react'
 
 interface ActionCardProps {
   title: string
@@ -13,7 +13,13 @@ interface ActionCardProps {
   source?: 'generated' | 'imported'
 }
 
-const statusConfig: Record<ActionStatus, { color: string; icon: any; label: string }> = {
+interface StatusConfigItem {
+  color: string
+  icon: LucideIcon
+  label: string
+}
+
+const statusConfig: Record<ActionStatus, StatusConfigItem> = {
   todo: { color: 'text-gray-400 bg-gray-500/10 border-gray-500/20', icon: Clock, label: 'To Do' },
   doing: { color: 'text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)]', icon: RotateCw, label: 'In Progress' },
   done: { color: 'text-green-400 bg-green-500/10 border-green-500/20', icon: CheckCircle2, label: 'Complete' }

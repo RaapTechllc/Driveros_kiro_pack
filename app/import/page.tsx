@@ -5,6 +5,7 @@ import { FileUpload } from '@/components/import/FileUpload'
 import { ValidationResults } from '@/components/import/ValidationResults'
 import { TemplateDownload } from '@/components/import/TemplateDownload'
 import { validateActionsCSV, validateGoalsCSV, CSVImportResult, ImportedAction, ImportedGoal } from '@/lib/csv-import'
+import { safeGetItem, safeSetItem, STORAGE_KEYS } from '@/lib/storage'
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 import { ClipboardCheck, Target } from 'lucide-react'
@@ -52,23 +53,31 @@ export default function ImportPage() {
     if (!validationResult?.data) return
 
     if (importType === 'actions') {
-      // Save actions to localStorage
-      const existingActions = JSON.parse(localStorage.getItem('imported-actions') || '[]')
-      const newActions = validationResult.data.map((action: ImportedAction) => ({
-        ...action,
+      // Save actions to localStorage with safe storage utility
+      const existingActions = safeGetItem<ImportedAction[]>(STORAGE_KEYS.IMPORTED_ACTIONS, [])
+      const newActions = validationResult.data.map((action) => ({
+        ...(action as ImportedAction),
         id: `imported_${Date.now()}_${Math.random()}`,
         created_at: new Date().toISOString()
       }))
-      localStorage.setItem('imported-actions', JSON.stringify([...existingActions, ...newActions]))
+      const success = safeSetItem(STORAGE_KEYS.IMPORTED_ACTIONS, [...existingActions, ...newActions])
+      if (!success) {
+        alert('Failed to save actions. Storage may be full. Please export and clear old data.')
+        return
+      }
     } else {
-      // Save goals to localStorage
-      const existingGoals = JSON.parse(localStorage.getItem('imported-goals') || '[]')
-      const newGoals = validationResult.data.map((goal: ImportedGoal) => ({
-        ...goal,
+      // Save goals to localStorage with safe storage utility
+      const existingGoals = safeGetItem<ImportedGoal[]>(STORAGE_KEYS.IMPORTED_GOALS, [])
+      const newGoals = validationResult.data.map((goal) => ({
+        ...(goal as ImportedGoal),
         id: `imported_${Date.now()}_${Math.random()}`,
         created_at: new Date().toISOString()
       }))
-      localStorage.setItem('imported-goals', JSON.stringify([...existingGoals, ...newGoals]))
+      const success = safeSetItem(STORAGE_KEYS.IMPORTED_GOALS, [...existingGoals, ...newGoals])
+      if (!success) {
+        alert('Failed to save goals. Storage may be full. Please export and clear old data.')
+        return
+      }
     }
 
     setImportedCount(validationResult.validRows)

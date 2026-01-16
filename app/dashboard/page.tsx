@@ -22,8 +22,8 @@ import { Download, AlertTriangle, CheckCircle, Clock, Target, FileText, Database
 export default function DashboardPage() {
   const [auditResult, setAuditResult] = useState<FullAuditResult | null>(null)
   const [flashResult, setFlashResult] = useState<FlashScanResult | null>(null)
-  const [importedActions, setImportedActions] = useState<any[]>([])
-  const [importedGoals, setImportedGoals] = useState<any>({ northStar: null, departments: [] })
+  const [importedActions, setImportedActions] = useState<ReturnType<typeof transformImportedActions>>([])
+  const [importedGoals, setImportedGoals] = useState<ReturnType<typeof transformImportedGoals>>({ northStar: undefined, departments: [] })
   const [showTour, setShowTour] = useState(false)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [engineTrends, setEngineTrends] = useState<Record<string, TrendDirection>>({})
@@ -54,7 +54,7 @@ export default function DashboardPage() {
           // Calculate engine trends
           const history = getEngineHistory()
           const trends: Record<string, TrendDirection> = {}
-          auditData.engines?.forEach((e: any) => {
+          auditData.engines?.forEach((e: { name: string; score: number }) => {
             trends[e.name] = calcTrend(e.name, history)
           })
           setEngineTrends(trends)
