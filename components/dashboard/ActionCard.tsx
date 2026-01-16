@@ -1,9 +1,8 @@
-'use client'
-
 import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { ActionStatus, cycleStatus, getActionStatus, setActionStatus } from '@/lib/action-status'
 import { getTeamRoster, getAssignedMember, assignAction, addTeamMember, TeamMember } from '@/lib/team-roster'
+import { Clock, User, Zap, CheckCircle2, RotateCw, Plus } from 'lucide-react'
 
 interface ActionCardProps {
   title: string
@@ -14,22 +13,10 @@ interface ActionCardProps {
   source?: 'generated' | 'imported'
 }
 
-const statusStyles: Record<ActionStatus, { badge: string; text: string; cardBg: string }> = {
-  todo: { 
-    badge: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all duration-300', 
-    text: 'transition-all duration-300', 
-    cardBg: 'border-gray-200 dark:border-gray-700' 
-  },
-  doing: { 
-    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 transition-all duration-300 animate-racing-pulse', 
-    text: 'transition-all duration-300', 
-    cardBg: 'border-blue-200 dark:border-blue-700 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
-  },
-  done: { 
-    badge: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 transition-all duration-300', 
-    text: 'line-through opacity-60 transition-all duration-300', 
-    cardBg: 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10' 
-  }
+const statusConfig: Record<ActionStatus, { color: string; icon: any; label: string }> = {
+  todo: { color: 'text-gray-400 bg-gray-500/10 border-gray-500/20', icon: Clock, label: 'To Do' },
+  doing: { color: 'text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)]', icon: RotateCw, label: 'In Progress' },
+  done: { color: 'text-green-400 bg-green-500/10 border-green-500/20', icon: CheckCircle2, label: 'Complete' }
 }
 
 export function ActionCard({ title, why, owner_role, eta_days, engine, source = 'generated' }: ActionCardProps) {
@@ -48,8 +35,7 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
   const handleStatusClick = () => {
     setIsTransitioning(true)
     const next = cycleStatus(status)
-    
-    // Add a small delay to show the transition animation
+
     setTimeout(() => {
       setStatus(next)
       setActionStatus(title, next)
@@ -73,84 +59,109 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
     setNewName('')
   }
 
-  const style = statusStyles[status]
+  const currentConfig = statusConfig[status]
+  const StatusIcon = currentConfig.icon
 
   return (
-    <div className={`relative overflow-hidden border-2 rounded-2xl p-4 space-y-2 transition-all duration-300 hover:translate-x-1 hover:shadow-[0_0_20px_rgba(255,71,19,0.15)] ${style.cardBg} ${status === 'done' ? 'opacity-70' : ''} group`}>
-      {/* Racing stripe accent */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
-      {/* Completion celebration effect */}
-      {status === 'done' && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-2 right-2 text-green-500 animate-slide-in">
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
+    <div className={`
+      relative overflow-hidden rounded-xl border transition-all duration-300 group
+      ${status === 'done' ? 'opacity-60 border-green-900/30 bg-green-950/5' : 'border-white/10 bg-[#0c0c0c] hover:border-white/20 hover:bg-[#111]'}
+    `}>
+      {/* Active State Glow */}
+      {status === 'doing' && (
+        <div className="absolute inset-0 bg-blue-500/5 pointer-events-none animate-pulse" />
       )}
-      
-      <div className="flex items-start justify-between gap-2">
-        <div className={`font-medium flex-1 ${style.text}`}>{title}</div>
-        <button
-          onClick={handleStatusClick}
-          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer hover:ring-2 hover:ring-offset-1 transform transition-all duration-200 hover:scale-105 active:scale-95 ${style.badge} ${isTransitioning ? 'animate-status-morph' : ''}`}
-        >
-          {status}
-        </button>
-        <Badge variant={source === 'imported' ? 'imported' : 'generated'}>{source === 'imported' ? 'Imported' : 'Generated'}</Badge>
-      </div>
-      <div className={`text-sm text-muted-foreground ${style.text}`}>{why}</div>
-      <div className="flex justify-between items-center text-xs">
+
+      {/* Technical Header Strip */}
+      <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/5 text-[10px] uppercase tracking-wider text-muted-foreground">
         <div className="flex items-center gap-2">
-          <Badge variant="outline">{assignee?.name || owner_role}</Badge>
+          <Zap className="w-3 h-3 text-primary/70" />
+          <span>{source}</span>
+        </div>
+        <span>{engine}</span>
+      </div>
+
+      <div className="p-4 space-y-4 relative z-10">
+        <div className="flex justify-between items-start gap-4">
+          {/* Title & Description */}
+          <div className="space-y-1 flex-1">
+            <h4 className={`font-semibold text-sm leading-tight ${status === 'done' ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+              {title}
+            </h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {why}
+            </p>
+          </div>
+
+          {/* Status Button */}
           <button
-            onClick={() => setShowAssign(!showAssign)}
-            className="text-xs text-blue-600 hover:underline"
+            onClick={handleStatusClick}
+            className={`
+               flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-wide transition-all hover:scale-105 active:scale-95
+               ${currentConfig.color}
+               ${isTransitioning ? 'opacity-50 scale-95' : ''}
+             `}
           >
-            {assignee ? 'reassign' : 'assign'}
+            <StatusIcon className={`w-3 h-3 ${status === 'doing' ? 'animate-spin-slow' : ''}`} />
+            {status === 'doing' ? 'Doing' : currentConfig.label}
           </button>
         </div>
-        <div className="flex space-x-2 text-muted-foreground">
-          <span>{eta_days}d</span>
-          <span>•</span>
-          <span>{engine}</span>
-        </div>
-      </div>
-      {showAssign && (
-        <div className="pt-2 border-t space-y-2">
-          {roster.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {roster.map(m => (
-                <button
-                  key={m.id}
-                  onClick={() => handleAssign(m.id)}
-                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                  {m.name}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="flex gap-1">
-            <input
-              type="text"
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              placeholder="New team member"
-              className="flex-1 px-2 py-1 text-xs border rounded"
-              onKeyDown={e => e.key === 'Enter' && handleAddMember()}
-            />
+
+        {/* Footer Metadata */}
+        <div className="flex items-center justify-between pt-2 border-t border-white/5">
+          {/* Assignee Section */}
+          <div className="relative">
             <button
-              onClick={handleAddMember}
-              className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={() => setShowAssign(!showAssign)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-white transition-colors group/assign"
             >
-              Add
+              <div className="p-1 rounded bg-white/5 group-hover/assign:bg-primary/20 transition-colors">
+                <User className="w-3 h-3" />
+              </div>
+              <span>{assignee?.name || owner_role}</span>
             </button>
+
+            {/* Assignee Dropdown */}
+            {showAssign && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 p-2 space-y-2 animate-in fade-in slide-in-from-top-1">
+                <div className="text-[10px] font-bold text-muted-foreground px-2 uppercase">Assign To</div>
+                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                  {roster.map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => handleAssign(m.id)}
+                      className="w-full text-left px-2 py-1.5 text-xs text-gray-300 hover:bg-white/10 rounded"
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-1 pt-2 border-t border-white/10">
+                  <input
+                    className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                    placeholder="New name..."
+                    value={newName}
+                    onChange={e => setNewName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddMember()}
+                  />
+                  <button
+                    onClick={handleAddMember}
+                    className="p-1 bg-primary/20 hover:bg-primary/40 text-primary rounded"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ETA Section */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Clock className="w-3 h-3" />
+            <span>{eta_days}d</span>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

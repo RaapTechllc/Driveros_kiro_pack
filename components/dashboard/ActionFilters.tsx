@@ -1,6 +1,5 @@
-'use client'
-
 import { ActionStatus } from '@/lib/action-status'
+import { Filter, Users, Layers, XCircle } from 'lucide-react'
 
 export interface ActionFilters {
   engine: string
@@ -18,45 +17,75 @@ const OWNERS = ['All', 'Owner', 'Ops', 'Sales', 'Finance']
 const STATUSES = ['All', 'todo', 'doing', 'done']
 
 export function ActionFiltersBar({ filters, onChange }: ActionFiltersProps) {
+  const hasActiveFilters = filters.engine !== 'all' || filters.owner !== 'all' || filters.status !== 'all'
+
+  const FilterSelect = ({
+    icon: Icon,
+    value,
+    options,
+    onChange: handleChange
+  }: {
+    icon: any,
+    value: string,
+    options: string[],
+    onChange: (val: string) => void
+  }) => (
+    <div className="relative group">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-hover:text-primary transition-colors pointer-events-none">
+        <Icon className="w-4 h-4" />
+      </div>
+      <select
+        value={value}
+        onChange={(e) => handleChange(e.target.value)}
+        className="
+          appearance-none pl-9 pr-8 py-2 text-sm bg-background border border-border/50 rounded-lg 
+          focus:ring-1 focus:ring-primary focus:border-primary hover:border-border transition-all
+          cursor-pointer text-foreground font-medium
+        "
+      >
+        {options.map(opt => (
+          <option key={opt} value={opt === 'All' ? 'all' : opt}>
+            {opt === 'All' ? `All ${opt === ENGINES[0] ? 'Engines' : opt === OWNERS[0] ? 'Owners' : 'Statuses'}` : opt}
+          </option>
+        ))}
+      </select>
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/50">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+      </div>
+    </div>
+  )
+
   return (
-    <div className="flex flex-wrap gap-3 p-3 bg-muted/50 rounded-lg">
-      <div className="flex items-center gap-2">
-        <label className="text-sm font-medium">Engine:</label>
-        <select
+    <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+        <FilterSelect
+          icon={Layers}
           value={filters.engine}
-          onChange={(e) => onChange({ ...filters, engine: e.target.value })}
-          className="text-sm border rounded px-2 py-1 bg-background"
-        >
-          {ENGINES.map(e => <option key={e} value={e === 'All' ? 'all' : e}>{e}</option>)}
-        </select>
-      </div>
-      <div className="flex items-center gap-2">
-        <label className="text-sm font-medium">Owner:</label>
-        <select
+          options={ENGINES}
+          onChange={(v) => onChange({ ...filters, engine: v })}
+        />
+        <FilterSelect
+          icon={Users}
           value={filters.owner}
-          onChange={(e) => onChange({ ...filters, owner: e.target.value })}
-          className="text-sm border rounded px-2 py-1 bg-background"
-        >
-          {OWNERS.map(o => <option key={o} value={o === 'All' ? 'all' : o}>{o}</option>)}
-        </select>
-      </div>
-      <div className="flex items-center gap-2">
-        <label className="text-sm font-medium">Status:</label>
-        <select
+          options={OWNERS}
+          onChange={(v) => onChange({ ...filters, owner: v })}
+        />
+        <FilterSelect
+          icon={Filter}
           value={filters.status}
-          onChange={(e) => onChange({ ...filters, status: e.target.value })}
-          className="text-sm border rounded px-2 py-1 bg-background"
-        >
-          {STATUSES.map(s => <option key={s} value={s === 'All' ? 'all' : s}>{s === 'All' ? s : s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-        </select>
+          options={STATUSES}
+          onChange={(v) => onChange({ ...filters, status: v })}
+        />
       </div>
-      {(filters.engine !== 'all' || filters.owner !== 'all' || filters.status !== 'all') && (
+
+      {hasActiveFilters && (
         <button
           type="button"
           onClick={() => onChange({ engine: 'all', owner: 'all', status: 'all' })}
-          className="text-sm text-muted-foreground hover:text-foreground underline"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-red-500 transition-colors px-2 py-1"
         >
-          Clear filters
+          <XCircle className="w-3.5 h-3.5" />
+          <span>Clear</span>
         </button>
       )}
     </div>
