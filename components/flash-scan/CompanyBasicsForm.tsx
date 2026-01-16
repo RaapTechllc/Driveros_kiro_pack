@@ -113,7 +113,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
           <Input
             id="north-star"
             name="north_star"
-            placeholder="e.g., Hit $2M ARR by Dec 31"
+            placeholder="e.g. Scale to $5M ARR and exit to private equity in 3 years"
             value={formData.north_star}
             onChange={(e) => updateField('north_star', e.target.value)}
             required
@@ -132,7 +132,7 @@ export function CompanyBasicsForm({ onSubmit, submitState = 'idle', progress = 0
           <Input
             id="top-constraint"
             name="top_constraint"
-            placeholder="e.g., Lead flow, cash, delivery, or team capacity"
+            placeholder="e.g. CAC is too high to scale paid ads profitably"
             value={formData.top_constraint}
             onChange={(e) => updateField('top_constraint', e.target.value)}
             required

@@ -120,15 +120,15 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
       case 0: // Company Profile
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderText('company_name', 'Company Name', 'Acme Corp')}
-            {renderText('website', 'Website', 'www.example.com')}
+            {renderText('company_name', 'Company Name', 'Your Company Name')}
+            {renderText('website', 'Website', 'example.com')}
             {renderSelect('industry', APEX_OPTIONS.industry, 'Industry')}
             {renderSelect('employees', APEX_OPTIONS.employees, 'Team Size')}
             {renderNumber('years_in_business', 'Years in Business')}
             {renderSelect('legal_entity', APEX_OPTIONS.legal_entity, 'Legal Entity')}
             {renderSelect('geography', APEX_OPTIONS.geography, 'Geography Focus')}
             <div className="md:col-span-2">
-              {renderTextarea('primary_product', 'Primary Product/Service', 'Describe what you sell...')}
+              {renderTextarea('primary_product', 'Primary Product/Service', 'e.g. Enterprise SaaS platform for logistics optimization')}
             </div>
           </div>
         )
@@ -166,10 +166,10 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
               {renderNumber('cart_abandonment_rate', 'Cart Abandonment Rate', '60', '%')}
               {renderNumber('lead_to_customer_rate', 'Lead to Customer Rate', '15', '%')}
             </div>
-            {renderTextarea('marketing_channels', 'Marketing Channels')}
-            {renderTextarea('messaging_angles', 'Messaging Angles')}
-            {renderTextarea('creatives', 'Creatives')}
-            {renderTextarea('follow_up_sla', 'Follow-up SLA')}
+            {renderTextarea('marketing_channels', 'Marketing Channels', 'e.g. LinkedIn, Cold Email, Industry Conferences')}
+            {renderTextarea('messaging_angles', 'Messaging Angles', 'e.g. Speed, Cost Savings, Quality')}
+            {renderTextarea('creatives', 'Creatives', 'e.g. Video testimonials, Whitepapers')}
+            {renderTextarea('follow_up_sla', 'Follow-up SLA', 'e.g. Call within 5 minutes')}
           </div>
         )
 
@@ -184,10 +184,10 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
             {renderSlider('nps_score', 'NPS Score', -100, 100, '')}
             {renderNumber('average_order_value', 'Average Order Value', '200', '$')}
             <div className="md:col-span-2 space-y-4 pt-4 border-t border-border">
-              {renderTextarea('icp', 'Ideal Customer Profile (ICP)')}
-              {renderTextarea('customer_segments', 'Customer Segments')}
-              {renderTextarea('primary_pain_points', 'Primary Pain Points')}
-              {renderTextarea('top_decision_drivers', 'Top Decision Drivers')}
+              {renderTextarea('icp', 'Ideal Customer Profile (ICP)', 'e.g. CMOs at B2B Tech companies with 50+ employees')}
+              {renderTextarea('customer_segments', 'Customer Segments', 'e.g. Enterprise vs SMB')}
+              {renderTextarea('primary_pain_points', 'Primary Pain Points', 'e.g. Manual data entry, lack of visibility')}
+              {renderTextarea('top_decision_drivers', 'Top Decision Drivers', 'e.g. Price, Integration capability')}
             </div>
           </div>
         )
@@ -199,7 +199,7 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
               {renderSelect('delivery_type', APEX_OPTIONS.delivery_type, 'Primary Delivery Type')}
               {renderSelect('tech_status', APEX_OPTIONS.tech_status, 'Current Tech Status')}
               {renderSelect('biggest_constraint', APEX_OPTIONS.constraint, 'Biggest Growth Constraint')}
-              {renderText('operations_capacity', 'Operations Capacity')}
+              {renderText('operations_capacity', 'Operations Capacity', 'e.g. Can handle 20 more clients')}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,7 +207,7 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
               {renderText('customer_onboarding', 'Customer Onboarding Process')}
             </div>
 
-            {renderTextarea('team_structure', 'Team Structure', 'Describe your team roles...')}
+            {renderTextarea('team_structure', 'Team Structure', 'e.g. CEO, CTO, 2 Sales, 3 Devs')}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {renderText('primary_business_processes', 'Primary Business Processes')}
@@ -234,8 +234,8 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
             {renderNumber('exit_target', 'Exit Target Amount', '5000000', '$')}
             {renderNumber('funding_needed', 'Funding Needed', '0', '$')}
             <div className="md:col-span-2">
-              {renderTextarea('growth_strategy', 'Growth Strategy')}
-              {renderTextarea('growth_constraints', 'Growth Constraints')}
+              {renderTextarea('growth_strategy', 'Growth Strategy', 'e.g. Expand to new territories, launch new product line')}
+              {renderTextarea('growth_constraints', 'Growth Constraints', 'e.g. Choosing between hiring sales vs dev')}
             </div>
           </div>
         )
@@ -246,8 +246,8 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
             {renderSelect('tech_crm', APEX_OPTIONS.crm, 'CRM')}
             {renderSelect('tech_accounting', APEX_OPTIONS.accounting, 'Accounting Software')}
             {renderSelect('tech_analytics', APEX_OPTIONS.analytics, 'Analytics')}
-            {renderText('tech_communication', 'Communication Tools', 'Slack, Teams, etc.')}
-            {renderText('common_tools', 'Common Tools/Stack')}
+            {renderText('tech_communication', 'Communication Tools', 'e.g. Slack, MS Teams, Zoom')}
+            {renderText('common_tools', 'Common Tools/Stack', 'e.g. Jira, GitHub, Figma')}
             {renderText('tech_other', 'Other Platforms')}
 
             <div className="md:col-span-2">
@@ -280,15 +280,15 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              {renderTextarea('value_proposition', 'Value Proposition', 'What makes you different? Why do customers choose you?')}
+              {renderTextarea('value_proposition', 'Value Proposition', 'e.g. We help dentists get 20+ new patients per month on auto-pilot')}
             </div>
             <div className="md:col-span-2">
-              {renderTextarea('differentiators', 'Key Differentiators', 'What do you do better than competitors?')}
+              {renderTextarea('differentiators', 'Key Differentiators', 'e.g. We offer a 100% money-back guarantee, unlike competitors')}
             </div>
-            {renderTextarea('proof_assets', 'Proof Assets', 'Case studies, testimonials, etc.')}
-            {renderTextarea('guarantees', 'Guarantees', 'Risk reversal offers')}
+            {renderTextarea('proof_assets', 'Proof Assets', 'e.g. Video Case Studies, G2 Reviews')}
+            {renderTextarea('guarantees', 'Guarantees', 'e.g. Double your leads in 90 days or you don\'t pay')}
             {renderTextarea('promotions', 'Current Promotions')}
-            {renderTextarea('offer_packages', 'Offer Packages', 'Tiers, bundles, etc.')}
+            {renderTextarea('offer_packages', 'Offer Packages', 'e.g. Basic, Pro, Enterprise tiers')}
           </div>
         )
 
@@ -305,26 +305,26 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
       case 9: // Brand
         return (
           <div className="space-y-4">
-            {renderTextarea('brand_voice', 'Brand Voice', 'Professional, playful, authoritative, etc.')}
-            {renderTextarea('prohibited_terms', 'Prohibited Terms', 'Words to avoid')}
-            {renderTextarea('trust_signals', 'Trust Signals', 'Associations, awards, certifications')}
+            {renderTextarea('brand_voice', 'Brand Voice', 'e.g. Professional, authoritative, yet approachable')}
+            {renderTextarea('prohibited_terms', 'Prohibited Terms', 'e.g. "Cheap", "Discount"')}
+            {renderTextarea('trust_signals', 'Trust Signals', 'e.g. "As seen on Forbes", "ISO Certified"')}
           </div>
         )
 
       case 10: // Experiments
         return (
           <div className="space-y-4">
-            {renderTextarea('experiment_history', 'Experiment History', 'Past marketing or operational tests')}
+            {renderTextarea('experiment_history', 'Experiment History', 'e.g. Tested Facebook ads in Q1, ROI was negative')}
           </div>
         )
 
       case 11: // Additional Context
         return (
           <div className="space-y-4">
-            {renderTextarea('top_objections', 'Top Customer Objections', 'What concerns do prospects raise?')}
-            {renderTextarea('whats_working', "What's Working Well", 'What aspects of your business are thriving?')}
-            {renderTextarea('biggest_challenges', 'Biggest Challenges', 'What keeps you up at night?')}
-            {renderTextarea('competitors', 'Competitors', 'Who are you up against?')}
+            {renderTextarea('top_objections', 'Top Customer Objections', 'e.g. "Too expensive", "Implementation takes too long"')}
+            {renderTextarea('whats_working', "What's Working Well", 'e.g. Referral program is generating 50% of leads')}
+            {renderTextarea('biggest_challenges', 'Biggest Challenges', 'e.g. Hiring qualified developers quickly enough')}
+            {renderTextarea('competitors', 'Competitors', 'e.g. Competitor A, Competitor B')}
           </div>
         )
 

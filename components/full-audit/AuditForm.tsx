@@ -273,56 +273,82 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
     inverted?: boolean
   }
 
-  const ScaleSelectWithHelp = ({ 
-    field, 
-    config 
-  }: { 
+  const RatingInput = ({
+    field,
+    config
+  }: {
     field: keyof FullAuditData
     config: QuestionConfig
   }) => {
-    const isExpanded = expandedHelp === field
     const currentValue = formData[field] as number
-    
+
     return (
-      <div className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <label className="block text-sm font-medium">{config.label}</label>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium">{config.label}</label>
           <button
             type="button"
             onClick={() => toggleHelp(field)}
-            className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
-            aria-label={`Help for ${config.label}`}
+            className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
           >
-            <HelpCircle className="h-4 w-4" />
+            <HelpCircle className="h-3 w-3" />
+            {expandedHelp === field ? 'Hide guide' : 'Show guide'}
           </button>
         </div>
-        
-        <p className="text-xs text-muted-foreground">{config.help}</p>
-        
-        <Select
-          name={field}
-          value={formData[field]?.toString() || '0'}
-          onChange={(e) => updateField(field, parseInt(e.target.value))}
-        >
-          <option value="0">Select rating...</option>
-          {config.scale.map((desc, idx) => (
-            <option key={idx + 1} value={idx + 1}>
-              {idx + 1} - {desc.split(';')[0]}
-            </option>
-          ))}
-        </Select>
 
-        {/* Expanded help with full scale descriptions */}
-        {isExpanded && (
-          <div className="mt-2 p-3 bg-muted/50 rounded-lg text-xs space-y-1 animate-slide-in">
-            <p className="font-medium mb-2">Rating Guide:</p>
-            {config.scale.map((desc, idx) => (
-              <div 
-                key={idx} 
-                className={`flex gap-2 ${currentValue === idx + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}`}
+        <p className="text-xs text-muted-foreground">{config.help}</p>
+
+        <div className="grid grid-cols-5 gap-1">
+          {[1, 2, 3, 4, 5].map((rating) => {
+            const isSelected = currentValue === rating
+            return (
+              <button
+                key={rating}
+                type="button"
+                onClick={() => updateField(field, rating)}
+                className={`
+                  group relative flex flex-col items-center justify-center p-2 rounded-lg border text-sm transition-all
+                  ${isSelected
+                    ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm'
+                    : 'border-border bg-card hover:border-primary/50 hover:bg-muted'
+                  }
+                `}
               >
-                <span className="font-mono w-4">{idx + 1}.</span>
-                <span>{desc}</span>
+                <span className="text-lg mb-1">{rating}</span>
+                {/* Tooltip-like description on hover or selection */}
+                <div className={`
+                  absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 rounded bg-popover text-popover-foreground text-xs text-center shadow-md z-50 pointer-events-none opacity-0 transition-opacity
+                  ${isSelected ? 'opacity-0' : 'group-hover:opacity-100'} 
+                `}>
+                  {config.scale[rating - 1]}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Selected Description Display */}
+        {currentValue > 0 && (
+          <div className="text-xs p-2 rounded bg-primary/5 border border-primary/10 text-foreground animate-in fade-in slide-in-from-top-1">
+            <span className="font-semibold text-primary">{currentValue}/5:</span> {config.scale[currentValue - 1]}
+          </div>
+        )}
+
+        {/* Expanded Guide */}
+        {expandedHelp === field && (
+          <div className="mt-2 p-3 bg-muted/50 rounded-lg text-xs space-y-2 animate-slide-in">
+            <p className="font-medium">Rating Guide:</p>
+            {config.scale.map((desc, idx) => (
+              <div
+                key={idx}
+                className={`flex gap-3 p-1.5 rounded ${currentValue === idx + 1 ? 'bg-background shadow-sm border border-border' : ''}`}
+              >
+                <span className={`font-mono font-bold ${currentValue === idx + 1 ? 'text-primary' : 'text-muted-foreground'}`}>
+                  {idx + 1}
+                </span>
+                <span className={currentValue === idx + 1 ? 'text-foreground' : 'text-muted-foreground'}>
+                  {desc}
+                </span>
               </div>
             ))}
           </div>
@@ -359,9 +385,9 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
         </div>
         <p className="text-sm text-muted-foreground mb-4">{ENGINE_GUIDANCE.leadership.description}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScaleSelectWithHelp field="vision_clarity" config={ENGINE_GUIDANCE.leadership.questions.vision_clarity} />
-          <ScaleSelectWithHelp field="decision_speed" config={ENGINE_GUIDANCE.leadership.questions.decision_speed} />
-          <ScaleSelectWithHelp field="team_alignment" config={ENGINE_GUIDANCE.leadership.questions.team_alignment} />
+          <RatingInput field="vision_clarity" config={ENGINE_GUIDANCE.leadership.questions.vision_clarity} />
+          <RatingInput field="decision_speed" config={ENGINE_GUIDANCE.leadership.questions.decision_speed} />
+          <RatingInput field="team_alignment" config={ENGINE_GUIDANCE.leadership.questions.team_alignment} />
         </div>
       </div>
 
@@ -373,9 +399,9 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
         </div>
         <p className="text-sm text-muted-foreground mb-4">{ENGINE_GUIDANCE.operations.description}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScaleSelectWithHelp field="process_efficiency" config={ENGINE_GUIDANCE.operations.questions.process_efficiency} />
-          <ScaleSelectWithHelp field="quality_control" config={ENGINE_GUIDANCE.operations.questions.quality_control} />
-          <ScaleSelectWithHelp field="delivery_reliability" config={ENGINE_GUIDANCE.operations.questions.delivery_reliability} />
+          <RatingInput field="process_efficiency" config={ENGINE_GUIDANCE.operations.questions.process_efficiency} />
+          <RatingInput field="quality_control" config={ENGINE_GUIDANCE.operations.questions.quality_control} />
+          <RatingInput field="delivery_reliability" config={ENGINE_GUIDANCE.operations.questions.delivery_reliability} />
         </div>
       </div>
 
@@ -387,9 +413,9 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
         </div>
         <p className="text-sm text-muted-foreground mb-4">{ENGINE_GUIDANCE.marketing_sales.description}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScaleSelectWithHelp field="lead_generation" config={ENGINE_GUIDANCE.marketing_sales.questions.lead_generation} />
-          <ScaleSelectWithHelp field="conversion_rate" config={ENGINE_GUIDANCE.marketing_sales.questions.conversion_rate} />
-          <ScaleSelectWithHelp field="customer_retention" config={ENGINE_GUIDANCE.marketing_sales.questions.customer_retention} />
+          <RatingInput field="lead_generation" config={ENGINE_GUIDANCE.marketing_sales.questions.lead_generation} />
+          <RatingInput field="conversion_rate" config={ENGINE_GUIDANCE.marketing_sales.questions.conversion_rate} />
+          <RatingInput field="customer_retention" config={ENGINE_GUIDANCE.marketing_sales.questions.customer_retention} />
         </div>
       </div>
 
@@ -401,9 +427,9 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
         </div>
         <p className="text-sm text-muted-foreground mb-4">{ENGINE_GUIDANCE.finance.description}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScaleSelectWithHelp field="cash_flow_health" config={ENGINE_GUIDANCE.finance.questions.cash_flow_health} />
-          <ScaleSelectWithHelp field="profitability" config={ENGINE_GUIDANCE.finance.questions.profitability} />
-          <ScaleSelectWithHelp field="financial_planning" config={ENGINE_GUIDANCE.finance.questions.financial_planning} />
+          <RatingInput field="cash_flow_health" config={ENGINE_GUIDANCE.finance.questions.cash_flow_health} />
+          <RatingInput field="profitability" config={ENGINE_GUIDANCE.finance.questions.profitability} />
+          <RatingInput field="financial_planning" config={ENGINE_GUIDANCE.finance.questions.financial_planning} />
         </div>
       </div>
 
@@ -415,9 +441,9 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
         </div>
         <p className="text-sm text-muted-foreground mb-4">{ENGINE_GUIDANCE.personnel.description}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScaleSelectWithHelp field="team_satisfaction" config={ENGINE_GUIDANCE.personnel.questions.team_satisfaction} />
-          <ScaleSelectWithHelp field="skill_gaps" config={ENGINE_GUIDANCE.personnel.questions.skill_gaps} />
-          <ScaleSelectWithHelp field="retention_risk" config={ENGINE_GUIDANCE.personnel.questions.retention_risk} />
+          <RatingInput field="team_satisfaction" config={ENGINE_GUIDANCE.personnel.questions.team_satisfaction} />
+          <RatingInput field="skill_gaps" config={ENGINE_GUIDANCE.personnel.questions.skill_gaps} />
+          <RatingInput field="retention_risk" config={ENGINE_GUIDANCE.personnel.questions.retention_risk} />
         </div>
       </div>
 
