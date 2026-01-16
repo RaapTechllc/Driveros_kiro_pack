@@ -7,6 +7,7 @@ import { TemplateDownload } from '@/components/import/TemplateDownload'
 import { validateActionsCSV, validateGoalsCSV, CSVImportResult, ImportedAction, ImportedGoal } from '@/lib/csv-import'
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
+import { ClipboardCheck, Target } from 'lucide-react'
 
 type ImportStep = 'select' | 'upload' | 'validate' | 'success'
 type ImportType = 'actions' | 'goals'
@@ -199,39 +200,69 @@ export default function ImportPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="border rounded-lg p-8 space-y-4 hover:border-primary/50 transition-colors">
-            <div className="text-4xl text-center">📋</div>
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold">Import Actions</h3>
-              <p className="text-muted-foreground">
-                Upload your action items with owners, timelines, and status tracking
-              </p>
+          <div className="group relative border-2 border-border/50 rounded-2xl p-8 space-y-6 hover:border-primary/50 hover:bg-card/50 transition-all duration-300 overflow-hidden">
+            {/* Background Gradient Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <ClipboardCheck className="h-10 w-10 text-primary" />
+              </div>
+
+              <div className="text-center space-y-2">
+                <h3 className="text-2xl font-bold">Import Actions</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Upload your action items with owners, timelines, and status tracking
+                </p>
+              </div>
             </div>
-            <div className="space-y-2 text-sm">
-              <p><strong>Required fields:</strong> title, why, owner_role, engine, eta_days, status</p>
-              <p><strong>Optional fields:</strong> due_date</p>
-              <p><strong>Supported owners:</strong> Owner, Ops, Sales, Finance</p>
+
+            <div className="relative z-10 space-y-3 p-4 bg-muted/30 rounded-lg text-sm border border-border/50">
+              <div className="flex gap-2 text-muted-foreground">
+                <span className="font-semibold text-foreground min-w-[60px]">Required:</span>
+                <span>title, why, owner_role, engine, status</span>
+              </div>
+              <div className="flex gap-2 text-muted-foreground">
+                <span className="font-semibold text-foreground min-w-[60px]">Optional:</span>
+                <span>due_date, eta_days</span>
+              </div>
             </div>
-            <Button onClick={() => handleTypeSelect('actions')} className="w-full">
-              Import Actions
+
+            <Button onClick={() => handleTypeSelect('actions')} className="w-full relative z-10" size="lg">
+              Select CSV File
             </Button>
           </div>
 
-          <div className="border rounded-lg p-8 space-y-4 hover:border-primary/50 transition-colors">
-            <div className="text-4xl text-center">🎯</div>
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold">Import Goals</h3>
-              <p className="text-muted-foreground">
-                Upload your North Star and department goals with metrics and targets
-              </p>
+          <div className="group relative border-2 border-border/50 rounded-2xl p-8 space-y-6 hover:border-blue-500/50 hover:bg-card/50 transition-all duration-300 overflow-hidden">
+            {/* Background Gradient Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="h-20 w-20 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Target className="h-10 w-10 text-blue-500" />
+              </div>
+
+              <div className="text-center space-y-2">
+                <h3 className="text-2xl font-bold">Import Goals</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Upload your North Star and department goals with metrics
+                </p>
+              </div>
             </div>
-            <div className="space-y-2 text-sm">
-              <p><strong>Required:</strong> 1 North Star goal, up to 3 department goals</p>
-              <p><strong>Department goals need:</strong> alignment_statement</p>
-              <p><strong>Supported departments:</strong> Ops, Sales/Marketing, Finance</p>
+
+            <div className="relative z-10 space-y-3 p-4 bg-muted/30 rounded-lg text-sm border border-border/50">
+              <div className="flex gap-2 text-muted-foreground">
+                <span className="font-semibold text-foreground min-w-[70px]">Structure:</span>
+                <span>1 North Star + 3 Dept Goals</span>
+              </div>
+              <div className="flex gap-2 text-muted-foreground">
+                <span className="font-semibold text-foreground min-w-[70px]">Alignment:</span>
+                <span>Must link to parent goals</span>
+              </div>
             </div>
-            <Button onClick={() => handleTypeSelect('goals')} className="w-full">
-              Import Goals
+
+            <Button onClick={() => handleTypeSelect('goals')} className="w-full relative z-10" variant="outline" size="lg">
+              Select CSV File
             </Button>
           </div>
         </div>

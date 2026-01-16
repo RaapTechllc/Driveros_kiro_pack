@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { DemoModeToggle } from '@/components/demo/DemoModeToggle'
 import { FeatureShowcase } from '@/components/landing/FeatureShowcase'
-import { Zap, Target, Gauge, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { Zap, Target, Gauge, ArrowRight, CheckCircle2, Crown } from 'lucide-react'
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null)
@@ -38,11 +38,11 @@ export default function HomePage() {
         <div className="absolute top-[-50%] left-[-20%] w-[800px] h-[800px] rounded-full
                         bg-gradient-radial from-orange-500/20 via-orange-500/5 to-transparent
                         blur-3xl animate-pulse"
-             style={{ animationDuration: '4s' }} />
+          style={{ animationDuration: '4s' }} />
         <div className="absolute bottom-[-30%] right-[-10%] w-[600px] h-[600px] rounded-full
                         bg-gradient-radial from-yellow-500/20 via-yellow-500/5 to-transparent
                         blur-3xl animate-pulse"
-             style={{ animationDuration: '4s', animationDelay: '2s' }} />
+          style={{ animationDuration: '4s', animationDelay: '2s' }} />
 
         {/* Grid overlay for technical feel */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
@@ -140,45 +140,60 @@ export default function HomePage() {
             className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             {[
-              { icon: Zap, title: 'Flash Scan', desc: 'Walk away with your #1 constraint and 3 actions to fix it', gear: '1-2' },
-              { icon: Target, title: 'Full Audit', desc: 'See which of your 5 business engines needs attention first', gear: '3-4' },
-              { icon: Gauge, title: 'Dashboard', desc: 'One screen. One number. Every week you know if you\'re winning.', gear: '5' }
+              { icon: Zap, title: 'Flash Scan', desc: 'Walk away with your #1 constraint and 3 actions to fix it', gear: '1-2', time: '5 min', href: '/flash-scan' },
+              { icon: Target, title: 'Full Audit', desc: 'See which of your 5 business engines needs attention first', gear: '3-4', time: '15 min', href: '/full-audit' },
+              { icon: Crown, title: 'Apex Audit', desc: 'Executive-level analysis with 80+ data points and strategic roadmap', gear: '5', time: '30-45 min', href: '/apex-audit', premium: true }
             ].map((feature, i) => (
-              <div
-                key={i}
-                className={`group relative overflow-hidden rounded-2xl border-2 border-border
-                           bg-card p-8
-                           hover:border-primary/50 transition-all duration-500
-                           hover:shadow-[0_0_30px_rgba(255,71,19,0.1)]
-                           ${featuresReveal.isVisible 
-                             ? 'opacity-100 translate-y-0' 
-                             : 'opacity-0 translate-y-8'}`}
-                style={{ transitionDelay: `${i * 150}ms` }}
-              >
-                {/* Racing stripe accent */}
-                <div className="absolute top-0 left-0 w-1 h-0 bg-gradient-to-b from-primary to-accent
-                                group-hover:h-full transition-all duration-500" />
+              <Link key={i} href={feature.href}>
+                <div
+                  className={`group relative overflow-hidden rounded-2xl border-2 p-8 h-full
+                             hover:border-primary/50 transition-all duration-500
+                             hover:shadow-[0_0_30px_rgba(255,71,19,0.1)] cursor-pointer
+                             ${feature.premium 
+                               ? 'border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-orange-500/5' 
+                               : 'border-border bg-card'}
+                             ${featuresReveal.isVisible 
+                               ? 'opacity-100 translate-y-0' 
+                               : 'opacity-0 translate-y-8'}`}
+                  style={{ transitionDelay: `${i * 150}ms` }}
+                >
+                  {/* Racing stripe accent */}
+                  <div className={`absolute top-0 left-0 w-1 h-0 bg-gradient-to-b ${feature.premium ? 'from-yellow-500 to-orange-500' : 'from-primary to-accent'}
+                                  group-hover:h-full transition-all duration-500`} />
 
-                {/* Gear number badge */}
-                <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-primary/10
-                                flex items-center justify-center border border-primary/20">
-                  <span className="text-primary font-mono font-bold text-sm">
-                    {feature.gear}
-                  </span>
+                  {/* Gear number badge */}
+                  <div className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center border ${
+                    feature.premium 
+                      ? 'bg-yellow-500/10 border-yellow-500/20' 
+                      : 'bg-primary/10 border-primary/20'
+                  }`}>
+                    <span className={`font-mono font-bold text-sm ${feature.premium ? 'text-yellow-500' : 'text-primary'}`}>
+                      {feature.gear}
+                    </span>
+                  </div>
+
+                  <div className={`mb-4 group-hover:scale-110 transition-transform ${feature.premium ? 'text-yellow-500' : 'text-primary'}`}>
+                    <feature.icon className="w-8 h-8" />
+                  </div>
+
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">
+                    {feature.title}
+                    {feature.premium && (
+                      <span className="ml-2 text-xs font-normal px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400">
+                        Premium
+                      </span>
+                    )}
+                  </h3>
+
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                    {feature.desc}
+                  </p>
+
+                  <div className="text-xs text-muted-foreground">
+                    ⏱ {feature.time}
+                  </div>
                 </div>
-
-                <div className="text-primary mb-4 group-hover:scale-110 transition-transform">
-                  <feature.icon className="w-8 h-8" />
-                </div>
-
-                <h3 className="font-display text-2xl font-bold text-foreground mb-3">
-                  {feature.title}
-                </h3>
-
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {feature.desc}
-                </p>
-              </div>
+              </Link>
             ))}
           </div>
 

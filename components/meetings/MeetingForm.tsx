@@ -4,7 +4,7 @@ import { generateMeetingActions, saveMeetingNotes } from '@/lib/meeting-template
 import { parseTranscript, validateTranscript, convertToQuickWins, ExtractedMeetingData } from '@/lib/transcript-parser'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { FileText, Keyboard, Upload, Sparkles, AlertCircle, CheckCircle } from 'lucide-react'
+import { FileText, Keyboard, Upload, Sparkles, AlertCircle, CheckCircle, Gauge } from 'lucide-react'
 
 type InputMode = 'manual' | 'transcript'
 
@@ -20,7 +20,7 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
   const [formData, setFormData] = useState<MeetingFormData>({})
   const [notes, setNotes] = useState('')
   const [decisions, setDecisions] = useState<string[]>([''])
-  
+
   // Transcript-related state
   const [transcript, setTranscript] = useState('')
   const [extractedData, setExtractedData] = useState<ExtractedMeetingData | null>(null)
@@ -30,17 +30,17 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     let actions: QuickWin[]
     let cleanDecisions: string[]
     let finalNotes: string
-    
+
     if (inputMode === 'transcript' && extractedData) {
       // Use extracted data from transcript
       actions = convertToQuickWins(extractedData.actionItems)
       cleanDecisions = extractedData.decisions
       finalNotes = `## Transcript Summary\n${extractedData.summary}\n\n## Key Topics\n${extractedData.keyTopics.join(', ')}\n\n## Participants\n${extractedData.participants.join(', ')}\n\n## Manual Notes\n${notes}`
-      
+
       // Add any blockers as actions if found
       if (extractedData.blockers.length > 0) {
         extractedData.blockers.forEach(blocker => {
@@ -59,15 +59,15 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
       cleanDecisions = decisions.filter(d => d.trim())
       finalNotes = notes
     }
-    
+
     saveMeetingNotes(template.type, finalNotes, cleanDecisions, actions)
     onComplete(actions)
   }
-  
+
   const handleProcessTranscript = () => {
     setTranscriptError(null)
     setIsProcessing(true)
-    
+
     // Validate transcript
     const validation = validateTranscript(transcript)
     if (!validation.valid) {
@@ -75,17 +75,17 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
       setIsProcessing(false)
       return
     }
-    
+
     // Parse and extract data
     try {
       const data = parseTranscript(transcript)
       setExtractedData(data)
-      
+
       // Pre-fill notes with summary
       if (data.summary) {
         setNotes(data.summary)
       }
-      
+
       // Pre-fill decisions
       if (data.decisions.length > 0) {
         setDecisions(data.decisions)
@@ -93,36 +93,36 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
     } catch (error) {
       setTranscriptError('Failed to parse transcript. Please check the format.')
     }
-    
+
     setIsProcessing(false)
   }
-  
+
   const handleClearTranscript = () => {
     setTranscript('')
     setExtractedData(null)
     setTranscriptError(null)
     setUploadedFileName(null)
   }
-  
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    
+
     // Validate file type
     const validExtensions = ['.txt', '.vtt', '.srt', '.md']
     const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'))
-    
+
     if (!validExtensions.includes(fileExtension) && !file.type.startsWith('text/')) {
       setTranscriptError('Please upload a text file (.txt, .vtt, .srt, or .md)')
       return
     }
-    
+
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       setTranscriptError('File too large. Maximum size is 2MB.')
       return
     }
-    
+
     try {
       const text = await file.text()
       setTranscript(text)
@@ -131,7 +131,7 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
     } catch (error) {
       setTranscriptError('Failed to read file. Please try again.')
     }
-    
+
     // Reset input
     e.target.value = ''
   }
@@ -176,11 +176,10 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
         <button
           type="button"
           onClick={() => setInputMode('manual')}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            inputMode === 'manual'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${inputMode === 'manual'
+            ? 'bg-background text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground'
+            }`}
         >
           <Keyboard className="h-4 w-4" />
           Manual Input
@@ -188,11 +187,10 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
         <button
           type="button"
           onClick={() => setInputMode('transcript')}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            inputMode === 'transcript'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${inputMode === 'transcript'
+            ? 'bg-background text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground'
+            }`}
         >
           <FileText className="h-4 w-4" />
           Import Transcript
@@ -219,7 +217,7 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
                 </Button>
               )}
             </div>
-            
+
             {!extractedData ? (
               <>
                 {/* File Upload Zone */}
@@ -240,7 +238,7 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
                     <span className="text-xs text-muted-foreground">.txt, .vtt, .srt, .md (max 2MB)</span>
                   </div>
                 </div>
-                
+
                 {uploadedFileName && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <FileText className="h-4 w-4" />
@@ -254,9 +252,9 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
                     </button>
                   </div>
                 )}
-                
+
                 <div className="text-center text-sm text-muted-foreground">— or paste directly —</div>
-                
+
                 <textarea
                   value={transcript}
                   onChange={(e) => { setTranscript(e.target.value); setUploadedFileName(null); }}
@@ -268,14 +266,14 @@ Example formats supported:
 • Otter: "John Smith: The main priority is..."
 • Generic: "Speaker: Content of what they said..."`}
                 />
-                
+
                 {transcriptError && (
                   <div className="flex items-center gap-2 text-destructive text-sm">
                     <AlertCircle className="h-4 w-4" />
                     {transcriptError}
                   </div>
                 )}
-                
+
                 <Button
                   type="button"
                   onClick={handleProcessTranscript}
@@ -299,13 +297,13 @@ Example formats supported:
                   <CheckCircle className="h-4 w-4" />
                   <span className="font-medium">Transcript processed successfully!</span>
                 </div>
-                
+
                 {/* Summary */}
                 <div className="p-3 bg-muted rounded-md">
                   <h4 className="text-sm font-medium mb-1">Summary</h4>
                   <p className="text-sm text-muted-foreground">{extractedData.summary}</p>
                 </div>
-                
+
                 {/* Participants */}
                 {extractedData.participants.length > 0 && (
                   <div>
@@ -317,7 +315,7 @@ Example formats supported:
                     </div>
                   </div>
                 )}
-                
+
                 {/* Action Items */}
                 {extractedData.actionItems.length > 0 && (
                   <div>
@@ -338,7 +336,7 @@ Example formats supported:
                     </ul>
                   </div>
                 )}
-                
+
                 {/* Decisions */}
                 {extractedData.decisions.length > 0 && (
                   <div>
@@ -350,7 +348,7 @@ Example formats supported:
                     </ul>
                   </div>
                 )}
-                
+
                 {/* Blockers */}
                 {extractedData.blockers.length > 0 && (
                   <div>
@@ -364,7 +362,7 @@ Example formats supported:
                     </ul>
                   </div>
                 )}
-                
+
                 {/* Key Topics */}
                 {extractedData.keyTopics.length > 0 && (
                   <div>
@@ -382,30 +380,55 @@ Example formats supported:
         )}
         {/* Dynamic inputs based on meeting type - Manual Mode Only */}
         {inputMode === 'manual' && template.type === 'warm_up' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Yesterday's result (1 line)</label>
-              <Input
-                value={formData.yesterday_result || ''}
-                onChange={(e) => setFormData({...formData, yesterday_result: e.target.value})}
-                placeholder="What did you accomplish yesterday toward the Accelerator?"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Today's focus (1 line)</label>
-              <Input
-                value={formData.today_focus || ''}
-                onChange={(e) => setFormData({...formData, today_focus: e.target.value})}
-                placeholder="What's your main focus today?"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Top brake (1 line)</label>
-              <Input
-                value={formData.top_brake || ''}
-                onChange={(e) => setFormData({...formData, top_brake: e.target.value})}
-                placeholder="What's blocking progress today?"
-              />
+          <div className="grid gap-6">
+            <div className="bg-card border-none shadow-none space-y-4">
+              {/* Rear View Mirror - Yesterday */}
+              <div className="relative group bg-muted/20 border border-border/50 rounded-xl p-4 hover:border-green-500/30 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  </div>
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Rear View (Yesterday)</label>
+                </div>
+                <Input
+                  value={formData.yesterday_result || ''}
+                  onChange={(e) => setFormData({ ...formData, yesterday_result: e.target.value })}
+                  placeholder="What did you punch through yesterday?"
+                  className="border-0 bg-transparent text-lg font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 p-0 h-auto"
+                />
+              </div>
+
+              {/* Current Gear - Today */}
+              <div className="relative group bg-primary/5 border-l-4 border-l-primary border-y border-r border-border/50 rounded-r-xl p-4 hover:bg-primary/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center animate-pulse">
+                    <Gauge className="h-4 w-4 text-primary" />
+                  </div>
+                  <label className="text-sm font-bold text-primary uppercase tracking-wider">Current Gear (Today)</label>
+                </div>
+                <Input
+                  value={formData.today_focus || ''}
+                  onChange={(e) => setFormData({ ...formData, today_focus: e.target.value })}
+                  placeholder="What is the ONE main thing today?"
+                  className="border-0 bg-transparent text-lg font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 p-0 h-auto"
+                />
+              </div>
+
+              {/* Check Engine - Blockers */}
+              <div className="relative group bg-red-500/5 border border-red-500/20 rounded-xl p-4 hover:border-red-500/50 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-8 w-8 rounded-full bg-red-500/10 flex items-center justify-center">
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                  </div>
+                  <label className="text-sm font-bold text-red-500/80 uppercase tracking-wider">Check Engine (Blockers)</label>
+                </div>
+                <Input
+                  value={formData.top_brake || ''}
+                  onChange={(e) => setFormData({ ...formData, top_brake: e.target.value })}
+                  placeholder="What's slowing you down?"
+                  className="border-0 bg-transparent text-lg font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 p-0 h-auto"
+                />
+              </div>
             </div>
           </div>
         )}
@@ -421,7 +444,7 @@ Example formats supported:
                     name="accelerator_result"
                     value="win"
                     checked={formData.accelerator_result === 'win'}
-                    onChange={(e) => setFormData({...formData, accelerator_result: e.target.value as 'win' | 'miss'})}
+                    onChange={(e) => setFormData({ ...formData, accelerator_result: e.target.value as 'win' | 'miss' })}
                     className="mr-2"
                   />
                   Win - Hit weekly target
@@ -432,7 +455,7 @@ Example formats supported:
                     name="accelerator_result"
                     value="miss"
                     checked={formData.accelerator_result === 'miss'}
-                    onChange={(e) => setFormData({...formData, accelerator_result: e.target.value as 'win' | 'miss'})}
+                    onChange={(e) => setFormData({ ...formData, accelerator_result: e.target.value as 'win' | 'miss' })}
                     className="mr-2"
                   />
                   Miss - Didn't hit target
@@ -444,12 +467,12 @@ Example formats supported:
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   value={formData.accelerator_actual || ''}
-                  onChange={(e) => setFormData({...formData, accelerator_actual: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, accelerator_actual: e.target.value })}
                   placeholder="Actual result"
                 />
                 <Input
                   value={formData.accelerator_target || ''}
-                  onChange={(e) => setFormData({...formData, accelerator_target: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, accelerator_target: e.target.value })}
                   placeholder="Target"
                 />
               </div>
@@ -463,7 +486,7 @@ Example formats supported:
               <label className="block text-sm font-medium mb-2">North Star Review</label>
               <Input
                 value={formData.north_star_review || ''}
-                onChange={(e) => setFormData({...formData, north_star_review: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, north_star_review: e.target.value })}
                 placeholder="Is the North Star still the right goal?"
               />
             </div>
@@ -471,7 +494,7 @@ Example formats supported:
               <label className="block text-sm font-medium mb-2">Accelerator Review</label>
               <Input
                 value={formData.accelerator_review || ''}
-                onChange={(e) => setFormData({...formData, accelerator_review: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, accelerator_review: e.target.value })}
                 placeholder="Is the weekly Accelerator still the right lever?"
               />
             </div>
@@ -479,7 +502,7 @@ Example formats supported:
               <label className="block text-sm font-medium mb-2">Goal Alignment</label>
               <Input
                 value={formData.goal_alignment || ''}
-                onChange={(e) => setFormData({...formData, goal_alignment: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, goal_alignment: e.target.value })}
                 placeholder="How well do department goals align with North Star?"
               />
             </div>
@@ -528,14 +551,14 @@ Example formats supported:
           </div>
         </div>
 
-        <Button 
-          type="submit" 
-          size="lg" 
+        <Button
+          type="submit"
+          size="lg"
           className="w-full"
           disabled={inputMode === 'transcript' && !extractedData}
         >
-          {inputMode === 'transcript' 
-            ? extractedData 
+          {inputMode === 'transcript'
+            ? extractedData
               ? `Complete Meeting (${extractedData.actionItems.length + extractedData.blockers.length} actions)`
               : 'Process transcript first'
             : 'Complete Meeting & Generate Actions'

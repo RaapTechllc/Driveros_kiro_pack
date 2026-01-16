@@ -18,7 +18,7 @@ interface BusinessGearIndicatorProps {
 
 const gearLabels = {
   1: "Idle",
-  2: "Grip", 
+  2: "Grip",
   3: "Drive",
   4: "Overdrive",
   5: "Apex"
@@ -26,7 +26,7 @@ const gearLabels = {
 
 const gearColors = {
   1: "bg-gray-500",
-  2: "bg-orange-500", 
+  2: "bg-orange-500",
   3: "bg-blue-500",
   4: "bg-green-500",
   5: "bg-emerald-500"
@@ -34,7 +34,7 @@ const gearColors = {
 
 export function BusinessGearIndicator({ gear, completionScore }: BusinessGearIndicatorProps) {
   const gearColor = gearColors[gear.number as keyof typeof gearColors] || "bg-gray-500"
-  
+
   return (
     <div className="max-w-4xl mx-auto mb-8">
       <Card className="relative overflow-hidden">
@@ -51,7 +51,7 @@ export function BusinessGearIndicator({ gear, completionScore }: BusinessGearInd
               </CardDescription>
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span>Analysis Complete</span>
@@ -60,7 +60,7 @@ export function BusinessGearIndicator({ gear, completionScore }: BusinessGearInd
             <Progress value={completionScore * 100} className="h-2" />
           </div>
         </CardHeader>
-        
+
         <CardContent className="text-center">
           <p className="text-muted-foreground max-w-2xl mx-auto">
             {gear.reason}
@@ -84,7 +84,7 @@ interface EngineCardProps {
 
 const statusColors = {
   green: "bg-green-100 text-green-800 border-green-200",
-  yellow: "bg-yellow-100 text-yellow-800 border-yellow-200", 
+  yellow: "bg-yellow-100 text-yellow-800 border-yellow-200",
   red: "bg-red-100 text-red-800 border-red-200",
   unknown: "bg-gray-100 text-gray-800 border-gray-200"
 }
@@ -115,43 +115,84 @@ export function EngineCard({ engine, trend }: EngineCardProps) {
   const statusColor = statusColors[engine.status]
   const glowClass = statusGlow[engine.status]
   const trendInfo = trend ? trendDisplay[trend] : null
-  
+
+  // Calculate gauge dasharray for 0-100 score (circumference ~ 126 for r=20)
+  const radius = 22
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - ((engine.score || 0) / 100) * circumference
+
+  const scoreColor = engine.score >= 80 ? 'text-green-500' : engine.score >= 50 ? 'text-yellow-500' : 'text-red-500'
+  const ringColor = engine.score >= 80 ? 'stroke-green-500' : engine.score >= 50 ? 'stroke-yellow-500' : 'stroke-red-500'
+
   return (
-    <Card className={`h-full ${glowClass}`}>
-      <CardHeader className="pb-3">
+    <Card className={`h-full ${glowClass} transition-shadow duration-300`}>
+      <CardHeader className="pb-3 border-b border-border/40">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">{engine.name}</CardTitle>
-          <Badge className={`${statusColor} capitalize`}>
-            <StatusIcon className="w-3 h-3 mr-1" />
+          <CardTitle className="text-lg flex items-center gap-2">
+            {engine.name}
+            {trendInfo && (
+              <span className={`text-base ${trendInfo.color}`} title={trendInfo.label}>
+                {trendInfo.arrow}
+              </span>
+            )}
+          </CardTitle>
+          <Badge className={`${statusColor} capitalize px-2 py-0.5`}>
             {engine.status}
           </Badge>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="text-2xl font-bold">
-            {engine.score > 0 ? engine.score : '—'}
-          </div>
-          {engine.score > 0 ? (
-            <div className="text-sm text-muted-foreground">/100</div>
-          ) : (
-            <div className="text-xs text-muted-foreground">Analysis needed</div>
-          )}
-          {trendInfo && (
-            <span className={`text-lg ${trendInfo.color}`} title={trendInfo.label}>
-              {trendInfo.arrow}
-            </span>
-          )}
-        </div>
       </CardHeader>
-      
-      <CardContent className="space-y-3">
-        <div>
-          <h4 className="text-sm font-medium mb-1">Assessment</h4>
-          <p className="text-sm text-muted-foreground">{engine.rationale}</p>
+
+      <CardContent className="pt-4 space-y-4">
+        {/* Gauge and Action Row */}
+        <div className="flex items-start gap-4">
+
+          {/* Score Gauge */}
+          <div className="relative h-20 w-20 flex-shrink-0 flex items-center justify-center">
+            <div className="text-center z-10">
+              <span className={`text-2xl font-bold ${scoreColor}`}>
+                {engine.score > 0 ? engine.score : '-'}
+              </span>
+            </div>
+            {/* SVG Ring */}
+            <svg className="absolute inset-0 transform -rotate-90 h-full w-full">
+              <circle
+                cx="40" cy="40" r={radius}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                className="text-muted/20"
+              />
+              <circle
+                cx="40" cy="40" r={radius}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                className={`${ringColor} transition-all duration-1000 ease-out`}
+              />
+            </svg>
+          </div>
+
+          {/* Action Snippet */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 text-sm font-medium text-foreground">
+              <div className="p-1 rounded bg-muted">
+                <Clock className="w-3 h-3" />
+              </div>
+              <span>Next Action</span>
+            </div>
+            <p className="text-xs text-muted-foreground line-clamp-3">
+              {engine.next_action}
+            </p>
+          </div>
         </div>
-        
-        <div>
-          <h4 className="text-sm font-medium mb-1">Next Action</h4>
-          <p className="text-sm text-muted-foreground">{engine.next_action}</p>
+
+        {/* Assessment Rationale */}
+        <div className="bg-muted/30 p-3 rounded-lg text-xs leading-relaxed text-muted-foreground">
+          <span className="font-semibold text-foreground mr-1">Insight:</span>
+          {engine.rationale}
         </div>
       </CardContent>
     </Card>
@@ -179,19 +220,19 @@ export function AcceleratorCard({ accelerator }: AcceleratorCardProps) {
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-3">
           <div>
             <h4 className="text-sm font-medium mb-1">Key Performance Indicator</h4>
             <p className="text-lg font-semibold">{accelerator.kpi}</p>
           </div>
-          
+
           <div>
             <h4 className="text-sm font-medium mb-1">Cadence</h4>
             <p className="text-sm text-muted-foreground capitalize">{accelerator.cadence}</p>
           </div>
-          
+
           {accelerator.notes && (
             <div>
               <h4 className="text-sm font-medium mb-1">Notes</h4>

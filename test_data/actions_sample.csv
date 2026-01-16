@@ -1,0 +1,6 @@
+title,why,owner_role,engine,eta_days,status,due_date
+"Fix Pricing Strategy","Current margin too low",Owner,Finance,5,todo,"2026-02-01"
+"Hire Operations Manager","Need to delegate daily ops",Ops,Operations,30,doing,"2026-03-01"
+"Launch Referral Program","Increase high-intent leads",Sales,"Marketing & Sales",14,todo,"2026-02-15"
+"Update Employment Contracts","Compliance risk",Ops,Personnel,7,done,"2026-01-20"
+"Weekly Leadership Sync","Align on priorities",Owner,Leadership,1,doing,"2026-01-16"
