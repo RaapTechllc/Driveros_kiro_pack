@@ -12,10 +12,13 @@
 
 ## Screenshots
 
-![Dashboard](docs/frontend/Screenshot%202026-01-07%20083823.png)
+![Dashboard](docs/frontend/dashboard.png)
 *Complete dashboard with Signal Board, Accelerator, and Action Bay*
 
-![Flash Scan](docs/frontend/Screenshot%202026-01-06%20225154.png)
+![Apex Audit](docs/frontend/apex-audit.png)
+*Executive-level business analysis*
+
+![Flash Scan](docs/frontend/flash-scan.png)
 *Quick 5-minute assessment with instant recommendations*
 
 ## Quick Start
