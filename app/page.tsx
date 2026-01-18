@@ -135,26 +135,26 @@ export default function HomePage() {
           </div>
 
           {/* Feature Grid - Racing stripes aesthetic */}
-          <div 
+          <div
             ref={featuresReveal.ref}
             className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             {[
               { icon: Zap, title: 'Flash Scan', desc: 'Walk away with your #1 constraint and 3 actions to fix it', gear: '1-2', time: '5 min', href: '/flash-scan' },
               { icon: Target, title: 'Full Audit', desc: 'See which of your 5 business engines needs attention first', gear: '3-4', time: '15 min', href: '/full-audit' },
-              { icon: Crown, title: 'Apex Audit', desc: 'Executive-level analysis with 80+ data points and strategic roadmap', gear: '5', time: '30-45 min', href: '/apex-audit', premium: true }
+              { icon: Crown, title: 'Apex Audit', desc: 'Executive-level analysis with 80+ data points and strategic roadmap', gear: '5', time: '30-45 min', href: '/pricing', premium: true }
             ].map((feature, i) => (
               <Link key={i} href={feature.href}>
                 <div
                   className={`group relative overflow-hidden rounded-2xl border-2 p-8 h-full
                              hover:border-primary/50 transition-all duration-500
                              hover:shadow-[0_0_30px_rgba(255,71,19,0.1)] cursor-pointer
-                             ${feature.premium 
-                               ? 'border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-orange-500/5' 
-                               : 'border-border bg-card'}
-                             ${featuresReveal.isVisible 
-                               ? 'opacity-100 translate-y-0' 
-                               : 'opacity-0 translate-y-8'}`}
+                             ${feature.premium
+                      ? 'border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-orange-500/5'
+                      : 'border-border bg-card'}
+                             ${featuresReveal.isVisible
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-8'}`}
                   style={{ transitionDelay: `${i * 150}ms` }}
                 >
                   {/* Racing stripe accent */}
@@ -162,11 +162,10 @@ export default function HomePage() {
                                   group-hover:h-full transition-all duration-500`} />
 
                   {/* Gear number badge */}
-                  <div className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center border ${
-                    feature.premium 
-                      ? 'bg-yellow-500/10 border-yellow-500/20' 
+                  <div className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center border ${feature.premium
+                      ? 'bg-yellow-500/10 border-yellow-500/20'
                       : 'bg-primary/10 border-primary/20'
-                  }`}>
+                    }`}>
                     <span className={`font-mono font-bold text-sm ${feature.premium ? 'text-yellow-500' : 'text-primary'}`}>
                       {feature.gear}
                     </span>
