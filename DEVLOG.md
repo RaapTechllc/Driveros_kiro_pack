@@ -2,6 +2,25 @@
 
 ---
 
+## 2026-01-17 - Double Sidebar Fix ✅
+
+### What Changed
+Resolved a layout duplication issue on the Admin Apex Reviews page where the sidebar was appearing twice.
+
+### Problem
+- The root layout (`app/layout.tsx`) wraps the entire application in `<AppLayout>`.
+- The `ApexReviewsPage` component was *also* wrapping its content in `<AppLayout>`.
+- This caused the sidebar and header to be rendered recursively (inner layout inside outer layout).
+
+### Solution
+- Removed the redundant `<AppLayout>` wrapper from `app/admin/apex-reviews/page.tsx`.
+- The page now relies solely on the global layout provided by the root.
+
+### Files Modified
+- `app/admin/apex-reviews/page.tsx` - Removed `AppLayout` import and wrapper tags.
+
+---
+
 ## 2026-01-17 - Monetization Demo Mockup ✅
 
 ### What Changed
