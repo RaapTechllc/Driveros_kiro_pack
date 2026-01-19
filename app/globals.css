@@ -61,7 +61,7 @@
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 70%; /* Increased from 65.1% for better contrast */
     --accent: 48 100% 50%; /* Neon Yellow #FFCC00 */
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 62.8% 30.6%;
@@ -84,7 +84,7 @@
     --secondary: 230 25% 15%;
     --secondary-foreground: 210 40% 98%;
     --muted: 230 25% 15%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 70%; /* Increased from 65.1% for better contrast */
     --accent: 280 100% 65%; /* Electric Purple #A855F7 */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 50%;
@@ -130,7 +130,7 @@
     --secondary: 25 25% 15%;
     --secondary-foreground: 45 30% 95%;
     --muted: 25 25% 15%;
-    --muted-foreground: 45 20% 60%;
+    --muted-foreground: 45 20% 70%; /* Increased from 60% for better contrast */
     --accent: 45 100% 51%; /* Golden Yellow #EAB308 */
     --accent-foreground: 25 30% 10%;
     --destructive: 0 62.8% 50%;
@@ -163,5 +163,24 @@
 @layer utilities {
   .focus-racing {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:shadow-[0_0_0_3px_rgba(255,71,19,0.1)];
+  }
+
+  /* High contrast text utility for better accessibility */
+  .text-contrast-high {
+    @apply text-foreground;
+  }
+
+  .dark .text-contrast-high {
+    color: hsl(210 40% 98%);
+  }
+
+  /* Override blue-400 to lighter blue on dark backgrounds for better contrast */
+  .dark .text-blue-400 {
+    color: hsl(213 94% 68%); /* Lighter blue for dark mode - WCAG AA compliant */
+  }
+
+  .midnight-racing .text-blue-400,
+  .sunrise-dark .text-blue-400 {
+    color: hsl(213 94% 68%); /* Lighter blue for dark themes */
   }
 }

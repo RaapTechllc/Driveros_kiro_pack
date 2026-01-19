@@ -43,77 +43,108 @@ export function ApexAuditForm({ onSubmit }: ApexAuditFormProps) {
     onSubmit(data as ApexAuditData)
   }
 
-  const renderSelect = (field: keyof ApexAuditData, options: string[], label: string) => (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">{label}</label>
-      <select
-        value={(data[field] as string) || ''}
-        onChange={e => updateField(field, e.target.value)}
-        className="w-full h-11 px-3 rounded-lg border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none"
-      >
-        <option value="">Select...</option>
-        {options.map(opt => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
-    </div>
-  )
+  const renderSelect = (field: keyof ApexAuditData, options: string[], label: string) => {
+    const fieldId = `apex-${field}`
+    return (
+      <div className="space-y-2">
+        <label htmlFor={fieldId} className="text-sm font-medium text-foreground">{label}</label>
+        <select
+          id={fieldId}
+          aria-label={label}
+          value={(data[field] as string) || ''}
+          onChange={e => updateField(field, e.target.value)}
+          className="w-full h-11 px-3 rounded-lg border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none"
+        >
+          <option value="">Select...</option>
+          {options.map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+      </div>
+    )
+  }
 
-  const renderNumber = (field: keyof ApexAuditData, label: string, placeholder?: string, prefix?: string) => (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">{label}</label>
-      <div className="relative">
-        {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">{prefix}</span>}
+  const renderNumber = (field: keyof ApexAuditData, label: string, placeholder?: string, prefix?: string) => {
+    const fieldId = `apex-${field}`
+    return (
+      <div className="space-y-2">
+        <label htmlFor={fieldId} className="text-sm font-medium text-foreground">{label}</label>
+        <div className="relative">
+          {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true">{prefix}</span>}
+          <Input
+            id={fieldId}
+            type="number"
+            aria-label={label}
+            value={(data[field] as number) || ''}
+            onChange={e => updateField(field, parseFloat(e.target.value) || 0)}
+            placeholder={placeholder}
+            className={prefix ? 'pl-7' : ''}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  const renderText = (field: keyof ApexAuditData, label: string, placeholder?: string) => {
+    const fieldId = `apex-${field}`
+    return (
+      <div className="space-y-2">
+        <label htmlFor={fieldId} className="text-sm font-medium text-foreground">{label}</label>
         <Input
-          type="number"
-          value={(data[field] as number) || ''}
-          onChange={e => updateField(field, parseFloat(e.target.value) || 0)}
+          id={fieldId}
+          aria-label={label}
+          value={(data[field] as string) || ''}
+          onChange={e => updateField(field, e.target.value)}
           placeholder={placeholder}
-          className={prefix ? 'pl-7' : ''}
         />
       </div>
-    </div>
-  )
+    )
+  }
 
-  const renderText = (field: keyof ApexAuditData, label: string, placeholder?: string) => (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">{label}</label>
-      <Input
-        value={(data[field] as string) || ''}
-        onChange={e => updateField(field, e.target.value)}
-        placeholder={placeholder}
-      />
-    </div>
-  )
+  const renderTextarea = (field: keyof ApexAuditData, label: string, placeholder?: string) => {
+    const fieldId = `apex-${field}`
+    return (
+      <div className="space-y-2">
+        <label htmlFor={fieldId} className="text-sm font-medium text-foreground">{label}</label>
+        <textarea
+          id={fieldId}
+          aria-label={label}
+          value={(data[field] as string) || ''}
+          onChange={e => updateField(field, e.target.value)}
+          placeholder={placeholder}
+          rows={3}
+          className="w-full px-3 py-2 rounded-lg border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none resize-none"
+        />
+      </div>
+    )
+  }
 
-  const renderTextarea = (field: keyof ApexAuditData, label: string, placeholder?: string) => (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">{label}</label>
-      <textarea
-        value={(data[field] as string) || ''}
-        onChange={e => updateField(field, e.target.value)}
-        placeholder={placeholder}
-        rows={3}
-        className="w-full px-3 py-2 rounded-lg border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none resize-none"
-      />
-    </div>
-  )
-
-  const renderSlider = (field: keyof ApexAuditData, label: string, min: number, max: number, suffix?: string) => (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">
-        {label}: <span className="text-primary">{data[field] || 0}{suffix}</span>
-      </label>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={(data[field] as number) || 0}
-        onChange={e => updateField(field, parseInt(e.target.value))}
-        className="w-full accent-primary"
-      />
-    </div>
-  )
+  const renderSlider = (field: keyof ApexAuditData, label: string, min: number, max: number, suffix?: string) => {
+    const fieldId = `apex-${field}`
+    const currentValue = (data[field] as number) || 0
+    return (
+      <div className="space-y-2">
+        <label htmlFor={fieldId} className="text-sm font-medium text-foreground">
+          {label}: <span className="text-primary">{currentValue}{suffix}</span>
+        </label>
+        <input
+          id={fieldId}
+          type="range"
+          role="slider"
+          aria-label={label}
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-valuenow={currentValue}
+          aria-valuetext={`${currentValue}${suffix || ''}`}
+          min={min}
+          max={max}
+          value={currentValue}
+          onChange={e => updateField(field, parseInt(e.target.value))}
+          className="w-full accent-primary"
+        />
+      </div>
+    )
+  }
 
   const renderSection = () => {
     switch (step) {

@@ -31,6 +31,7 @@ let clipboardItem: YearItem | null = null
 export function YearCard({ item, onEdit, onDelete, onUpdate }: YearCardProps) {
   const { contextMenu, handleContextMenu, closeContextMenu } = useContextMenu()
   const [showMoveMenu, setShowMoveMenu] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   const typeColors = {
     milestone: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -49,11 +50,23 @@ export function YearCard({ item, onEdit, onDelete, onUpdate }: YearCardProps) {
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', item.id)
     e.dataTransfer.effectAllowed = 'move'
+    setIsDragging(true)
   }
 
   const handleDragEnd = (e: React.DragEvent) => {
-    // Transitions handle return to normal state automatically
+    setIsDragging(false)
   }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Allow keyboard activation for accessibility
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onEdit()
+    }
+  }
+
+  // Create accessible label for screen readers
+  const accessibleLabel = `${item.type} card: ${item.title}${item.status ? `, status: ${item.status}` : ''}${item.alignment_status === 'unlinked' ? ', not linked to North Star' : ''}`
 
   const handleDeleteItem = () => {
     if (confirm(`Delete "${item.title}"?`)) {
@@ -223,12 +236,21 @@ export function YearCard({ item, onEdit, onDelete, onUpdate }: YearCardProps) {
   return (
     <div className="animate-slide-in">
       <div
-        className="bg-card border rounded-lg p-3 cursor-move hover:shadow-[0_0_20px_rgba(255,71,19,0.2)] transition-[transform,shadow] duration-300 active:cursor-grabbing active:scale-105 active:shadow-[0_0_30px_rgba(255,71,19,0.4)]"
+        role="button"
+        tabIndex={0}
+        aria-label={accessibleLabel}
+        aria-grabbed={isDragging}
+        aria-describedby={`card-instructions-${item.id}`}
+        className="bg-card border rounded-lg p-3 cursor-move hover:shadow-[0_0_20px_rgba(255,71,19,0.2)] transition-[transform,shadow] duration-300 active:cursor-grabbing active:scale-105 active:shadow-[0_0_30px_rgba(255,71,19,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onContextMenu={handleContextMenu}
+        onKeyDown={handleKeyDown}
       >
+        <span id={`card-instructions-${item.id}`} className="sr-only">
+          Press Enter or Space to edit. Drag to move to another quarter.
+        </span>
         {/* Header with badges */}
         <div className="flex justify-between items-start mb-2">
           <Badge className={typeColors[item.type]}>

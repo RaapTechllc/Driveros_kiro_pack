@@ -194,6 +194,8 @@ export const STORAGE_KEYS = {
   YEAR_PLAN: 'year-plan',
   YEAR_ITEMS: 'year-items',
   APEX_AUDIT_RESULT: 'apex-audit-result',
+  PARKED_IDEAS: 'parked-ideas',
+  CHECK_INS: 'check-ins',
   // Demo prefixed keys
   DEMO_FLASH_SCAN_RESULT: 'demo-flash-scan-result',
   DEMO_FULL_AUDIT_RESULT: 'demo-full-audit-result',

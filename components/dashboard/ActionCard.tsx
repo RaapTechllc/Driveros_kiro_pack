@@ -102,13 +102,15 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
           {/* Status Button */}
           <button
             onClick={handleStatusClick}
+            aria-label={`Task status: ${currentConfig.label}. Click to change status.`}
+            aria-pressed={status === 'done'}
             className={`
                flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-wide transition-all hover:scale-105 active:scale-95
                ${currentConfig.color}
                ${isTransitioning ? 'opacity-50 scale-95' : ''}
              `}
           >
-            <StatusIcon className={`w-3 h-3 ${status === 'doing' ? 'animate-spin-slow' : ''}`} />
+            <StatusIcon className={`w-3 h-3 ${status === 'doing' ? 'animate-spin-slow' : ''}`} aria-hidden="true" />
             {status === 'doing' ? 'Doing' : currentConfig.label}
           </button>
         </div>
@@ -119,9 +121,12 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
           <div className="relative">
             <button
               onClick={() => setShowAssign(!showAssign)}
+              aria-expanded={showAssign}
+              aria-haspopup="listbox"
+              aria-label={`Assigned to ${assignee?.name || owner_role}. Click to reassign.`}
               className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-white transition-colors group/assign"
             >
-              <div className="p-1 rounded bg-white/5 group-hover/assign:bg-primary/20 transition-colors">
+              <div className="p-1 rounded bg-white/5 group-hover/assign:bg-primary/20 transition-colors" aria-hidden="true">
                 <User className="w-3 h-3" />
               </div>
               <span>{assignee?.name || owner_role}</span>
@@ -129,12 +134,18 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
 
             {/* Assignee Dropdown */}
             {showAssign && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 p-2 space-y-2 animate-in fade-in slide-in-from-top-1">
-                <div className="text-[10px] font-bold text-muted-foreground px-2 uppercase">Assign To</div>
+              <div
+                role="listbox"
+                aria-label="Select assignee"
+                className="absolute top-full left-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 p-2 space-y-2 animate-in fade-in slide-in-from-top-1"
+              >
+                <div className="text-[10px] font-bold text-muted-foreground px-2 uppercase" aria-hidden="true">Assign To</div>
                 <div className="space-y-0.5 max-h-32 overflow-y-auto">
                   {roster.map(m => (
                     <button
                       key={m.id}
+                      role="option"
+                      aria-selected={assignee?.id === m.id}
                       onClick={() => handleAssign(m.id)}
                       className="w-full text-left px-2 py-1.5 text-xs text-gray-300 hover:bg-white/10 rounded"
                     >
@@ -144,6 +155,7 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
                 </div>
                 <div className="flex gap-1 pt-2 border-t border-white/10">
                   <input
+                    aria-label="Add new team member"
                     className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1 text-xs text-white"
                     placeholder="New name..."
                     value={newName}
@@ -152,9 +164,10 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
                   />
                   <button
                     onClick={handleAddMember}
+                    aria-label="Add team member"
                     className="p-1 bg-primary/20 hover:bg-primary/40 text-primary rounded"
                   >
-                    <Plus className="w-3 h-3" />
+                    <Plus className="w-3 h-3" aria-hidden="true" />
                   </button>
                 </div>
               </div>

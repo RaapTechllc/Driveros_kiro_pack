@@ -1,6 +1,9 @@
 import './globals.css'
 import { DM_Sans, Rajdhani, JetBrains_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { AuthProvider } from '@/components/providers/AuthProvider'
+import { OrgProvider } from '@/components/providers/OrgProvider'
+import { MigrationProvider } from '@/components/providers/MigrationProvider'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
@@ -43,9 +46,15 @@ export default function RootLayout({
             disableTransitionOnChange
             themes={['light', 'dark', 'system', 'midnight-racing', 'sunrise', 'sunrise-dark']}
           >
-            <AppLayout>
-              {children}
-            </AppLayout>
+            <AuthProvider>
+              <OrgProvider>
+                <MigrationProvider>
+                  <AppLayout>
+                    {children}
+                  </AppLayout>
+                </MigrationProvider>
+              </OrgProvider>
+            </AuthProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </body>

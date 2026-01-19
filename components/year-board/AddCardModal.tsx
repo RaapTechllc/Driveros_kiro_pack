@@ -6,12 +6,15 @@ import { addYearItem, loadYearPlan, createYearItem } from '@/lib/year-board-stor
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 
 interface AddCardModalProps {
   isOpen: boolean
   onClose: () => void
   onAdd: () => void
 }
+
+const MODAL_TITLE_ID = 'add-card-modal-title'
 
 export function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalProps) {
   const [formData, setFormData] = useState({
@@ -23,6 +26,8 @@ export function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalProps) {
     status: 'planned' as YearItem['status'],
     alignment_status: 'linked' as YearItem['alignment_status']
   })
+
+  const focusTrapRef = useFocusTrap<HTMLDivElement>({ enabled: isOpen })
 
   if (!isOpen) return null
 
@@ -88,17 +93,25 @@ export function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalProps) {
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={handleCancel}
+        aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="relative bg-card border-2 rounded-lg shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div
+        ref={focusTrapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={MODAL_TITLE_ID}
+        className="relative bg-card border-2 rounded-lg shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+      >
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Add New Card</h2>
+            <h2 id={MODAL_TITLE_ID} className="text-xl font-bold">Add New Card</h2>
             <button
               type="button"
               onClick={handleCancel}
+              aria-label="Close modal"
               className="text-muted-foreground hover:text-foreground text-2xl leading-none"
             >
               ×

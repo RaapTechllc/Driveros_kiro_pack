@@ -6,6 +6,7 @@ import { updateYearItem } from '@/lib/year-board-storage'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 
 interface EditCardModalProps {
   item: YearItem
@@ -14,8 +15,11 @@ interface EditCardModalProps {
   onUpdate: () => void
 }
 
+const MODAL_TITLE_ID = 'edit-card-modal-title'
+
 export function EditCardModal({ item, isOpen, onClose, onUpdate }: EditCardModalProps) {
   const [formData, setFormData] = useState<YearItem>(item)
+  const focusTrapRef = useFocusTrap<HTMLDivElement>({ enabled: isOpen })
 
   useEffect(() => {
     setFormData(item)
@@ -41,17 +45,25 @@ export function EditCardModal({ item, isOpen, onClose, onUpdate }: EditCardModal
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={handleCancel}
+        aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="relative bg-card border-2 rounded-lg shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div
+        ref={focusTrapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={MODAL_TITLE_ID}
+        className="relative bg-card border-2 rounded-lg shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+      >
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Edit Card</h2>
+            <h2 id={MODAL_TITLE_ID} className="text-xl font-bold">Edit Card</h2>
             <button
               type="button"
               onClick={handleCancel}
+              aria-label="Close modal"
               className="text-muted-foreground hover:text-foreground text-2xl leading-none"
             >
               ×

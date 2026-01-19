@@ -112,3 +112,101 @@ export type { FullAuditData, FullAuditResult, EngineResult } from './full-audit-
 
 // Re-export Year Board types for convenience
 export type { YearPlan, YearItem } from './year-board-types'
+
+// ============================================================================
+// Framework Intelligence Types (Section 5)
+// ============================================================================
+
+/** The 5 DriverOS engines for business health diagnosis */
+export type FrameworkEngineName = 'vision' | 'people' | 'operations' | 'revenue' | 'finance'
+
+/** Business maturity gear (1-5 scale) */
+export type GearNumber = 1 | 2 | 3 | 4 | 5
+
+/** Action owner roles for assignment */
+export type ActionOwner = 'CEO' | 'COO' | 'Sales' | 'Finance' | 'Operations' | 'HR'
+
+/** Effort level for actions (1-5 scale) */
+export type EffortLevel = 1 | 2 | 3 | 4 | 5
+
+/** Flash scan answer strength */
+export type AnswerStrength = 'strong' | 'partial' | 'weak'
+
+/** Action priority level */
+export type ActionPriority = 'do_now' | 'do_next'
+
+/** Red flag severity */
+export type FlagSeverity = 'critical' | 'warning'
+
+/** Individual flash scan answer */
+export interface FlashScanAnswer {
+  questionId: number
+  strength: AnswerStrength
+  freeformResponse?: string // For question 6 (biggest constraint)
+}
+
+/** Result from a single question evaluation */
+export interface QuestionResult {
+  questionId: number
+  pointsAwarded: number
+  maxPoints: number
+  affectedEngines: FrameworkEngineName[]
+  triggeredFlags: string[]
+}
+
+/** Engine scores mapped by engine name */
+export type EngineScores = Record<FrameworkEngineName, number>
+
+/** A red flag indicating a business health issue */
+export interface RedFlag {
+  id: string
+  engine: FrameworkEngineName
+  description: string
+  severity: FlagSeverity
+  recommendedAction: string
+  source: 'question' | 'engine_score'
+  questionId?: number
+}
+
+/** A recommended action from the framework analysis */
+export interface FrameworkAction {
+  id: string
+  title: string
+  description: string
+  priority: ActionPriority
+  owner: ActionOwner
+  effort: EffortLevel
+  engine: FrameworkEngineName
+  rationale: string
+}
+
+/** Complete result from framework flash scan analysis */
+export interface FrameworkFlashScanResult {
+  schemaVersion: string
+  timestamp: string
+  overallScore: number
+  currentGear: GearNumber
+  gearLabel: string
+  gearReason: string
+  engineScores: EngineScores
+  questionResults: QuestionResult[]
+  redFlags: RedFlag[]
+  actions: FrameworkAction[]
+  context?: {
+    industry?: string
+    sizeband?: string
+    revenue?: number
+    biggestConstraint?: string
+  }
+}
+
+/** Input for action generation orchestrator */
+export interface ActionGeneratorInput {
+  engineScores: EngineScores
+  overallScore: number
+  questionResults: QuestionResult[]
+  questionRedFlags: RedFlag[]
+  currentGear: GearNumber
+  isSmallBusiness: boolean
+  biggestConstraint?: string
+}

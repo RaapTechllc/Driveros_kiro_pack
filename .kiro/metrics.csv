@@ -1,0 +1,4 @@
+timestamp,metric,value,thread_type,session_id
+2026-01-18T23:43:49-06:00,session_start,1,p-thread,1768801429
+2026-01-18T23:43:49-06:00,parallel_count,5,p-thread,1768801429
+2026-01-18T23:43:49-06:00,agent_count,5,p-thread,1768801429

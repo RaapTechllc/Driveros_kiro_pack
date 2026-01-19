@@ -6,6 +6,10 @@ import { FlashScanResult } from '@/lib/types'
 import { loadImportedActions, loadImportedGoals, transformImportedActions, transformImportedGoals } from '@/lib/imported-data'
 import { exportActions, exportGoals, exportMeetingTemplates, exportCombinedData, exportExcelReady, downloadCSV } from '@/lib/csv-export'
 import { getEngineHistory, calcTrend, saveEngineSnapshot, TrendDirection } from '@/lib/engine-history'
+import { getFlashScanResult, getFullAuditResult } from '@/lib/data/assessments'
+import { useOrg } from '@/components/providers/OrgProvider'
+import { useAuth } from '@/components/providers/AuthProvider'
+import { getTodayCheckIn } from '@/lib/data/check-ins'
 import { Button } from '@/components/ui/Button'
 import { GuidedTour } from '@/components/demo/GuidedTour'
 import { BusinessGearIndicator } from '@/components/dashboard/BusinessGearIndicator'
@@ -29,56 +33,64 @@ export default function DashboardPage() {
   const [engineTrends, setEngineTrends] = useState<Record<string, TrendDirection>>({})
   const [snapshotSaved, setSnapshotSaved] = useState(false)
   const [actionFilters, setActionFilters] = useState<ActionFilters>({ engine: 'all', owner: 'all', status: 'all' })
+  const { currentOrg } = useOrg()
+  const { user } = useAuth()
+  const [checkInComplete, setCheckInComplete] = useState(false)
 
   useEffect(() => {
-    // Check if this is demo mode
     const demoMode = localStorage.getItem('demo-mode') === 'true'
     const tourCompleted = localStorage.getItem('demo-tour-completed') === 'true'
 
     setIsDemoMode(demoMode)
 
-    // Load results from localStorage with error handling
-    try {
-      const savedAudit = localStorage.getItem('full-audit-result')
-      const savedFlash = localStorage.getItem('flash-scan-result')
+    const loadAssessments = async () => {
+      try {
+        const orgId = currentOrg?.id
+        const auditData = await getFullAuditResult(orgId)
 
-      if (savedAudit) {
-        const auditData = JSON.parse(savedAudit)
-        // Basic validation
-        if (auditData && auditData.schema_version === '1.0') {
-          setAuditResult(auditData)
-          // Show tour for demo mode if not completed
+        if (auditData && typeof auditData === 'object' && (auditData as any).schema_version === '1.0') {
+          setAuditResult(auditData as FullAuditResult)
           if (demoMode && !tourCompleted) {
             setShowTour(true)
           }
-          // Calculate engine trends
           const history = getEngineHistory()
           const trends: Record<string, TrendDirection> = {}
-          auditData.engines?.forEach((e: { name: string; score: number }) => {
+          ;(auditData as any).engines?.forEach((e: { name: string; score: number }) => {
             trends[e.name] = calcTrend(e.name, history)
           })
           setEngineTrends(trends)
+        } else {
+          const flashData = await getFlashScanResult(orgId)
+          if (flashData && typeof flashData === 'object' && (flashData as any).schema_version === '1.0') {
+            setFlashResult(flashData as FlashScanResult)
+          }
         }
-      } else if (savedFlash) {
-        const flashData = JSON.parse(savedFlash)
-        // Basic validation
-        if (flashData && flashData.schema_version === '1.0') {
-          setFlashResult(flashData)
-        }
-      }
 
-      // Load imported data
-      const actions = loadImportedActions()
-      const goals = loadImportedGoals()
-      setImportedActions(transformImportedActions(actions))
-      setImportedGoals(transformImportedGoals(goals))
-    } catch (error) {
-      console.error('Failed to load data:', error)
-      // Clear corrupted data
-      localStorage.removeItem('full-audit-result')
-      localStorage.removeItem('flash-scan-result')
+        const actions = loadImportedActions()
+        const goals = loadImportedGoals()
+        setImportedActions(transformImportedActions(actions))
+        setImportedGoals(transformImportedGoals(goals))
+      } catch (error) {
+        console.error('Failed to load data:', error)
+      }
     }
-  }, [])
+
+    loadAssessments()
+  }, [currentOrg?.id])
+
+  useEffect(() => {
+    const loadCheckInStatus = async () => {
+      if (!user || !currentOrg?.id) return
+      try {
+        const checkIn = await getTodayCheckIn(currentOrg.id, user.id)
+        setCheckInComplete(!!checkIn)
+      } catch (error) {
+        console.error('Failed to load check-in status:', error)
+      }
+    }
+
+    loadCheckInStatus()
+  }, [user, currentOrg?.id])
 
   const clearAllData = () => {
     if (isDemoMode) {
@@ -235,6 +247,25 @@ export default function DashboardPage() {
       )}
 
       <div className="space-y-8">
+        {/* Header with Check-In Status */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <Link href="/check-in">
+            <Badge className={checkInComplete ? 'bg-green-500 text-white' : 'bg-orange-500 text-white'}>
+              {checkInComplete ? (
+                <>
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Done
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Pending
+                </>
+              )}
+            </Badge>
+          </Link>
+        </div>
         {/* Business Gear Indicator */}
         <div data-tour="gear">
           <BusinessGearIndicator
