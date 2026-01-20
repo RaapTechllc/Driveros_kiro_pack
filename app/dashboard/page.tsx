@@ -48,8 +48,8 @@ export default function DashboardPage() {
         const orgId = currentOrg?.id
         const auditData = await getFullAuditResult(orgId)
 
-        if (auditData && typeof auditData === 'object' && (auditData as any).schema_version === '1.0') {
-          setAuditResult(auditData as FullAuditResult)
+        if (auditData && typeof auditData === 'object' && !Array.isArray(auditData) && (auditData as any).schema_version === '1.0') {
+          setAuditResult(auditData as unknown as FullAuditResult)
           if (demoMode && !tourCompleted) {
             setShowTour(true)
           }
@@ -61,8 +61,8 @@ export default function DashboardPage() {
           setEngineTrends(trends)
         } else {
           const flashData = await getFlashScanResult(orgId)
-          if (flashData && typeof flashData === 'object' && (flashData as any).schema_version === '1.0') {
-            setFlashResult(flashData as FlashScanResult)
+          if (flashData && typeof flashData === 'object' && !Array.isArray(flashData) && (flashData as any).schema_version === '1.0') {
+            setFlashResult(flashData as unknown as FlashScanResult)
           }
         }
 

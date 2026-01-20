@@ -78,7 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .limit(1)
         .single()
 
-      const currentOrg = membership?.orgs as unknown as Org | null
+      const currentOrg = (membership as any)?.orgs as Org | null
 
       return {
         id: supabaseUser.id,
@@ -87,12 +87,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         currentOrg: currentOrg || null,
         membership: membership
           ? {
-              id: membership.id,
-              user_id: membership.user_id,
-              org_id: membership.org_id,
-              role: membership.role as MembershipRole,
-              created_at: membership.created_at,
-              updated_at: membership.updated_at,
+              id: (membership as any).id,
+              user_id: (membership as any).user_id,
+              org_id: (membership as any).org_id,
+              role: (membership as any).role as MembershipRole,
+              created_at: (membership as any).created_at,
+              updated_at: (membership as any).updated_at,
             }
           : null,
       }

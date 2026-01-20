@@ -7,17 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { CheckCircle, Clock, AlertTriangle, Target, ArrowRight } from 'lucide-react'
-import { getLastWeekSummary, generateWeeklyPlan } from '@/lib/pit-stop/planning'
+import { getLastWeekSummary, generateWeeklyPlan, type WeeklySummary, type WeeklyPlan } from '@/lib/pit-stop/planning'
 import { createAction } from '@/lib/data/actions'
 import { createMeeting } from '@/lib/data/meetings'
 import { getActiveNorthStar } from '@/lib/data/north-star'
 import type { Action, NorthStar } from '@/lib/supabase/types'
-
-interface WeeklySummary {
-  completed: Action[]
-  missed: Action[]
-  completionRate: number
-}
 
 interface ProposedAction {
   title: string
@@ -25,11 +19,6 @@ interface ProposedAction {
   engine: string
   priority: 'do_now' | 'do_next'
   effort: number
-}
-
-interface WeeklyPlan {
-  actions: ProposedAction[]
-  rationale: string
 }
 
 function LastWeekSummary({ summary }: { summary: WeeklySummary | null }) {
@@ -135,7 +124,7 @@ function ProposedPlan({
                       <h4 className="font-medium">{action.title}</h4>
                       <p className="text-sm text-muted-foreground mt-1">{action.why}</p>
                     </div>
-                    <Badge variant={action.priority === 'do_now' ? 'destructive' : 'secondary'}>
+                    <Badge variant={action.priority === 'do_now' ? 'default' : 'secondary'} className={action.priority === 'do_now' ? 'bg-red-500' : ''}>
                       {action.priority === 'do_now' ? 'Do Now' : 'Do Next'}
                     </Badge>
                   </div>
@@ -199,11 +188,11 @@ export default function PitStopPage() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!user) return
+      if (!user || !currentOrg?.id) return
       try {
         const [weekSummary, ns] = await Promise.all([
-          getLastWeekSummary(currentOrg?.id),
-          getActiveNorthStar(currentOrg?.id)
+          getLastWeekSummary(currentOrg.id),
+          getActiveNorthStar(currentOrg.id)
         ])
         setSummary(weekSummary)
         setNorthStar(ns)
@@ -215,11 +204,11 @@ export default function PitStopPage() {
   }, [user, currentOrg?.id])
 
   const handleGenerate = async () => {
-    if (!summary || !northStar) return
+    if (!summary || !northStar || !currentOrg?.id) return
     setIsGenerating(true)
     setError(null)
     try {
-      const generatedPlan = await generateWeeklyPlan(summary, northStar, currentOrg?.id)
+      const generatedPlan = await generateWeeklyPlan(summary, northStar.goal, currentOrg.id)
       setPlan(generatedPlan)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate plan')
@@ -252,14 +241,13 @@ export default function PitStopPage() {
 
       // Create meeting record
       await createMeeting({
-        org_id: currentOrg?.id ?? 'demo-org',
         type: 'pit_stop',
-        date: new Date().toISOString(),
+        scheduled_for: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
         notes: plan.rationale,
         decisions: { approved_actions: plan.actions.length },
-        action_ids: [],
-        completed_at: new Date().toISOString()
-      })
+        action_ids: []
+      }, currentOrg?.id, user.id)
 
       // Reset for next week
       setPlan(null)

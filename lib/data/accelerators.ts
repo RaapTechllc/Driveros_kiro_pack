@@ -40,8 +40,8 @@ interface DemoHistory {
 function demoDatasource() {
   return {
     getAll(): DemoAccelerator[] {
-      const data = safeGetItem<DemoAccelerator[]>(ACCELERATOR_KEY)
-      return data.success && data.data ? data.data : []
+      const data = safeGetItem<DemoAccelerator[]>(ACCELERATOR_KEY, [])
+      return data
     },
 
     save(accelerators: DemoAccelerator[]): void {
@@ -49,8 +49,8 @@ function demoDatasource() {
     },
 
     getHistory(): DemoHistory[] {
-      const data = safeGetItem<DemoHistory[]>(ACCELERATOR_HISTORY_KEY)
-      return data.success && data.data ? data.data : []
+      const data = safeGetItem<DemoHistory[]>(ACCELERATOR_HISTORY_KEY, [])
+      return data
     },
 
     saveHistory(history: DemoHistory[]): void {
@@ -133,8 +133,8 @@ export async function createAccelerator(
   }
 
   const supabase = createClient()
-  const { data, error } = await supabase
-    .from('accelerators')
+  const { data, error } = await (supabase
+    .from('accelerators') as any)
     .insert({
       ...accelerator,
       org_id: getOrgId(orgId),
@@ -170,8 +170,8 @@ export async function updateAccelerator(
   }
 
   const supabase = createClient()
-  const { data, error } = await supabase
-    .from('accelerators')
+  const { data, error } = await (supabase
+    .from('accelerators') as any)
     .update(updates)
     .eq('id', id)
     .select()
@@ -236,14 +236,14 @@ export async function recordAcceleratorValue(
   const supabase = createClient()
 
   // Update current value
-  await supabase
-    .from('accelerators')
+  await (supabase
+    .from('accelerators') as any)
     .update({ current_value: value })
     .eq('id', acceleratorId)
 
   // Add to history
-  const { data, error } = await supabase
-    .from('accelerator_history')
+  const { data, error } = await (supabase
+    .from('accelerator_history') as any)
     .insert({
       accelerator_id: acceleratorId,
       value,

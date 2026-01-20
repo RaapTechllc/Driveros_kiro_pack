@@ -44,8 +44,8 @@ const safeString = z.string()
 
 // CSV-safe string validation
 const csvSafeString = z.string()
-  .min(1, 'Required')
   .transform(sanitizeCSVInput)
+  .refine((val) => val.length > 0, 'Required')
   .refine((val) => val.length <= 500, 'Too long')
 
 // Flash Scan validation schema

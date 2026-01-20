@@ -119,8 +119,8 @@ export function validateActionsCSVSync(csvContent: string): CSVImportResult {
     }
     
     // Load North Star for guardrails validation
-    const northStarResult = safeGetItem<NorthStarInput>('north-star')
-    const northStar = northStarResult.success && northStarResult.data ? northStarResult.data : null
+    const northStarResult = safeGetItem<NorthStarInput | null>('north-star', null)
+    const northStar = northStarResult
     
     const validData: ImportedAction[] = []
     

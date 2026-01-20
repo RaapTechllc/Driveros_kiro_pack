@@ -22,9 +22,9 @@ export default function CheckInPage() {
 
   useEffect(() => {
     const loadTodayCheckIn = async () => {
-      if (!user) return
+      if (!user || !currentOrg?.id) return
       try {
-        const checkIn = await getTodayCheckIn(currentOrg?.id, user.id)
+        const checkIn = await getTodayCheckIn(currentOrg.id, user.id)
         if (checkIn) {
           setExistingCheckIn(checkIn)
           setActionsCompleted(checkIn.actions_completed ?? false)

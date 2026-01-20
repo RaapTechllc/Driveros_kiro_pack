@@ -1,6 +1,13 @@
 import { meetingTemplates, generateMeetingActions } from '../lib/meeting-templates'
 import { MeetingFormData } from '../lib/types'
 
+// Mock storage module
+jest.mock('../lib/storage', () => ({
+  safeGetItem: jest.fn(() => ({ success: false, data: null })),
+  safeSetItem: jest.fn(() => ({ success: true })),
+  safeRemoveItem: jest.fn(() => ({ success: true })),
+}))
+
 describe('Meeting Templates', () => {
   test('should have all three meeting templates', () => {
     expect(meetingTemplates.warm_up).toBeDefined()

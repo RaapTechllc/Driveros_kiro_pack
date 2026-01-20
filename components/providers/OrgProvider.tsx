@@ -65,7 +65,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
     }
 
     return (data || [])
-      .map((m) => m.orgs as unknown as Org)
+      .map((m) => (m as any).orgs as Org)
       .filter((org): org is Org => org !== null)
   }, [isDemoMode, user])
 
