@@ -9,7 +9,13 @@
     "test": "jest",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose up --build -d",
+    "seed": "tsx scripts/seed-demo.ts",
+    "reset": "tsx scripts/reset-demo.ts",
+    "demo": "npm run reset && npm run dev"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.0.4",
