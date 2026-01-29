@@ -5,6 +5,13 @@ import {
   generateTemplateCSV 
 } from '../lib/csv-import'
 
+// Mock storage module
+jest.mock('../lib/storage', () => ({
+  safeGetItem: jest.fn(() => ({ success: false, data: null })),
+  safeSetItem: jest.fn(() => ({ success: true })),
+  safeRemoveItem: jest.fn(() => ({ success: true })),
+}))
+
 describe('CSV Import', () => {
   describe('parseCSV', () => {
     test('should parse simple CSV', () => {
@@ -37,6 +44,10 @@ describe('CSV Import', () => {
 
     test('should validate correct actions CSV', () => {
       const result = validateActionsCSV(validActionsCSV)
+      
+      if (!result.success) {
+        console.log('Validation errors:', JSON.stringify(result.errors, null, 2))
+      }
       
       expect(result.success).toBe(true)
       expect(result.validRows).toBe(2)

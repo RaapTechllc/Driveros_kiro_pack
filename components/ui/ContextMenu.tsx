@@ -59,9 +59,28 @@ export function ContextMenu({ items, x, y, onClose }: ContextMenuProps) {
       }
     }
 
-    const handleEscape = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
+        return
+      }
+
+      // Arrow key navigation
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        const menuItems = menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not([disabled])')
+        if (!menuItems || menuItems.length === 0) return
+
+        const currentIndex = Array.from(menuItems).findIndex(item => item === document.activeElement)
+        let nextIndex: number
+
+        if (e.key === 'ArrowDown') {
+          nextIndex = currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
+        } else {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
+        }
+
+        menuItems[nextIndex]?.focus()
       }
     }
 
@@ -70,12 +89,18 @@ export function ContextMenu({ items, x, y, onClose }: ContextMenuProps) {
     }
 
     document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleKeyDown)
     document.addEventListener('scroll', handleScroll, true)
+
+    // Focus first menu item when menu opens
+    requestAnimationFrame(() => {
+      const firstItem = menuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]:not([disabled])')
+      firstItem?.focus()
+    })
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('scroll', handleScroll, true)
     }
   }, [onClose])
@@ -92,6 +117,8 @@ export function ContextMenu({ items, x, y, onClose }: ContextMenuProps) {
   const menu = (
     <div
       ref={menuRef}
+      role="menu"
+      aria-label="Context menu"
       className="fixed z-[100] min-w-[180px] overflow-hidden rounded-lg border bg-popover p-1 shadow-lg animate-in fade-in-0 zoom-in-95"
       style={{
         left: `${position.x}px`,
@@ -103,6 +130,7 @@ export function ContextMenu({ items, x, y, onClose }: ContextMenuProps) {
           return (
             <div
               key={`separator-${index}`}
+              role="separator"
               className="my-1 h-px bg-border"
             />
           )
@@ -111,8 +139,11 @@ export function ContextMenu({ items, x, y, onClose }: ContextMenuProps) {
         return (
           <button
             key={item.id}
+            role="menuitem"
             onClick={() => handleItemClick(item)}
             disabled={item.disabled}
+            aria-disabled={item.disabled}
+            tabIndex={item.disabled ? -1 : 0}
             className={`
               w-full flex items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-sm
               outline-none transition-colors
@@ -126,14 +157,14 @@ export function ContextMenu({ items, x, y, onClose }: ContextMenuProps) {
           >
             <span className="flex items-center gap-2">
               {item.icon && (
-                <span className="w-4 h-4 flex items-center justify-center">
+                <span className="w-4 h-4 flex items-center justify-center" aria-hidden="true">
                   {item.icon}
                 </span>
               )}
               {item.label}
             </span>
             {item.shortcut && (
-              <span className="ml-auto text-xs text-muted-foreground">
+              <span className="ml-auto text-xs text-muted-foreground" aria-hidden="true">
                 {item.shortcut}
               </span>
             )}

@@ -1,17 +1,21 @@
 'use client'
 
 import * as React from "react"
+import { usePathname, useRouter } from 'next/navigation'
 import { TopBanner } from "./TopBanner"
 import { Header } from "./Header"
 import { Sidebar } from "./Sidebar"
 import { cn } from "@/lib/utils"
+import { useAuth } from '@/components/providers/AuthProvider'
 
 const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed'
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
     const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
-    const [hasError, setHasError] = React.useState(false)
+    const { user, isLoading, isDemoMode } = useAuth()
+    const pathname = usePathname()
+    const router = useRouter()
 
     // Load collapsed state from localStorage on mount
     React.useEffect(() => {
@@ -31,22 +35,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         }
     }
 
-    if (hasError) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
-                    <p className="text-muted-foreground mb-4">Please refresh the page to continue.</p>
-                    <button 
-                        onClick={() => window.location.reload()} 
-                        className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
-                    >
-                        Refresh Page
-                    </button>
-                </div>
-            </div>
-        )
-    }
+    React.useEffect(() => {
+        if (isDemoMode || isLoading) return
+
+        if (user && !user.currentOrg) {
+            if (!pathname.startsWith('/onboarding')) {
+                router.replace('/onboarding')
+            }
+            return
+        }
+
+        if (user?.currentOrg && pathname.startsWith('/onboarding')) {
+            router.replace('/dashboard')
+        }
+    }, [user, isLoading, isDemoMode, pathname, router])
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col font-sans antialiased">

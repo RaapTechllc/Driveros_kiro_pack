@@ -1,4 +1,6 @@
 import { MeetingTemplate, MeetingFormData, QuickWin } from './types'
+import { validateActionAlignment, type NorthStarInput } from './guardrails'
+import { safeGetItem } from './storage'
 
 export const meetingTemplates: Record<string, MeetingTemplate> = {
   warm_up: {
@@ -156,6 +158,23 @@ export function generateMeetingActions(
         }
       )
       break
+  }
+  
+  // Apply guardrails validation to all generated actions
+  const northStarResult = safeGetItem<NorthStarInput>('north-star')
+  const northStar = northStarResult.success && northStarResult.data ? northStarResult.data : null
+  
+  if (northStar) {
+    actions.forEach(action => {
+      const alignment = validateActionAlignment(
+        { title: action.title, why: action.why },
+        northStar
+      )
+      if (!alignment.isValid) {
+        // Add alignment warning as a property (can be displayed in UI)
+        (action as any).alignment_warning = alignment.reason
+      }
+    })
   }
   
   return actions

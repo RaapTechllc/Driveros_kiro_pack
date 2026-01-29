@@ -36,8 +36,23 @@ const mainNavItems = [
     icon: Calendar,
   },
   {
+    title: "Daily Check-In",
+    href: "/check-in",
+    icon: Calendar,
+  },
+  {
+    title: "Weekly Pit Stop",
+    href: "/pit-stop",
+    icon: Calendar,
+  },
+  {
     title: "Year Board",
     href: "/year-board",
+    icon: Target,
+  },
+  {
+    title: "Parked Ideas",
+    href: "/parked-ideas",
     icon: Target,
   },
   {

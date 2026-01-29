@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: driveros-postgres
+    environment:
+      POSTGRES_USER: driveros
+      POSTGRES_PASSWORD: driveros_dev_password
+      POSTGRES_DB: driveros
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U driveros"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis (for sessions and caching)
+  redis:
+    image: redis:7-alpine
+    container_name: driveros-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # DriverOS Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: driveros-app
+    ports:
+      - "4005:4005"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://driveros:driveros_dev_password@postgres:5432/driveros
+      - REDIS_URL=redis://redis:6379
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:54321}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

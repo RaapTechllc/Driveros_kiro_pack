@@ -1,59 +1,79 @@
-# DriverOS Project Context
+# CLAUDE.md - DriverOS Project Instructions
 
-## What This Is
-AI-powered business dashboard for hackathon. Flash Scan → Full Audit → Dashboard → Year Board.
+## Project Overview
+DriverOS is an AI-powered business operating system that helps founders diagnose and improve their businesses. It synthesizes multiple business frameworks (Empire OS, EOS/Traction, Hormozi) into a unified diagnostic and action system.
 
 ## Tech Stack
-- Next.js 14 App Router, TypeScript, Tailwind CSS
-- Client-side analysis engine (no backend DB)
-- localStorage for persistence
-- Jest + Playwright for testing
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS
+- **Validation**: Zod
+- **Database**: Supabase (if applicable)
+- **Deployment**: Vercel
 
-## Key Commands
-```bash
-npm run dev          # Start dev server (port 3060)
-npm run build        # Production build
-npm test             # Unit tests
-npm run test:e2e     # E2E tests
+## Core Concepts
+
+### The 5 Engines
+Business health is measured across 5 engines:
+1. **Vision** — Clarity, strategy, alignment (EOS Vision Component)
+2. **People** — Team, structure, right seats (EOS People, GWC)
+3. **Operations** — Systems, processes, execution (EOS Process, Empire Brick)
+4. **Revenue** — Marketing, sales, offers (Hormozi Leads/Offers)
+5. **Finance** — Cash, metrics, unit economics (EOS Data, scorecards)
+
+### The Gear System (1-5)
+Business maturity mapped to driving metaphor:
+- **Gear 1 (Idle)**: $0-250K, survival mode, founder does everything
+- **Gear 2 (Cruising)**: $250K-1M, stability, basic systems
+- **Gear 3 (Accelerating)**: $1M-5M, efficiency, scaling team
+- **Gear 4 (Racing)**: $5M-25M, high performance, leadership team
+- **Gear 5 (Apex)**: $25M+, self-managing, legacy mode
+
+### Flash Scan
+6-question rapid diagnostic that scores each engine (0-20 points per question) and identifies red flags. Total score determines current Gear estimate.
+
+### Actions
+Generated recommendations with:
+- Priority: `do_now` (urgent/blocking) vs `do_next` (important/sequential)
+- Owner: Inferred role (CEO, COO, Sales, Finance, Operations)
+- Effort: 1-5 scale (1 = <1hr, 5 = multiple weeks)
+
+## Directory Structure
+```
+/lib
+  /frameworks      # Framework constants and types
+    engines.ts     # 5 engines with questions, flags, mistakes
+    gears.ts       # 5 gears with criteria and transitions
+    flash-scan.ts  # 6 Flash Scan questions with scoring
+    actions.ts     # Action templates and generation rules
+  /analysis        # Scoring and recommendation logic
+    score-calculator.ts
+    action-generator.ts
+  /types           # Shared TypeScript types
 ```
 
-## Critical Files
-- `.kiro/steering/` - Project context and constraints
-- `PLAN.md` - Current task checklist
-- `PROGRESS.md` - Real-time status
-- `LEARNINGS.md` - Captured corrections
+## Code Conventions
+- Pure functions for scoring/analysis logic
+- Zod schemas for all external data
+- Export types alongside implementations
+- Use discriminated unions for action types
+- Scoring functions return deterministic results (no randomness)
 
-## Completion Protocol
-Agents MUST output when done:
-```
-<promise>DONE</promise>
-```
+## Framework Reference
+Primary source: `SECTION_5__MAPPING_FRAMEWORKS_TO_DRIVEROS.docx`
+- Section 5.1: Engine mapping table (questions, scoring, flags, mistakes)
+- Section 5.2: Gear definitions (revenue ranges, characteristics, traps)
+- Section 5.3: Flash Scan questions (scoring logic, red flags, follow-ups)
+- Section 5.4: Action generation (prioritization, owner assignment, effort)
 
-## Validation Gates
-Before claiming DONE:
-```bash
-npm run build        # Must pass
-npm test             # Must pass
-```
+## Key Implementation Rules
+1. Every diagnostic question maps to exactly one engine
+2. Scores are additive: +0, +10, or +20 per question
+3. Red flags trigger `do_now` actions automatically
+4. Owner assignment uses functional inference (no org chart required)
+5. Actions must be specific and actionable (not vague advice)
 
-## Constraints (Hackathon Scope)
-- No external integrations
-- Max 3 departments
-- CSV import/export only
-- Weekly accelerator cadence
-- One sentence rationales
-
-## DriverOS Domain
-- **Gear** = business phase (1-5: Idle → Apex)
-- **Engines** = 5 health pillars (Leadership, Operations, Marketing & Sales, Finance, Personnel)
-- **Accelerator** = weekly KPI (The Brick)
-- **Brakes** = risks and constraints
-
-## Self-Improvement
-When corrected, capture the learning:
-```bash
-# Add to LEARNINGS.md
-echo "- [$(date +%Y-%m-%d)] CORRECTION: description" >> LEARNINGS.md
-```
-
-At session end, use `@self-reflect` to analyze patterns.
+## Testing Approach
+- Unit test scoring functions with known inputs/outputs
+- Test edge cases: all zeros, all max scores, mixed
+- Validate action generation produces valid owner/effort combinations

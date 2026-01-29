@@ -21,6 +21,11 @@ const nextConfig = {
             key: 'X-Frame-Options',
             value: 'DENY'
           },
+          // HTTP Strict Transport Security (HSTS)
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          },
           // Prevent MIME type sniffing
           {
             key: 'X-Content-Type-Options',

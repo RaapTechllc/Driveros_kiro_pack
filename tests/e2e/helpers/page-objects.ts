@@ -1,5 +1,132 @@
 import { Page, Locator } from '@playwright/test'
 
+export class ApexAuditPage {
+  readonly page: Page
+  readonly nextButton: Locator
+  readonly previousButton: Locator
+  readonly submitButton: Locator
+  readonly companyNameInput: Locator
+  readonly websiteInput: Locator
+  readonly industrySelect: Locator
+  readonly employeesSelect: Locator
+  readonly yearsInBusinessInput: Locator
+  readonly sectionButtons: Locator
+  readonly currentStepText: Locator
+
+  constructor(page: Page) {
+    this.page = page
+    this.nextButton = page.getByRole('button', { name: 'Next' })
+    this.previousButton = page.getByRole('button', { name: 'Previous' })
+    this.submitButton = page.getByRole('button', { name: 'Generate Apex Analysis' })
+    this.companyNameInput = page.locator('#apex-company_name')
+    this.websiteInput = page.locator('#apex-website')
+    this.industrySelect = page.locator('#apex-industry')
+    this.employeesSelect = page.locator('#apex-employees')
+    this.yearsInBusinessInput = page.locator('#apex-years_in_business')
+    this.sectionButtons = page.locator('button').filter({ hasText: /Company Profile|Revenue|Sales|Customers|Operations|Growth|Tech|Offer|Compliance|Brand|Experiments|Additional/ })
+    this.currentStepText = page.locator('text=/Step \\d+ of \\d+/')
+  }
+
+  async goto() {
+    await this.page.goto('/apex-audit')
+  }
+
+  async fillCompanyProfile(data: {
+    companyName?: string
+    website?: string
+    industry?: string
+    employees?: string
+    yearsInBusiness?: number
+  }) {
+    if (data.companyName) {
+      await this.companyNameInput.fill(data.companyName)
+    }
+    if (data.website) {
+      await this.websiteInput.fill(data.website)
+    }
+    if (data.industry) {
+      await this.industrySelect.selectOption(data.industry)
+    }
+    if (data.employees) {
+      await this.employeesSelect.selectOption(data.employees)
+    }
+    if (data.yearsInBusiness) {
+      await this.yearsInBusinessInput.fill(data.yearsInBusiness.toString())
+    }
+  }
+
+  async nextSection() {
+    await this.nextButton.click()
+  }
+
+  async previousSection() {
+    await this.previousButton.click()
+  }
+
+  async goToSection(sectionIndex: number) {
+    const buttons = await this.page.locator('button').filter({ hasText: /Company Profile|Revenue|Sales|Customers|Operations|Growth|Tech|Offer|Compliance|Brand|Experiments|Additional|^\\d+$/ }).all()
+    if (buttons[sectionIndex]) {
+      await buttons[sectionIndex].click()
+    }
+  }
+
+  async submit() {
+    await this.submitButton.click()
+  }
+
+  async getCurrentStep(): Promise<number> {
+    const text = await this.currentStepText.textContent()
+    const match = text?.match(/Step (\d+) of (\d+)/)
+    return match ? parseInt(match[1]) : 0
+  }
+
+  async getTotalSteps(): Promise<number> {
+    const text = await this.currentStepText.textContent()
+    const match = text?.match(/Step (\d+) of (\d+)/)
+    return match ? parseInt(match[2]) : 0
+  }
+
+  async fillMinimalForm() {
+    // Section 0: Company Profile
+    await this.fillCompanyProfile({
+      companyName: 'Test Company E2E',
+      website: 'https://test-e2e.com',
+      industry: 'Technology',
+      employees: '2-10',
+      yearsInBusiness: 3
+    })
+    await this.nextSection()
+
+    // Section 1: Revenue & Profit - fill key fields
+    await this.page.locator('#apex-annual_revenue').fill('500000')
+    await this.page.locator('#apex-monthly_revenue').fill('42000')
+    await this.page.locator('#apex-cash_on_hand').fill('100000')
+    await this.page.locator('#apex-monthly_burn').fill('10000')
+    await this.nextSection()
+
+    // Section 2: Sales & Marketing - fill some fields
+    await this.page.locator('#apex-selling_mechanism').selectOption('Hybrid')
+    await this.page.locator('#apex-lead_source').selectOption('Paid Search')
+    await this.page.locator('#apex-average_deal_size').fill('2500')
+    await this.page.locator('#apex-monthly_leads').fill('100')
+    await this.nextSection()
+
+    // Section 3: Customers - fill key fields
+    await this.page.locator('#apex-total_customers').fill('200')
+    await this.page.locator('#apex-customer_acquisition_cost').fill('500')
+    await this.page.locator('#apex-customer_lifetime_value').fill('2500')
+    await this.nextSection()
+
+    // Skip through remaining sections (4-10)
+    for (let i = 0; i < 7; i++) {
+      await this.nextSection()
+    }
+
+    // Now at Section 11 (Additional Context) - last section
+    // Submit button should be visible
+  }
+}
+
 export class HomePage {
   readonly page: Page
   readonly flashScanButton: Locator
@@ -245,5 +372,161 @@ export class MeetingsPage {
 
   async startFullTuneUp() {
     await this.fullTuneUpButton.click()
+  }
+}
+
+export class YearBoardPage {
+  readonly page: Page
+  readonly generateButton: Locator
+  readonly addCardButton: Locator
+  readonly exportCsvButton: Locator
+  readonly quarterColumns: Locator
+  readonly cards: Locator
+  readonly modal: Locator
+  readonly emptyState: Locator
+
+  constructor(page: Page) {
+    this.page = page
+    this.generateButton = page.getByRole('button', { name: 'Generate my Year Plan' })
+    this.addCardButton = page.getByRole('button', { name: 'Add Item' })
+    this.exportCsvButton = page.getByRole('button', { name: 'Export CSV' })
+    this.quarterColumns = page.locator('.grid-cols-5 .bg-secondary')
+    this.cards = page.locator('[role="button"][draggable="true"]')
+    this.modal = page.locator('[role="dialog"]')
+    this.emptyState = page.getByText('Create Your Year Plan')
+  }
+
+  async goto() {
+    await this.page.goto('/year-board')
+  }
+
+  async generateYearPlan() {
+    await this.generateButton.click()
+    // Wait for the board to appear
+    await this.page.waitForSelector('text=2026 Year Plan', { timeout: 5000 })
+  }
+
+  async addCard(data: {
+    title: string
+    rationale: string
+    type?: 'milestone' | 'play' | 'ritual' | 'tuneup'
+    department?: 'company' | 'ops' | 'sales_marketing' | 'finance'
+    quarter?: 1 | 2 | 3 | 4
+    status?: 'planned' | 'active' | 'blocked' | 'done'
+  }) {
+    await this.addCardButton.click()
+    await this.modal.waitFor({ state: 'visible' })
+
+    // Fill the form
+    await this.page.locator('#title').fill(data.title)
+    await this.page.locator('#rationale').fill(data.rationale)
+
+    if (data.type) {
+      await this.page.locator('#type').selectOption(data.type)
+    }
+    if (data.department) {
+      await this.page.locator('#department').selectOption(data.department)
+    }
+    if (data.quarter) {
+      await this.page.locator('#quarter').selectOption(data.quarter.toString())
+    }
+    if (data.status) {
+      await this.page.locator('#status').selectOption(data.status)
+    }
+
+    // Submit
+    await this.page.getByRole('button', { name: 'Add Card' }).click()
+    await this.modal.waitFor({ state: 'hidden' })
+  }
+
+  async getCardCount(): Promise<number> {
+    return await this.cards.count()
+  }
+
+  async getCardByTitle(title: string): Promise<Locator> {
+    return this.page.locator(`[role="button"][draggable="true"]:has-text("${title}")`)
+  }
+
+  async openContextMenu(cardTitle: string) {
+    const card = await this.getCardByTitle(cardTitle)
+    await card.click({ button: 'right' })
+    // Wait for context menu to appear
+    await this.page.locator('[role="menu"]').waitFor({ state: 'visible' })
+  }
+
+  async clickContextMenuItem(menuItemText: string) {
+    await this.page.locator(`[role="menuitem"]:has-text("${menuItemText}")`).click()
+  }
+
+  async editCard(cardTitle: string, newTitle: string) {
+    await this.openContextMenu(cardTitle)
+    await this.clickContextMenuItem('Edit')
+    await this.modal.waitFor({ state: 'visible' })
+
+    // Clear and fill new title
+    const titleInput = this.page.locator('#title')
+    await titleInput.clear()
+    await titleInput.fill(newTitle)
+
+    // Save
+    await this.page.getByRole('button', { name: 'Save Changes' }).click()
+    await this.modal.waitFor({ state: 'hidden' })
+  }
+
+  async deleteCard(cardTitle: string) {
+    await this.openContextMenu(cardTitle)
+    await this.clickContextMenuItem('Delete')
+    // Handle confirmation dialog
+    this.page.on('dialog', dialog => dialog.accept())
+  }
+
+  async changeCardStatus(cardTitle: string, status: 'planned' | 'active' | 'blocked' | 'done') {
+    await this.openContextMenu(cardTitle)
+    const statusMap = {
+      planned: 'Set Planned',
+      active: 'Set Active',
+      blocked: 'Set Blocked',
+      done: 'Set Done'
+    }
+    await this.clickContextMenuItem(statusMap[status])
+  }
+
+  async dragCard(cardTitle: string, targetQuarter: 1 | 2 | 3 | 4) {
+    const card = await this.getCardByTitle(cardTitle)
+    const quarterHeader = this.page.locator(`.bg-secondary:has-text("Q${targetQuarter}")`).first()
+
+    // Get the quarter column - find the column under the header
+    const quarterBounds = await quarterHeader.boundingBox()
+    if (!quarterBounds) throw new Error('Could not find target quarter')
+
+    // Drag to the center of the quarter column area
+    await card.dragTo(quarterHeader, {
+      targetPosition: { x: quarterBounds.width / 2, y: quarterBounds.height + 50 }
+    })
+  }
+
+  async clearLocalStorage() {
+    await this.page.evaluate(() => {
+      const keys = Object.keys(localStorage).filter(k =>
+        k.includes('year-plan') || k.includes('year-items')
+      )
+      keys.forEach(k => localStorage.removeItem(k))
+    })
+  }
+
+  async getLocalStorageYearPlan(): Promise<any> {
+    return await this.page.evaluate(() => {
+      const year = new Date().getFullYear()
+      const data = localStorage.getItem(`year-plan-${year}`)
+      return data ? JSON.parse(data) : null
+    })
+  }
+
+  async getLocalStorageYearItems(): Promise<any[]> {
+    return await this.page.evaluate(() => {
+      const year = new Date().getFullYear()
+      const data = localStorage.getItem(`year-items-${year}`)
+      return data ? JSON.parse(data) : []
+    })
   }
 }
