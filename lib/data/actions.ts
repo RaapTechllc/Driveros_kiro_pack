@@ -57,6 +57,13 @@ export async function getActions(orgId?: string): Promise<Action[]> {
       org_id: getOrgId(orgId),
       created_by: 'demo-user',
       north_star_id: null,
+      description: a.description ?? null,
+      why: a.why ?? null,
+      owner: a.owner ?? null,
+      engine: a.engine ?? null,
+      effort: a.effort ?? null,
+      due_date: a.due_date ?? null,
+      source: a.source ?? null,
     }))
   }
 
@@ -81,6 +88,13 @@ export async function getActionById(id: string, orgId?: string): Promise<Action 
       org_id: getOrgId(orgId),
       created_by: 'demo-user',
       north_star_id: null,
+      description: action.description ?? null,
+      why: action.why ?? null,
+      owner: action.owner ?? null,
+      engine: action.engine ?? null,
+      effort: action.effort ?? null,
+      due_date: action.due_date ?? null,
+      source: action.source ?? null,
     }
   }
 
@@ -127,6 +141,13 @@ export async function createAction(
       org_id: getOrgId(orgId),
       created_by: userId || 'demo-user',
       north_star_id: action.north_star_id || null,
+      description: newAction.description ?? null,
+      why: newAction.why ?? null,
+      owner: newAction.owner ?? null,
+      engine: newAction.engine ?? null,
+      effort: newAction.effort ?? null,
+      due_date: newAction.due_date ?? null,
+      source: newAction.source ?? null,
     }
   }
 
@@ -167,6 +188,13 @@ export async function updateAction(
       org_id: 'demo',
       created_by: 'demo-user',
       north_star_id: null,
+      description: updated.description ?? null,
+      why: updated.why ?? null,
+      owner: updated.owner ?? null,
+      engine: updated.engine ?? null,
+      effort: updated.effort ?? null,
+      due_date: updated.due_date ?? null,
+      source: updated.source ?? null,
     }
   }
 
