@@ -258,7 +258,7 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
                 <textarea
                   value={transcript}
                   onChange={(e) => { setTranscript(e.target.value); setUploadedFileName(null); }}
-                  className="w-full p-3 border rounded-md min-h-[200px] font-mono text-sm"
+                  className="w-full p-3 border rounded-md min-h-[200px] font-mono text-sm bg-background text-foreground placeholder:text-muted-foreground"
                   placeholder={`Paste your meeting transcript here...
 
 Example formats supported:
@@ -515,7 +515,7 @@ Example formats supported:
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full p-3 border rounded-md min-h-[100px]"
+            className="w-full p-3 border rounded-md min-h-[100px] bg-background text-foreground placeholder:text-muted-foreground"
             placeholder="Key discussion points, insights, concerns..."
           />
         </div>

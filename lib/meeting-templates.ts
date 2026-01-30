@@ -161,8 +161,7 @@ export function generateMeetingActions(
   }
   
   // Apply guardrails validation to all generated actions
-  const northStarResult = safeGetItem<NorthStarInput>('north-star')
-  const northStar = northStarResult.success && northStarResult.data ? northStarResult.data : null
+  const northStar = safeGetItem<NorthStarInput | null>('north-star', null)
   
   if (northStar) {
     actions.forEach(action => {
