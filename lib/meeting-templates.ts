@@ -171,7 +171,7 @@ export function generateMeetingActions(
       )
       if (!alignment.isValid) {
         // Add alignment warning as a property (can be displayed in UI)
-        (action as any).alignment_warning = alignment.reason
+        action.alignment_warning = alignment.reason
       }
     })
   }

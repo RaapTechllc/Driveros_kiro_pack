@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { VALID_DEPARTMENTS, VALID_ENGINES, VALID_OWNER_ROLES, VALID_STATUSES } from './constants'
 
 // CSV injection prevention - detect dangerous formulas
 const CSV_INJECTION_PATTERNS = [
@@ -89,16 +90,16 @@ export const fullAuditSchema = flashScanSchema.extend({
 export const csvActionSchema = z.object({
   title: csvSafeString.refine((val) => val.length <= 100, 'Title too long'),
   why: csvSafeString.refine((val) => val.length <= 200, 'Why description too long'),
-  owner_role: z.enum(['Owner', 'Ops', 'Sales', 'Finance']),
-  engine: z.enum(['Leadership', 'Operations', 'Marketing & Sales', 'Finance', 'Personnel']),
+  owner_role: z.enum(VALID_OWNER_ROLES),
+  engine: z.enum(VALID_ENGINES),
   eta_days: z.number().int().min(1).max(365),
-  status: z.enum(['todo', 'doing', 'done']),
+  status: z.enum(VALID_STATUSES),
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional()
 })
 
 export const csvGoalSchema = z.object({
   level: z.enum(['north_star', 'department']),
-  department: z.enum(['Ops', 'Sales/Marketing', 'Finance']).optional(),
+  department: z.enum(VALID_DEPARTMENTS).optional(),
   title: csvSafeString.refine((val) => val.length <= 100, 'Title too long'),
   metric: csvSafeString.refine((val) => val.length <= 50, 'Metric too long').optional(),
   current: z.number().optional(),

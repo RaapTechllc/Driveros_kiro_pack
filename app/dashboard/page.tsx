@@ -23,6 +23,22 @@ import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
 import { Download, AlertTriangle, CheckCircle, Clock, Target, FileText, Database, Table, Camera } from 'lucide-react'
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const isFullAuditResult = (value: unknown): value is FullAuditResult => {
+  if (!isRecord(value)) return false
+  if (value['schema_version'] !== '1.0') return false
+  if (value['mode'] !== 'audit') return false
+  return Array.isArray(value['engines'])
+}
+
+const isFlashScanResult = (value: unknown): value is FlashScanResult => {
+  if (!isRecord(value)) return false
+  if (value['schema_version'] !== '1.0') return false
+  return Array.isArray(value['quick_wins']) && typeof value['gear_estimate'] === 'object' && value['gear_estimate'] !== null
+}
+
 export default function DashboardPage() {
   const [auditResult, setAuditResult] = useState<FullAuditResult | null>(null)
   const [flashResult, setFlashResult] = useState<FlashScanResult | null>(null)
@@ -48,21 +64,21 @@ export default function DashboardPage() {
         const orgId = currentOrg?.id
         const auditData = await getFullAuditResult(orgId)
 
-        if (auditData && typeof auditData === 'object' && !Array.isArray(auditData) && (auditData as any).schema_version === '1.0') {
-          setAuditResult(auditData as unknown as FullAuditResult)
+        if (isFullAuditResult(auditData)) {
+          setAuditResult(auditData)
           if (demoMode && !tourCompleted) {
             setShowTour(true)
           }
           const history = getEngineHistory()
           const trends: Record<string, TrendDirection> = {}
-          ;(auditData as any).engines?.forEach((e: { name: string; score: number }) => {
+          auditData.engines.forEach((e) => {
             trends[e.name] = calcTrend(e.name, history)
           })
           setEngineTrends(trends)
         } else {
           const flashData = await getFlashScanResult(orgId)
-          if (flashData && typeof flashData === 'object' && !Array.isArray(flashData) && (flashData as any).schema_version === '1.0') {
-            setFlashResult(flashData as unknown as FlashScanResult)
+          if (isFlashScanResult(flashData)) {
+            setFlashResult(flashData)
           }
         }
 

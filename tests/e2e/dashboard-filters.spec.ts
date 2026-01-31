@@ -25,7 +25,7 @@ test.describe('Dashboard Filters', () => {
     await expect(page.locator('select').first()).toHaveValue('Finance')
     
     // Clear filters button should appear
-    await expect(page.getByText('Clear filters')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Clear' })).toBeVisible()
   })
 
   test('filter by owner shows only matching actions', async ({ page }) => {
@@ -49,13 +49,13 @@ test.describe('Dashboard Filters', () => {
     await page.locator('select').first().selectOption('Finance')
     
     // Wait for clear filters button to appear
-    await expect(page.getByText('Clear filters')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Clear' })).toBeVisible()
     
     // Click clear filters
-    await page.getByText('Clear filters').click()
+    await page.getByRole('button', { name: 'Clear' }).click()
     
     // Wait for filters to reset (button should disappear)
-    await expect(page.getByText('Clear filters')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Clear' })).not.toBeVisible()
     
     // Verify all filters reset to 'all'
     await expect(page.locator('select').first()).toHaveValue('all')

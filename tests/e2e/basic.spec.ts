@@ -5,11 +5,11 @@ test.describe('DriverOS Basic Tests', () => {
     await page.goto('/')
     
     // Check if page loads
-    await expect(page.locator('h1')).toContainText('DriverOS')
-    await expect(page.getByText('Turn your North Star into weekly wins')).toBeVisible()
+    await expect(page.locator('h1')).toContainText('Know Your One Thing This Week')
+    await expect(page.getByText('5 minutes from now')).toBeVisible()
     
     // Check navigation buttons exist
-    await expect(page.getByRole('link', { name: 'Start Flash Scan' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Full Audit' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Get My 3 Actions' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Deep Dive Audit' })).toBeVisible()
   })
 })

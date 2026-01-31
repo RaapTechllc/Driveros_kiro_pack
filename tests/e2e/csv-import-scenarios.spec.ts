@@ -1,8 +1,15 @@
 import { test, expect } from '@playwright/test'
 import path from 'path'
+import type { Page } from '@playwright/test'
 
 test.describe('CSV Import Scenarios', () => {
   const fixturesPath = path.join(__dirname, 'fixtures', 'test-csvs')
+  const getImportButton = (page: Page, label: 'Import Actions' | 'Import Goals') =>
+    page.getByRole('heading', { name: label })
+      .locator('..')
+      .locator('..')
+      .locator('..')
+      .getByRole('button', { name: 'Select CSV File' })
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/import')
@@ -12,7 +19,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('successful actions CSV import', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Upload valid actions file
     const validActionsPath = path.join(fixturesPath, 'valid-actions.csv')
@@ -30,7 +37,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('successful goals CSV import', async ({ page }) => {
     // Click Import Goals button
-    await page.getByRole('button', { name: 'Import Goals' }).click()
+    await getImportButton(page, 'Import Goals').click()
     
     // Upload valid goals file
     const validGoalsPath = path.join(fixturesPath, 'valid-goals.csv')
@@ -48,7 +55,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('invalid headers error handling', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Upload file with invalid headers
     const invalidHeadersPath = path.join(fixturesPath, 'invalid-headers.csv')
@@ -63,7 +70,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('invalid data error handling', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Upload file with invalid data
     const invalidDataPath = path.join(fixturesPath, 'invalid-data.csv')
@@ -78,7 +85,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('template download button visible', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Verify template download button is visible
     await expect(page.getByRole('button', { name: 'Download Template' })).toBeVisible()
@@ -86,7 +93,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('empty file handling', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Upload empty CSV file
     const emptyPath = path.join(fixturesPath, 'empty.csv')
@@ -99,7 +106,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('round-trip import flow', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Upload valid actions file
     const validActionsPath = path.join(fixturesPath, 'valid-actions.csv')
@@ -117,7 +124,7 @@ test.describe('CSV Import Scenarios', () => {
 
   test('large file import', async ({ page }) => {
     // Click Import Actions button
-    await page.getByRole('button', { name: 'Import Actions' }).click()
+    await getImportButton(page, 'Import Actions').click()
     
     // Upload large CSV file
     const largePath = path.join(fixturesPath, 'large-actions.csv')

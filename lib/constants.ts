@@ -112,14 +112,39 @@ export const VALID_OWNER_ROLES = ['Owner', 'Ops', 'Sales', 'Finance'] as const
 /** Valid engine names */
 export const VALID_ENGINES = ['Leadership', 'Operations', 'Marketing & Sales', 'Finance', 'Personnel'] as const
 
+export type AppEngineName = typeof VALID_ENGINES[number]
+export type AppOwnerRole = typeof VALID_OWNER_ROLES[number]
+
 /** Valid action statuses */
 export const VALID_STATUSES = ['todo', 'doing', 'done'] as const
+
+export type AppActionStatus = typeof VALID_STATUSES[number]
 
 /** Valid goal levels */
 export const VALID_LEVELS = ['north_star', 'department'] as const
 
 /** Valid department names */
 export const VALID_DEPARTMENTS = ['Ops', 'Sales/Marketing', 'Finance'] as const
+
+export type AppDepartment = typeof VALID_DEPARTMENTS[number]
+
+/** Mapping between framework engine ids and app-facing engine labels */
+export const FRAMEWORK_ENGINE_TO_APP_ENGINE = {
+  vision: 'Leadership',
+  people: 'Personnel',
+  operations: 'Operations',
+  revenue: 'Marketing & Sales',
+  finance: 'Finance'
+} as const
+
+/** Mapping between app-facing engine labels and framework engine ids */
+export const APP_ENGINE_TO_FRAMEWORK_ENGINE = {
+  Leadership: 'vision',
+  Personnel: 'people',
+  Operations: 'operations',
+  'Marketing & Sales': 'revenue',
+  Finance: 'finance'
+} as const
 
 /** Minimum ETA days for actions */
 export const MIN_ETA_DAYS = 1

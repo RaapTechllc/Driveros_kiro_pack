@@ -118,6 +118,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // Demo mode - no auth needed
     if (isDemoMode) {
+      const timestamp = new Date().toISOString()
+      setUser({
+        id: 'demo-user',
+        email: 'demo@driveros.ai',
+        profile: null,
+        currentOrg: {
+          id: 'demo-org',
+          name: 'Demo Org',
+          slug: 'demo-org',
+          industry: null,
+          size_band: null,
+          created_at: timestamp,
+          updated_at: timestamp,
+        },
+        membership: {
+          id: 'demo-membership',
+          user_id: 'demo-user',
+          org_id: 'demo-org',
+          role: 'owner',
+          created_at: timestamp,
+          updated_at: timestamp,
+        },
+      })
       setIsLoading(false)
       return
     }

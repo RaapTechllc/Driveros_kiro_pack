@@ -9,6 +9,16 @@ import { z } from 'zod'
 import { csvActionSchema, csvGoalSchema, type CSVActionInput, type CSVGoalInput } from './validation'
 import { validateActionAlignment, type NorthStarInput } from './guardrails'
 import { safeGetItem } from './storage'
+import {
+  VALID_DEPARTMENTS,
+  VALID_ENGINES,
+  VALID_OWNER_ROLES,
+  VALID_STATUSES,
+  type AppActionStatus,
+  type AppDepartment,
+  type AppEngineName,
+  type AppOwnerRole
+} from './constants'
 
 export interface CSVValidationError {
   row: number
@@ -28,17 +38,17 @@ export interface CSVImportResult<T = ImportedAction | ImportedGoal> {
 export interface ImportedAction {
   title: string
   why: string
-  owner_role: 'Owner' | 'Ops' | 'Sales' | 'Finance'
-  engine: 'Leadership' | 'Operations' | 'Marketing & Sales' | 'Finance' | 'Personnel'
+  owner_role: AppOwnerRole
+  engine: AppEngineName
   eta_days: number
-  status: 'todo' | 'doing' | 'done'
+  status: AppActionStatus
   due_date?: string
   alignment_warning?: string // Added for guardrails
 }
 
 export interface ImportedGoal {
   level: 'north_star' | 'department'
-  department?: 'Ops' | 'Sales/Marketing' | 'Finance'
+  department?: AppDepartment
   title: string
   metric?: string
   current?: number
@@ -49,9 +59,9 @@ export interface ImportedGoal {
 
 const REQUIRED_ACTION_HEADERS = ['title', 'why', 'owner_role', 'engine', 'eta_days', 'status']
 const REQUIRED_GOAL_HEADERS = ['level', 'title']
-const ACTION_OWNER_ROLES = ['Owner', 'Ops', 'Sales', 'Finance'] as const
-const ACTION_ENGINES = ['Leadership', 'Operations', 'Marketing & Sales', 'Finance', 'Personnel'] as const
-const GOAL_DEPARTMENTS = ['Ops', 'Sales/Marketing', 'Finance'] as const
+const ACTION_OWNER_ROLES = VALID_OWNER_ROLES
+const ACTION_ENGINES = VALID_ENGINES
+const GOAL_DEPARTMENTS = VALID_DEPARTMENTS
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
 export function parseCSV(csvContent: string): string[][] {

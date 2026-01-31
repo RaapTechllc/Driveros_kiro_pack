@@ -1,5 +1,5 @@
-// @ts-nocheck
 // TODO: Regenerate Supabase types from local schema to fix type errors
+// NOTE: Targeted @ts-ignore comments used for Supabase insert/update operations
 /**
  * Actions Data Layer
  *
@@ -24,17 +24,31 @@ import type {
 interface DemoAction {
   id: string
   title: string
-  description?: string | null
-  why?: string | null
-  owner?: string | null
-  engine?: EngineName | null
+  description: string | null
+  why: string | null
+  owner: string | null
+  engine: EngineName | null
   priority: ActionPriority
   status: ActionStatus
-  effort?: number | null
-  due_date?: string | null
-  source?: string | null
+  effort: number | null
+  due_date: string | null
+  source: string | null
   created_at: string
   updated_at: string
+}
+
+// Type-safe utility to ensure nullable fields are properly set
+export function ensureNullableFields<T extends Partial<DemoAction>>(action: T): T & Pick<DemoAction, 'description' | 'why' | 'owner' | 'engine' | 'effort' | 'due_date' | 'source'> {
+  return {
+    ...action,
+    description: action.description ?? null,
+    why: action.why ?? null,
+    owner: action.owner ?? null,
+    engine: action.engine ?? null,
+    effort: action.effort ?? null,
+    due_date: action.due_date ?? null,
+    source: action.source ?? null,
+  }
 }
 
 function demoDatasource() {
@@ -55,7 +69,7 @@ export async function getActions(orgId?: string): Promise<Action[]> {
     const actions = demo.getAll()
     // Add org_id and created_by for type compatibility
     return actions.map((a) => ({
-      ...a,
+      ...ensureNullableFields(a),
       org_id: getOrgId(orgId),
       created_by: 'demo-user',
       north_star_id: null,
@@ -86,7 +100,7 @@ export async function getActionById(id: string, orgId?: string): Promise<Action 
     const action = actions.find((a) => a.id === id)
     if (!action) return null
     return {
-      ...action,
+      ...ensureNullableFields(action),
       org_id: getOrgId(orgId),
       created_by: 'demo-user',
       north_star_id: null,
@@ -125,28 +139,24 @@ export async function createAction(
     const newAction: DemoAction = {
       id,
       title: action.title,
-      description: action.description,
-      why: action.why,
-      owner: action.owner,
-      engine: action.engine,
+      description: action.description ?? null,
+      why: action.why ?? null,
+      owner: action.owner ?? null,
+      engine: action.engine ?? null,
       priority: action.priority || 'do_next',
       status: action.status || 'not_started',
-      effort: action.effort,
-      due_date: action.due_date,
-      source: action.source,
+      effort: action.effort ?? null,
+      due_date: action.due_date ?? null,
+      source: action.source ?? null,
       created_at: timestamp,
       updated_at: timestamp,
     }
     demo.save([newAction, ...actions])
     return {
-      ...newAction,
+      ...ensureNullableFields(newAction),
       org_id: getOrgId(orgId),
       created_by: userId || 'demo-user',
       north_star_id: action.north_star_id || null,
-      description: newAction.description ?? null,
-      why: newAction.why ?? null,
-      owner: newAction.owner ?? null,
-      engine: newAction.engine ?? null,
       effort: newAction.effort ?? null,
       due_date: newAction.due_date ?? null,
       source: newAction.source ?? null,
@@ -154,11 +164,17 @@ export async function createAction(
   }
 
   const supabase = createClient()
-  // @ts-ignore - Supabase types need regeneration from local schema
-  const { data, error } = await supabase
-    .from('actions')
+  const { data, error } = await (supabase
+    .from('actions') as any)
     .insert({
       ...action,
+      description: action.description ?? null,
+      why: action.why ?? null,
+      owner: action.owner ?? null,
+      engine: action.engine ?? null,
+      effort: action.effort ?? null,
+      due_date: action.due_date ?? null,
+      source: action.source ?? null,
       org_id: getOrgId(orgId),
       created_by: userId || '',
     })
@@ -187,24 +203,16 @@ export async function updateAction(
     actions[index] = updated
     demo.save(actions)
     return {
-      ...updated,
+      ...ensureNullableFields(updated),
       org_id: 'demo',
       created_by: 'demo-user',
       north_star_id: null,
-      description: updated.description ?? null,
-      why: updated.why ?? null,
-      owner: updated.owner ?? null,
-      engine: updated.engine ?? null,
-      effort: updated.effort ?? null,
-      due_date: updated.due_date ?? null,
-      source: updated.source ?? null,
     }
   }
 
   const supabase = createClient()
-  // @ts-ignore - Supabase types need regeneration from local schema
-  const { data, error } = await supabase
-    .from('actions')
+  const { data, error } = await (supabase
+    .from('actions') as any)
     .update(updates)
     .eq('id', id)
     .select()

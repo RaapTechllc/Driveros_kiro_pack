@@ -227,7 +227,7 @@ export default function PitStopPage() {
         await createAction({
           title: action.title,
           why: action.why,
-          engine: action.engine as any,
+          engine: action.engine,
           priority: action.priority,
           status: 'not_started',
           effort: action.effort,

@@ -283,7 +283,7 @@ export function AuditForm({ initialData, onSubmit }: AuditFormProps) {
     const currentValue = formData[field] as number
 
     return (
-      <div className="space-y-3">
+      <div className="space-y-3" data-testid={`rating-${field}`}>
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">{config.label}</label>
           <button

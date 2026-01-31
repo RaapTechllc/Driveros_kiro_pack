@@ -134,8 +134,8 @@ export class HomePage {
 
   constructor(page: Page) {
     this.page = page
-    this.flashScanButton = page.getByRole('link', { name: 'Start Flash Scan' })
-    this.fullAuditButton = page.getByRole('link', { name: 'Full Audit' })
+    this.flashScanButton = page.getByRole('link', { name: 'Get My 3 Actions' })
+    this.fullAuditButton = page.getByRole('link', { name: 'Deep Dive Audit' })
   }
 
   async goto() {
@@ -206,14 +206,34 @@ export class FullAuditPage {
     // Matches "Generate Full Analysis" when ready, or we can use a regex or ID if needed.
     // Given the component logic, it shows "Generate Full Analysis" when complete.
     this.submitButton = page.getByRole('button', { name: 'Generate Full Analysis' })
-    this.dashboardButton = page.getByRole('link', { name: 'Go to Dashboard' })
+    this.dashboardButton = page.getByRole('link', { name: 'Launch DriverOS Dashboard' })
   }
 
   async fillForm(data: Record<string, number>) {
-    // Fill all audit form fields
+    const labelMap: Record<string, string> = {
+      vision_clarity: 'Vision Clarity',
+      decision_speed: 'Decision Speed',
+      team_alignment: 'Team Alignment',
+      process_efficiency: 'Process Efficiency',
+      quality_control: 'Quality Control',
+      delivery_reliability: 'Delivery Reliability',
+      lead_generation: 'Lead Generation',
+      conversion_rate: 'Conversion Rate',
+      customer_retention: 'Customer Retention',
+      cash_flow_health: 'Cash Flow Health',
+      profitability: 'Profitability',
+      financial_planning: 'Financial Planning',
+      team_satisfaction: 'Team Satisfaction',
+      skill_gaps: 'Skill Gaps',
+      retention_risk: 'Retention Risk'
+    }
+
+    await this.page.getByRole('heading', { name: 'Full Audit' }).waitFor({ state: 'visible' })
+
     for (const [key, value] of Object.entries(data)) {
-      const select = this.page.locator(`select[name="${key}"]`)
-      await select.selectOption(value.toString())
+      const label = labelMap[key]
+      const group = this.page.getByText(label, { exact: true }).locator('..').locator('..')
+      await group.locator('button').nth(value - 1).click()
     }
   }
 
@@ -282,8 +302,16 @@ export class ImportPage {
 
   constructor(page: Page) {
     this.page = page
-    this.importActionsButton = page.getByRole('button', { name: 'Import Actions' })
-    this.importGoalsButton = page.getByRole('button', { name: 'Import Goals' })
+    this.importActionsButton = page.getByRole('heading', { name: 'Import Actions' })
+      .locator('..')
+      .locator('..')
+      .locator('..')
+      .getByRole('button', { name: 'Select CSV File' })
+    this.importGoalsButton = page.getByRole('heading', { name: 'Import Goals' })
+      .locator('..')
+      .locator('..')
+      .locator('..')
+      .getByRole('button', { name: 'Select CSV File' })
     this.downloadTemplateButton = page.getByRole('button', { name: 'Download Template' }).first()
     this.fileInput = page.locator('input[type="file"]')
     this.uploadButton = page.getByRole('button', { name: 'Upload CSV' })
@@ -449,19 +477,16 @@ export class YearBoardPage {
 
   async openContextMenu(cardTitle: string) {
     const card = await this.getCardByTitle(cardTitle)
-    await card.click({ button: 'right' })
-    // Wait for context menu to appear
-    await this.page.locator('[role="menu"]').waitFor({ state: 'visible' })
+    await card.getByRole('button', { name: 'Edit' }).click()
+    await this.modal.waitFor({ state: 'visible' })
   }
 
   async clickContextMenuItem(menuItemText: string) {
-    await this.page.locator(`[role="menuitem"]:has-text("${menuItemText}")`).click()
+    await this.page.getByRole('button', { name: menuItemText }).click()
   }
 
   async editCard(cardTitle: string, newTitle: string) {
     await this.openContextMenu(cardTitle)
-    await this.clickContextMenuItem('Edit')
-    await this.modal.waitFor({ state: 'visible' })
 
     // Clear and fill new title
     const titleInput = this.page.locator('#title')
@@ -474,35 +499,22 @@ export class YearBoardPage {
   }
 
   async deleteCard(cardTitle: string) {
-    await this.openContextMenu(cardTitle)
-    await this.clickContextMenuItem('Delete')
-    // Handle confirmation dialog
-    this.page.on('dialog', dialog => dialog.accept())
+    const card = await this.getCardByTitle(cardTitle)
+    await card.getByRole('button', { name: 'Delete' }).click()
   }
 
   async changeCardStatus(cardTitle: string, status: 'planned' | 'active' | 'blocked' | 'done') {
     await this.openContextMenu(cardTitle)
-    const statusMap = {
-      planned: 'Set Planned',
-      active: 'Set Active',
-      blocked: 'Set Blocked',
-      done: 'Set Done'
-    }
-    await this.clickContextMenuItem(statusMap[status])
+    await this.page.locator('#status').selectOption(status)
+    await this.page.getByRole('button', { name: 'Save Changes' }).click()
+    await this.modal.waitFor({ state: 'hidden' })
   }
 
   async dragCard(cardTitle: string, targetQuarter: 1 | 2 | 3 | 4) {
-    const card = await this.getCardByTitle(cardTitle)
-    const quarterHeader = this.page.locator(`.bg-secondary:has-text("Q${targetQuarter}")`).first()
-
-    // Get the quarter column - find the column under the header
-    const quarterBounds = await quarterHeader.boundingBox()
-    if (!quarterBounds) throw new Error('Could not find target quarter')
-
-    // Drag to the center of the quarter column area
-    await card.dragTo(quarterHeader, {
-      targetPosition: { x: quarterBounds.width / 2, y: quarterBounds.height + 50 }
-    })
+    await this.openContextMenu(cardTitle)
+    await this.page.locator('#quarter').selectOption(targetQuarter.toString())
+    await this.page.getByRole('button', { name: 'Save Changes' }).click()
+    await this.modal.waitFor({ state: 'hidden' })
   }
 
   async clearLocalStorage() {
@@ -517,7 +529,8 @@ export class YearBoardPage {
   async getLocalStorageYearPlan(): Promise<any> {
     return await this.page.evaluate(() => {
       const year = new Date().getFullYear()
-      const data = localStorage.getItem(`year-plan-${year}`)
+      const demoPrefix = localStorage.getItem('demo-mode') === 'true' ? 'demo-' : ''
+      const data = localStorage.getItem(`${demoPrefix}year-plan-${year}`)
       return data ? JSON.parse(data) : null
     })
   }
@@ -525,7 +538,8 @@ export class YearBoardPage {
   async getLocalStorageYearItems(): Promise<any[]> {
     return await this.page.evaluate(() => {
       const year = new Date().getFullYear()
-      const data = localStorage.getItem(`year-items-${year}`)
+      const demoPrefix = localStorage.getItem('demo-mode') === 'true' ? 'demo-' : ''
+      const data = localStorage.getItem(`${demoPrefix}year-items-${year}`)
       return data ? JSON.parse(data) : []
     })
   }

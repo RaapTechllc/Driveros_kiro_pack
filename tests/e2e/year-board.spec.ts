@@ -4,13 +4,15 @@ import { YearBoardPage } from './helpers/page-objects'
 test.describe('Year Board', () => {
   test.beforeEach(async ({ page }) => {
     // Clear localStorage before each test to ensure clean state
-    await page.goto('/year-board')
+    await page.goto('/')
     await page.evaluate(() => {
+      localStorage.removeItem('demo-mode')
       const keys = Object.keys(localStorage).filter(k =>
         k.includes('year-plan') || k.includes('year-items')
       )
       keys.forEach(k => localStorage.removeItem(k))
     })
+    await page.goto('/year-board')
   })
 
   test('should load Year Board page with empty state', async ({ page }) => {
@@ -47,10 +49,10 @@ test.describe('Year Board', () => {
     await expect(page.getByText('2026 Year Plan')).toBeVisible()
 
     // Should have quarter columns
-    await expect(page.getByText('Q1')).toBeVisible()
-    await expect(page.getByText('Q2')).toBeVisible()
-    await expect(page.getByText('Q3')).toBeVisible()
-    await expect(page.getByText('Q4')).toBeVisible()
+    await expect(page.getByText('Q1', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('Q2', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('Q3', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('Q4', { exact: true }).first()).toBeVisible()
 
     // Should have generated some cards
     const cardCount = await yearBoard.getCardCount()
@@ -72,7 +74,7 @@ test.describe('Year Board', () => {
     const yearItems = await yearBoard.getLocalStorageYearItems()
 
     expect(yearPlan).not.toBeNull()
-    expect(yearPlan.north_star).toBeDefined()
+    expect(yearPlan.north_star_goal_id).toBeDefined()
     expect(yearItems.length).toBeGreaterThan(0)
 
     // Reload page and verify persistence
@@ -91,8 +93,7 @@ test.describe('Year Board', () => {
     // Generate plan first to get the board
     await yearBoard.generateYearPlan()
 
-    // Get initial card count
-    const initialCount = await yearBoard.getCardCount()
+    const itemsBefore = await yearBoard.getLocalStorageYearItems()
 
     // Add a new card
     await yearBoard.addCard({
@@ -104,13 +105,12 @@ test.describe('Year Board', () => {
       status: 'planned'
     })
 
-    // Verify card was added
-    const newCount = await yearBoard.getCardCount()
-    expect(newCount).toBe(initialCount + 1)
-
     // Verify card content is visible
     await expect(page.getByText('E2E Test Card')).toBeVisible()
     await expect(page.getByText('Testing the add card functionality')).toBeVisible()
+
+    const itemsAfter = await yearBoard.getLocalStorageYearItems()
+    expect(itemsAfter.length).toBe(itemsBefore.length + 1)
   })
 
   test('should edit card via context menu', async ({ page }) => {
@@ -159,7 +159,7 @@ test.describe('Year Board', () => {
     const countBefore = await yearBoard.getCardCount()
 
     // Set up dialog handler before triggering delete
-    page.on('dialog', dialog => dialog.accept())
+    page.once('dialog', dialog => dialog.accept())
 
     // Delete the card
     await yearBoard.deleteCard('Card to Delete')
@@ -253,7 +253,7 @@ test.describe('Year Board', () => {
     const download = await downloadPromise
 
     // Verify download
-    expect(download.suggestedFilename()).toContain('year-board')
+    expect(download.suggestedFilename()).toContain('YearBoard')
     expect(download.suggestedFilename()).toContain('.csv')
   })
 })

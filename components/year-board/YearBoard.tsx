@@ -6,6 +6,7 @@ import { AddCardModal } from './AddCardModal'
 import { downloadYearBoardCSV } from '@/lib/year-board-csv'
 import { Button } from '@/components/ui/Button'
 import { Plus, Download } from 'lucide-react'
+import type { YearItem } from '@/lib/year-board-types'
 
 interface YearBoardProps {
   onPlanChange: () => void
@@ -16,12 +17,12 @@ export function YearBoard({ onPlanChange }: YearBoardProps) {
   const [showAddModal, setShowAddModal] = useState(false)
 
   const quarters = [1, 2, 3, 4] as const
-  const departments = [
+  const departments: { id: YearItem['department']; name: string }[] = [
     { id: 'company', name: 'Company' },
     { id: 'ops', name: 'Ops' },
     { id: 'sales_marketing', name: 'Sales/Marketing' },
     { id: 'finance', name: 'Finance' }
-  ] as const
+  ]
 
   const handleExportCSV = () => {
     downloadYearBoardCSV()
@@ -100,7 +101,7 @@ export function YearBoard({ onPlanChange }: YearBoardProps) {
                 <QuarterColumn
                   key={`${department.id}-${quarter}-${refreshKey}`}
                   quarter={quarter}
-                  department={department.id as any}
+                  department={department.id}
                   onCardMove={handleCardMove}
                 />
               ))}

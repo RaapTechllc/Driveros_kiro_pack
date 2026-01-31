@@ -42,6 +42,7 @@ export interface QuickWin {
   owner_role: OwnerRole
   eta_days: number
   engine: string
+  alignment_warning?: string
 }
 
 export interface FlashScanResult {

@@ -12,7 +12,7 @@ test.describe('DriverOS Complete Flow', () => {
     // 1. Start from homepage
     await homePage.goto()
     await expect(page).toHaveTitle(/DriverOS/)
-    await expect(page.getByText('Turn your North Star into weekly wins')).toBeVisible()
+    await expect(page.getByText('5 minutes from now')).toBeVisible()
 
     // 2. Start Flash Scan
     await homePage.startFlashScan()
@@ -82,8 +82,8 @@ test.describe('DriverOS Complete Flow', () => {
     await fullAuditPage.submit()
 
     // 3. Wait for results to render, then navigate to dashboard
-    await expect(page.getByText('Your Full Analysis')).toBeVisible({ timeout: 10000 })
-    await page.getByRole('link', { name: 'Go to Dashboard' }).click()
+    await expect(page.getByText('Strategic Architecture Report')).toBeVisible({ timeout: 10000 })
+    await page.getByRole('link', { name: 'Launch DriverOS Dashboard' }).click()
 
     await expect(page).toHaveURL('/dashboard')
     await expect(page.getByText('Signal Board')).toBeVisible()
@@ -144,9 +144,9 @@ test.describe('DriverOS Complete Flow', () => {
     await expect(page).toHaveURL('/meetings')
 
     // Verify meeting templates are displayed
-    await expect(page.getByText('Daily Warm-Up')).toBeVisible()
-    await expect(page.getByText('Weekly Pit Stop')).toBeVisible()
-    await expect(page.getByText('Full Tune-Up')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Daily Warm-Up' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Weekly Pit Stop' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Full Tune-Up' })).toBeVisible()
 
     // Test starting a meeting
     await meetingsPage.startWarmUp()
@@ -173,7 +173,7 @@ test.describe('DriverOS Complete Flow', () => {
     await fullAuditPage.submit()
     
     // Wait for Full Audit results to be saved
-    await expect(page.getByText('Your Full Analysis')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Strategic Architecture Report')).toBeVisible({ timeout: 10000 })
 
     // Navigate away and back
     await page.goto('/')
