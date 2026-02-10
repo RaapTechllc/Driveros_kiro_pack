@@ -21,12 +21,7 @@ export function AuthGuard({
   loadingFallback,
   unauthenticatedFallback,
 }: AuthGuardProps) {
-  const { isLoading, isAuthenticated, isDemoMode } = useAuth()
-
-  // Demo mode bypasses auth
-  if (isDemoMode) {
-    return <>{children}</>
-  }
+  const { isLoading, isAuthenticated } = useAuth()
 
   // Show loading state
   if (isLoading) {

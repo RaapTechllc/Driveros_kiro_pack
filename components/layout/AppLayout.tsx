@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname, useRouter } from 'next/navigation'
-import { TopBanner } from "./TopBanner"
+
 import { Header } from "./Header"
 import { Sidebar } from "./Sidebar"
 import { cn } from "@/lib/utils"
@@ -13,7 +13,7 @@ const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed'
 export function AppLayout({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
     const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
-    const { user, isLoading, isDemoMode } = useAuth()
+    const { user, isLoading } = useAuth()
     const pathname = usePathname()
     const router = useRouter()
 
@@ -36,7 +36,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
 
     React.useEffect(() => {
-        if (isDemoMode || isLoading) return
+        if (isLoading) return
 
         if (user && !user.currentOrg) {
             if (!pathname.startsWith('/onboarding')) {
@@ -48,15 +48,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         if (user?.currentOrg && pathname.startsWith('/onboarding')) {
             router.replace('/dashboard')
         }
-    }, [user, isLoading, isDemoMode, pathname, router])
+    }, [user, isLoading, pathname, router])
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col font-sans antialiased">
-            {/* 1. Top Banner (Fixed/Sticky handled inside component) */}
-            <TopBanner />
+            {/* Header */}
 
             {/* 2. Header (Sticky handled inside component) */}
-            <Header 
+            <Header
                 onMobileMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 onSidebarToggle={() => handleCollapsedChange(!isSidebarCollapsed)}
                 isSidebarCollapsed={isSidebarCollapsed}
@@ -80,8 +79,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
                     )}
                 >
-                    <Sidebar 
-                        className="h-full" 
+                    <Sidebar
+                        className="h-full"
                         isCollapsed={isSidebarCollapsed}
                         onCollapsedChange={handleCollapsedChange}
                     />

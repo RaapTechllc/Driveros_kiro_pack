@@ -16,13 +16,7 @@ export default function SignupPage() {
   const [isSuccess, setIsSuccess] = useState(false)
 
   const router = useRouter()
-  const { signUp, isDemoMode } = useAuth()
-
-  // Redirect to dashboard if demo mode is enabled
-  if (isDemoMode) {
-    router.push('/dashboard')
-    return null
-  }
+  const { signUp } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

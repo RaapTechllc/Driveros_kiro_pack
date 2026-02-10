@@ -11,7 +11,7 @@ import { useOrg } from '@/components/providers/OrgProvider'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { getTodayCheckIn } from '@/lib/data/check-ins'
 import { Button } from '@/components/ui/Button'
-import { GuidedTour } from '@/components/demo/GuidedTour'
+
 import { BusinessGearIndicator } from '@/components/dashboard/BusinessGearIndicator'
 import { EngineCard, AcceleratorCard } from '@/components/dashboard/BusinessMetrics'
 import { ActionCard } from '@/components/dashboard/ActionCard'
@@ -44,8 +44,7 @@ export default function DashboardPage() {
   const [flashResult, setFlashResult] = useState<FlashScanResult | null>(null)
   const [importedActions, setImportedActions] = useState<ReturnType<typeof transformImportedActions>>([])
   const [importedGoals, setImportedGoals] = useState<ReturnType<typeof transformImportedGoals>>({ northStar: undefined, departments: [] })
-  const [showTour, setShowTour] = useState(false)
-  const [isDemoMode, setIsDemoMode] = useState(false)
+
   const [engineTrends, setEngineTrends] = useState<Record<string, TrendDirection>>({})
   const [snapshotSaved, setSnapshotSaved] = useState(false)
   const [actionFilters, setActionFilters] = useState<ActionFilters>({ engine: 'all', owner: 'all', status: 'all' })
@@ -54,11 +53,6 @@ export default function DashboardPage() {
   const [checkInComplete, setCheckInComplete] = useState(false)
 
   useEffect(() => {
-    const demoMode = localStorage.getItem('demo-mode') === 'true'
-    const tourCompleted = localStorage.getItem('demo-tour-completed') === 'true'
-
-    setIsDemoMode(demoMode)
-
     const loadAssessments = async () => {
       try {
         const orgId = currentOrg?.id
@@ -66,9 +60,6 @@ export default function DashboardPage() {
 
         if (isFullAuditResult(auditData)) {
           setAuditResult(auditData)
-          if (demoMode && !tourCompleted) {
-            setShowTour(true)
-          }
           const history = getEngineHistory()
           const trends: Record<string, TrendDirection> = {}
           auditData.engines.forEach((e) => {
@@ -109,44 +100,14 @@ export default function DashboardPage() {
   }, [user, currentOrg?.id])
 
   const clearAllData = () => {
-    if (isDemoMode) {
-      const message = 'Exit demo mode and restore your original data?'
-      if (confirm(message)) {
-        // Restore backup if it exists
-        const backup = localStorage.getItem('demo-backup')
-        if (backup) {
-          try {
-            const backupData = JSON.parse(backup)
-            Object.entries(backupData).forEach(([key, value]) => {
-              if (value) {
-                localStorage.setItem(key, value as string)
-              }
-            })
-            localStorage.removeItem('demo-backup')
-          } catch (error) {
-            console.error('Failed to restore backup:', error)
-          }
-        }
-
-        // Clear demo mode
-        localStorage.removeItem('demo-mode')
-        localStorage.removeItem('demo-tour-completed')
-        localStorage.removeItem('full-audit-result')
-
-        // Reload to show restored data
-        window.location.reload()
-      }
-    } else {
-      const message = 'This will delete all data and start fresh. Are you sure?'
-      if (confirm(message)) {
-        localStorage.removeItem('full-audit-result')
-        localStorage.removeItem('flash-scan-result')
-        localStorage.removeItem('full-audit-data')
-        localStorage.removeItem('flash-scan-data')
-        setAuditResult(null)
-        setFlashResult(null)
-        setIsDemoMode(false)
-      }
+    const message = 'This will delete all data and start fresh. Are you sure?'
+    if (confirm(message)) {
+      localStorage.removeItem('full-audit-result')
+      localStorage.removeItem('flash-scan-result')
+      localStorage.removeItem('full-audit-data')
+      localStorage.removeItem('flash-scan-data')
+      setAuditResult(null)
+      setFlashResult(null)
     }
   }
 
@@ -175,28 +136,28 @@ export default function DashboardPage() {
 
   const exportCSV = (type: 'actions' | 'goals' | 'meetings' | 'combined' | 'excel') => {
     const timestamp = new Date().toISOString().split('T')[0]
-    
+
     switch (type) {
       case 'actions':
         const actionsCSV = exportActions(auditResult || undefined, flashResult || undefined)
         downloadCSV(actionsCSV, `driveros-actions-${timestamp}.csv`)
         break
-        
+
       case 'goals':
         const goalsCSV = exportGoals(auditResult || undefined)
         downloadCSV(goalsCSV, `driveros-goals-${timestamp}.csv`)
         break
-        
+
       case 'meetings':
         const meetingsCSV = exportMeetingTemplates()
         downloadCSV(meetingsCSV, `driveros-meetings-${timestamp}.csv`)
         break
-        
+
       case 'combined':
         const combinedCSV = exportCombinedData(auditResult || undefined, flashResult || undefined)
         downloadCSV(combinedCSV, `driveros-complete-${timestamp}.csv`)
         break
-        
+
       case 'excel':
         const excelCSV = exportExcelReady(auditResult || undefined, flashResult || undefined)
         downloadCSV(excelCSV, `driveros-excel-ready-${timestamp}.csv`)
@@ -254,13 +215,6 @@ export default function DashboardPage() {
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-500/10 dark:bg-orange-500/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-yellow-500/10 dark:bg-yellow-500/10 rounded-full blur-[120px]" />
       </div>
-
-      {/* Demo Banner handled by global TopBanner */}
-
-      {/* Guided Tour */}
-      {showTour && (
-        <GuidedTour onComplete={() => setShowTour(false)} />
-      )}
 
       <div className="space-y-8">
         {/* Header with Check-In Status */}
@@ -569,7 +523,7 @@ export default function DashboardPage() {
                 size="sm"
                 className="text-destructive hover:text-destructive"
               >
-                {isDemoMode ? 'Exit Demo Mode' : 'Reset All Data'}
+                Reset All Data
               </Button>
             </div>
           </CardContent>

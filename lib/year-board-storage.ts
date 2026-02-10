@@ -1,5 +1,4 @@
 import { YearPlan, YearItem } from './year-board-types'
-import { isDemoMode } from './demo-mode'
 
 // Storage utilities for Year Board data
 export function getCurrentYear(): number {
@@ -8,14 +7,13 @@ export function getCurrentYear(): number {
 
 export function getStorageKey(key: string, year?: number): string {
   const currentYear = year || getCurrentYear()
-  const prefix = isDemoMode() ? 'demo-' : ''
-  return `${prefix}${key}-${currentYear}`
+  return `${key}-${currentYear}`
 }
 
 // Year Plan CRUD operations
 export function saveYearPlan(plan: YearPlan): void {
   if (typeof window === 'undefined') return
-  
+
   try {
     const key = getStorageKey('year-plan', plan.year)
     localStorage.setItem(key, JSON.stringify(plan))
@@ -26,7 +24,7 @@ export function saveYearPlan(plan: YearPlan): void {
 
 export function loadYearPlan(year?: number): YearPlan | null {
   if (typeof window === 'undefined') return null
-  
+
   try {
     const key = getStorageKey('year-plan', year)
     const data = localStorage.getItem(key)
@@ -39,7 +37,7 @@ export function loadYearPlan(year?: number): YearPlan | null {
 
 export function deleteYearPlan(year?: number): void {
   if (typeof window === 'undefined') return
-  
+
   try {
     const key = getStorageKey('year-plan', year)
     localStorage.removeItem(key)
@@ -51,7 +49,7 @@ export function deleteYearPlan(year?: number): void {
 // Year Items CRUD operations
 export function saveYearItems(items: YearItem[], year?: number): void {
   if (typeof window === 'undefined') return
-  
+
   try {
     const key = getStorageKey('year-items', year)
     localStorage.setItem(key, JSON.stringify(items))
@@ -62,7 +60,7 @@ export function saveYearItems(items: YearItem[], year?: number): void {
 
 export function loadYearItems(year?: number): YearItem[] {
   if (typeof window === 'undefined') return []
-  
+
   try {
     const key = getStorageKey('year-items', year)
     const data = localStorage.getItem(key)
@@ -141,7 +139,7 @@ export function moveYearItem(
 ): void {
   const items = loadYearItems(year)
   const item = items.find(item => item.id === itemId)
-  
+
   if (item) {
     item.quarter = newQuarter
     item.department = newDepartment

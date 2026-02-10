@@ -16,13 +16,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo') || '/dashboard'
 
-  const { signIn, isDemoMode } = useAuth()
-
-  // Redirect to dashboard if demo mode is enabled
-  if (isDemoMode) {
-    router.push('/dashboard')
-    return null
-  }
+  const { signIn } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,15 +119,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Demo mode option */}
-        <div className="mt-4 text-center">
-          <Link
-            href="/dashboard"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Or try the demo without signing in
-          </Link>
-        </div>
+
       </div>
     </div>
   )

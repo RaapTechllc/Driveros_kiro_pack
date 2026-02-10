@@ -17,7 +17,7 @@ function toSlug(value: string): string {
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const { user, isLoading, isDemoMode, refreshUser } = useAuth()
+  const { user, isLoading, refreshUser } = useAuth()
   const [orgName, setOrgName] = useState('')
   const [orgSlug, setOrgSlug] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
@@ -25,15 +25,10 @@ export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    if (isDemoMode) {
-      router.replace('/dashboard')
-      return
-    }
-
     if (!isLoading && user?.currentOrg) {
       router.replace('/dashboard')
     }
-  }, [isDemoMode, isLoading, user, router])
+  }, [isLoading, user, router])
 
   useEffect(() => {
     if (!slugEdited) {

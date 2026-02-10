@@ -137,47 +137,7 @@ export function useEngineTrends(auditResult: FullAuditResult | null) {
   return engineTrends
 }
 
-/**
- * Hook to manage demo mode state
- */
-export function useDemoMode() {
-  const [isDemoMode, setIsDemoMode] = useState(false)
-  const [tourCompleted, setTourCompleted] = useState(false)
 
-  useEffect(() => {
-    const demoMode = localStorage.getItem('demo-mode') === 'true'
-    const completed = localStorage.getItem('demo-tour-completed') === 'true'
-
-    setIsDemoMode(demoMode)
-    setTourCompleted(completed)
-  }, [])
-
-  const exitDemoMode = useCallback(() => {
-    // Restore backup if it exists
-    const backup = localStorage.getItem('demo-backup')
-    if (backup) {
-      try {
-        const backupData = JSON.parse(backup)
-        Object.entries(backupData).forEach(([key, value]) => {
-          if (value) {
-            localStorage.setItem(key, value as string)
-          }
-        })
-        localStorage.removeItem('demo-backup')
-      } catch (error) {
-        dashboardLogger.error('Failed to restore backup', error)
-      }
-    }
-
-    localStorage.removeItem('demo-mode')
-    localStorage.removeItem('demo-tour-completed')
-    localStorage.removeItem('full-audit-result')
-
-    window.location.reload()
-  }, [])
-
-  return { isDemoMode, tourCompleted, setTourCompleted, exitDemoMode }
-}
 
 /**
  * Combined hook for all dashboard data
@@ -187,7 +147,6 @@ export function useDashboardData() {
   const { flashResult, setFlashResult, isLoading: flashLoading, error: flashError } = useFlashResult()
   const { importedActions, isLoading: actionsLoading } = useImportedActions()
   const { importedGoals, isLoading: goalsLoading } = useImportedGoals()
-  const { isDemoMode, tourCompleted, setTourCompleted, exitDemoMode } = useDemoMode()
   const engineTrends = useEngineTrends(auditResult)
 
   const isLoading = auditLoading || flashLoading || actionsLoading || goalsLoading
@@ -208,12 +167,6 @@ export function useDashboardData() {
     // Setters
     setAuditResult,
     setFlashResult,
-
-    // Demo mode
-    isDemoMode,
-    tourCompleted,
-    setTourCompleted,
-    exitDemoMode,
 
     // State
     isLoading,

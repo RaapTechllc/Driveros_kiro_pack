@@ -1,4 +1,4 @@
-import { isDemoMode } from './demo-mode'
+
 
 export interface ImportedAction {
   id: string
@@ -27,10 +27,9 @@ export interface ImportedGoal {
 
 export function loadImportedActions(): ImportedAction[] {
   if (typeof window === 'undefined') return []
-  
+
   try {
-    const key = isDemoMode() ? 'demo-imported-actions' : 'imported-actions'
-    const data = localStorage.getItem(key)
+    const data = localStorage.getItem('imported-actions')
     return data ? JSON.parse(data) : []
   } catch (error) {
     console.error('Failed to load imported actions:', error)
@@ -40,10 +39,9 @@ export function loadImportedActions(): ImportedAction[] {
 
 export function loadImportedGoals(): ImportedGoal[] {
   if (typeof window === 'undefined') return []
-  
+
   try {
-    const key = isDemoMode() ? 'demo-imported-goals' : 'imported-goals'
-    const data = localStorage.getItem(key)
+    const data = localStorage.getItem('imported-goals')
     return data ? JSON.parse(data) : []
   } catch (error) {
     console.error('Failed to load imported goals:', error)

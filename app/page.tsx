@@ -3,8 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { DemoModeToggle } from '@/components/demo/DemoModeToggle'
-import { FeatureShowcase } from '@/components/landing/FeatureShowcase'
+
 import { Zap, Target, Gauge, ArrowRight, CheckCircle2, Crown } from 'lucide-react'
 
 function useScrollReveal() {
@@ -106,7 +105,7 @@ export default function HomePage() {
 
               <p className="text-sm text-muted-foreground flex items-center gap-3">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
-                Free • No signup • Used by 500+ business owners
+                AI-powered business diagnostics
               </p>
             </div>
 
@@ -129,10 +128,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Feature Showcase Carousel */}
-          <div className="mt-32">
-            <FeatureShowcase />
-          </div>
+
 
           {/* Feature Grid - Racing stripes aesthetic */}
           <div
@@ -163,8 +159,8 @@ export default function HomePage() {
 
                   {/* Gear number badge */}
                   <div className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center border ${feature.premium
-                      ? 'bg-yellow-500/10 border-yellow-500/20'
-                      : 'bg-primary/10 border-primary/20'
+                    ? 'bg-yellow-500/10 border-yellow-500/20'
+                    : 'bg-primary/10 border-primary/20'
                     }`}>
                     <span className={`font-mono font-bold text-sm ${feature.premium ? 'text-yellow-500' : 'text-primary'}`}>
                       {feature.gear}
@@ -196,10 +192,6 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Demo Mode Toggle */}
-          <div className="mt-16 flex justify-center">
-            <DemoModeToggle />
-          </div>
         </div>
       </div>
     </div>

@@ -36,8 +36,8 @@ function isLocalStorageAvailable(): boolean {
 function classifyError(error: unknown): StorageErrorType {
   if (error instanceof Error) {
     if (error.name === 'QuotaExceededError' ||
-        error.message.includes('quota') ||
-        error.message.includes('storage')) {
+      error.message.includes('quota') ||
+      error.message.includes('storage')) {
       return 'QUOTA_EXCEEDED'
     }
     if (error instanceof SyntaxError) {
@@ -189,18 +189,11 @@ export const STORAGE_KEYS = {
   ACTION_STATUSES: 'action-statuses',
   TEAM_ROSTER: 'team-roster',
   ENGINE_HISTORY: 'engine-history',
-  DEMO_MODE: 'demo-mode',
-  DEMO_BACKUP: 'demo-backup',
   YEAR_PLAN: 'year-plan',
   YEAR_ITEMS: 'year-items',
   APEX_AUDIT_RESULT: 'apex-audit-result',
   PARKED_IDEAS: 'parked-ideas',
   CHECK_INS: 'check-ins',
-  // Demo prefixed keys
-  DEMO_FLASH_SCAN_RESULT: 'demo-flash-scan-result',
-  DEMO_FULL_AUDIT_RESULT: 'demo-full-audit-result',
-  DEMO_IMPORTED_ACTIONS: 'demo-imported-actions',
-  DEMO_IMPORTED_GOALS: 'demo-imported-goals',
 } as const
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS]

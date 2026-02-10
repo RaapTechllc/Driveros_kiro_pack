@@ -16,13 +16,10 @@ interface UseRequireAuthOptions {
  */
 export function useRequireAuth(options: UseRequireAuthOptions = {}) {
   const { redirectTo = '/login', requireOrg = false } = options
-  const { user, isLoading, isAuthenticated, isDemoMode } = useAuth()
+  const { user, isLoading, isAuthenticated } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    // Skip auth check in demo mode
-    if (isDemoMode) return
-
     // Wait for auth to load
     if (isLoading) return
 
@@ -38,12 +35,11 @@ export function useRequireAuth(options: UseRequireAuthOptions = {}) {
     if (requireOrg && !user?.currentOrg) {
       router.push('/onboarding')
     }
-  }, [isLoading, isAuthenticated, isDemoMode, user, requireOrg, redirectTo, router])
+  }, [isLoading, isAuthenticated, user, requireOrg, redirectTo, router])
 
   return {
     user,
-    isLoading: isDemoMode ? false : isLoading,
-    isAuthenticated: isDemoMode ? true : isAuthenticated,
-    isDemoMode,
+    isLoading,
+    isAuthenticated,
   }
 }

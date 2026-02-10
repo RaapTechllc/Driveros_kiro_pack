@@ -3,21 +3,20 @@
  */
 
 /**
- * Check if we're in demo mode (no Supabase, use localStorage)
+ * @deprecated Demo mode has been removed. This stub always returns false
+ * so existing data layer modules compile. Will be removed in Phase 2
+ * when data layer is rewritten for Supabase-only.
  */
-export function isDemoMode(): boolean {
-  if (typeof window === 'undefined') return false
-  return (
-    process.env.NEXT_PUBLIC_DEMO_MODE === 'true' ||
-    !process.env.NEXT_PUBLIC_SUPABASE_URL
-  )
+export function isDemoMode(): false {
+  return false
 }
 
 /**
- * Get the current org ID from context or return 'demo' for demo mode
+ * Get the current org ID from context
  */
 export function getOrgId(orgId?: string | null): string {
-  return orgId || 'demo'
+  if (!orgId) throw new Error('Organization ID is required')
+  return orgId
 }
 
 /**

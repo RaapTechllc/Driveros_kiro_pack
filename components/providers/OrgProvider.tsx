@@ -38,7 +38,7 @@ interface OrgProviderProps {
 }
 
 export function OrgProvider({ children }: OrgProviderProps) {
-  const { user, isDemoMode, refreshUser } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [switchingOrg, setSwitchingOrg] = useState(false)
 
   const currentOrg = user?.currentOrg || null
@@ -51,7 +51,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
   const canManage = isOwner
 
   const getUserOrgs = useCallback(async (): Promise<Org[]> => {
-    if (isDemoMode || !user) return []
+    if (!user) return []
 
     const supabase = createClient()
     const { data, error } = await supabase
@@ -67,11 +67,11 @@ export function OrgProvider({ children }: OrgProviderProps) {
     return (data || [])
       .map((m) => (m as any).orgs as Org)
       .filter((org): org is Org => org !== null)
-  }, [isDemoMode, user])
+  }, [user])
 
   const switchOrg = useCallback(
     async (orgId: string) => {
-      if (isDemoMode || !user || switchingOrg) return
+      if (!user || switchingOrg) return
 
       setSwitchingOrg(true)
       try {
@@ -82,7 +82,7 @@ export function OrgProvider({ children }: OrgProviderProps) {
         setSwitchingOrg(false)
       }
     },
-    [isDemoMode, user, switchingOrg, refreshUser]
+    [user, switchingOrg, refreshUser]
   )
 
   const value: OrgContextType = {

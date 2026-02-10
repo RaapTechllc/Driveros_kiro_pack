@@ -18,7 +18,7 @@ interface AuthContextType {
   session: Session | null
   isLoading: boolean
   isAuthenticated: boolean
-  isDemoMode: boolean
+
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, name?: string) => Promise<void>
   signOut: () => Promise<void>
@@ -44,24 +44,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Check if demo mode is enabled
-  const isDemoMode =
-    process.env.NEXT_PUBLIC_DEMO_MODE === 'true' ||
-    !process.env.NEXT_PUBLIC_SUPABASE_URL
-
-  const supabase = isDemoMode ? null : createClient()
+  // Check if Supabase is configured
+  const supabase = createClient()
 
   const fetchUserData = useCallback(
     async (supabaseUser: SupabaseUser): Promise<AuthUser> => {
-      if (!supabase) {
-        return {
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          profile: null,
-          currentOrg: null,
-          membership: null,
-        }
-      }
 
       // Get profile
       const { data: profile } = await supabase
@@ -87,13 +74,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         currentOrg: currentOrg || null,
         membership: membership
           ? {
-              id: (membership as any).id,
-              user_id: (membership as any).user_id,
-              org_id: (membership as any).org_id,
-              role: (membership as any).role as MembershipRole,
-              created_at: (membership as any).created_at,
-              updated_at: (membership as any).updated_at,
-            }
+            id: (membership as any).id,
+            user_id: (membership as any).user_id,
+            org_id: (membership as any).org_id,
+            role: (membership as any).role as MembershipRole,
+            created_at: (membership as any).created_at,
+            updated_at: (membership as any).updated_at,
+          }
           : null,
       }
     },
@@ -101,8 +88,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   )
 
   const refreshUser = useCallback(async () => {
-    if (!supabase) return
-
     const {
       data: { user: supabaseUser },
     } = await supabase.auth.getUser()
@@ -116,40 +101,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [supabase, fetchUserData])
 
   useEffect(() => {
-    // Demo mode - no auth needed
-    if (isDemoMode) {
-      const timestamp = new Date().toISOString()
-      setUser({
-        id: 'demo-user',
-        email: 'demo@driveros.ai',
-        profile: null,
-        currentOrg: {
-          id: 'demo-org',
-          name: 'Demo Org',
-          slug: 'demo-org',
-          industry: null,
-          size_band: null,
-          created_at: timestamp,
-          updated_at: timestamp,
-        },
-        membership: {
-          id: 'demo-membership',
-          user_id: 'demo-user',
-          org_id: 'demo-org',
-          role: 'owner',
-          created_at: timestamp,
-          updated_at: timestamp,
-        },
-      })
-      setIsLoading(false)
-      return
-    }
-
-    if (!supabase) {
-      setIsLoading(false)
-      return
-    }
-
     // Get initial session
     const initAuth = async () => {
       try {
@@ -192,11 +143,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, isDemoMode, fetchUserData])
+  }, [supabase, fetchUserData])
 
   const signIn = async (email: string, password: string) => {
-    if (!supabase) throw new Error('Auth not available in demo mode')
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -206,8 +155,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const signUp = async (email: string, password: string, name?: string) => {
-    if (!supabase) throw new Error('Auth not available in demo mode')
-
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -220,8 +167,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const signOut = async () => {
-    if (!supabase) return
-
     const { error } = await supabase.auth.signOut()
     if (error) throw error
   }
@@ -231,7 +176,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     session,
     isLoading,
     isAuthenticated: !!user,
-    isDemoMode,
     signIn,
     signUp,
     signOut,

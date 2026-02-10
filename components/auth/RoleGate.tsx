@@ -2,7 +2,6 @@
 
 import { type ReactNode } from 'react'
 import { useOrg } from '@/components/providers/OrgProvider'
-import { useAuth } from '@/components/providers/AuthProvider'
 import type { MembershipRole } from '@/lib/supabase/types'
 
 interface RoleGateProps {
@@ -28,13 +27,7 @@ export function RoleGate({
   writeAccess,
   fallback = null,
 }: RoleGateProps) {
-  const { isDemoMode } = useAuth()
   const { role, isOwner, canWrite } = useOrg()
-
-  // In demo mode, show all content
-  if (isDemoMode) {
-    return <>{children}</>
-  }
 
   // Check owner-only access
   if (ownerOnly && !isOwner) {
