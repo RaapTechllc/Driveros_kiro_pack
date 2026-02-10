@@ -3,14 +3,11 @@
 /**
  * Assessments Data Layer
  *
- * Provides unified access to assessments (flash scan, full audit, apex audit)
- * Works in both demo mode (localStorage) and production (Supabase)
+ * Provides access to assessments (flash scan, full audit, apex audit) via Supabase
  */
 
 import { createClient } from '@/lib/supabase/client'
-import { safeGetItem, safeSetItem } from '@/lib/storage'
-import { STORAGE_KEYS } from '@/lib/storage'
-import { isDemoMode, generateId, now, getOrgId } from './utils'
+import { generateId, now, getOrgId } from './utils'
 import type {
   Assessment,
   InsertTables,
@@ -18,39 +15,10 @@ import type {
   Json,
 } from '@/lib/supabase/types'
 
-function getStorageKey(type: AssessmentType): string {
-  switch (type) {
-    case 'flash_scan':
-      return STORAGE_KEYS.FLASH_SCAN_RESULT
-    case 'full_audit':
-      return STORAGE_KEYS.FULL_AUDIT_RESULT
-    case 'apex_audit':
-      return STORAGE_KEYS.APEX_AUDIT_RESULT
-    default:
-      throw new Error(`Unknown assessment type: ${type}`)
-  }
-}
-
 export async function getLatestAssessment(
   type: AssessmentType,
   orgId?: string
 ): Promise<Assessment | null> {
-  if (isDemoMode()) {
-    const key = getStorageKey(type)
-    const data = safeGetItem<Json | null>(key, null)
-    if (!data) return null
-
-    return {
-      id: `demo-${type}`,
-      org_id: getOrgId(orgId),
-      type,
-      data: data,
-      schema_version: 1,
-      created_by: 'demo-user',
-      created_at: now(),
-    }
-  }
-
   const supabase = createClient()
   const { data, error } = await supabase
     .from('assessments')
@@ -68,30 +36,6 @@ export async function getAllAssessments(
   type?: AssessmentType,
   orgId?: string
 ): Promise<Assessment[]> {
-  if (isDemoMode()) {
-    const results: Assessment[] = []
-    const types: AssessmentType[] = type
-      ? [type]
-      : ['flash_scan', 'full_audit', 'apex_audit']
-
-    for (const t of types) {
-      const key = getStorageKey(t)
-      const data = safeGetItem<Json | null>(key, null)
-      if (data) {
-        results.push({
-          id: `demo-${t}`,
-          org_id: getOrgId(orgId),
-          type: t,
-          data: data,
-          schema_version: 1,
-          created_by: 'demo-user',
-          created_at: now(),
-        })
-      }
-    }
-    return results
-  }
-
   const supabase = createClient()
   let query = supabase
     .from('assessments')
@@ -114,23 +58,6 @@ export async function saveAssessment(
   orgId?: string,
   userId?: string
 ): Promise<Assessment> {
-  const id = generateId()
-  const timestamp = now()
-
-  if (isDemoMode()) {
-    const key = getStorageKey(type)
-    safeSetItem(key, data)
-    return {
-      id,
-      org_id: getOrgId(orgId),
-      type,
-      data,
-      schema_version: 1,
-      created_by: userId || 'demo-user',
-      created_at: timestamp,
-    }
-  }
-
   const supabase = createClient()
   const { data: savedData, error } = await supabase
     .from('assessments')

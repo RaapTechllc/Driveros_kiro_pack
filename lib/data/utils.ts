@@ -3,15 +3,6 @@
  */
 
 /**
- * @deprecated Demo mode has been removed. This stub always returns false
- * so existing data layer modules compile. Will be removed in Phase 2
- * when data layer is rewritten for Supabase-only.
- */
-export function isDemoMode(): false {
-  return false
-}
-
-/**
  * Get the current org ID from context
  */
 export function getOrgId(orgId?: string | null): string {
