@@ -8,12 +8,14 @@ import { ApexAuditData, ApexAuditResult } from '@/lib/apex-audit-types'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Crown, Clock, FileText, CheckCircle2 } from 'lucide-react'
 import { analyzeApexAudit } from '@/lib/apex-audit-analysis'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 
 export default function ApexAuditPage() {
   const router = useRouter()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [apexResult, setApexResult] = useState<ApexAuditResult | null>(null)
+  const fireMemoryEvent = useMemoryEvent()
 
   const handleSubmit = async (data: ApexAuditData) => {
     setIsSubmitting(true)
@@ -37,6 +39,22 @@ export default function ApexAuditPage() {
 
     const existing = JSON.parse(localStorage.getItem('apex_audit_submissions') || '[]')
     localStorage.setItem('apex_audit_submissions', JSON.stringify([submission, ...existing]))
+
+    // Update AI coach memory with profile and assessment data
+    fireMemoryEvent({
+      type: 'profile_updated',
+      industry: data.industry,
+      name: data.company_name,
+    })
+    fireMemoryEvent({
+      type: 'assessment_completed',
+      assessmentType: 'apex',
+      scores: {},
+      gear: analysis.stage === 'Startup' ? 1
+        : analysis.stage === 'Growth' ? 2
+        : analysis.stage === 'Scale' ? 3
+        : 4,
+    })
 
     setIsSubmitting(false)
     setIsSubmitted(true)

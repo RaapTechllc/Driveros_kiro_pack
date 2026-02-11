@@ -103,7 +103,8 @@ export function processMemoryEvent(memory: CompanyMemory, event: MemoryEvent): C
 
   switch (event.type) {
     case 'assessment_completed': {
-      // Update engine scores
+      // Build "what changed" diff before updating scores
+      const scoreDiffs: string[] = []
       for (const [engine, score] of Object.entries(event.scores)) {
         const prevScore = m.engineSnapshot.scores[engine as FrameworkEngineName]
         m.engineSnapshot.scores[engine as FrameworkEngineName] = score
@@ -111,10 +112,13 @@ export function processMemoryEvent(memory: CompanyMemory, event: MemoryEvent): C
         // Calculate trend
         if (prevScore === undefined) {
           m.engineSnapshot.trends[engine as FrameworkEngineName] = 'new'
+          scoreDiffs.push(`${engine}: ${score} (new)`)
         } else if (score - prevScore >= 5) {
           m.engineSnapshot.trends[engine as FrameworkEngineName] = 'up'
+          scoreDiffs.push(`${engine}: ${prevScore}\u2192${score} (+${score - prevScore})`)
         } else if (prevScore - score >= 5) {
           m.engineSnapshot.trends[engine as FrameworkEngineName] = 'down'
+          scoreDiffs.push(`${engine}: ${prevScore}\u2192${score} (${score - prevScore})`)
         } else {
           m.engineSnapshot.trends[engine as FrameworkEngineName] = 'stable'
         }
@@ -135,10 +139,12 @@ export function processMemoryEvent(memory: CompanyMemory, event: MemoryEvent): C
         }
       }
 
+      // Build summary with score diffs when available
+      const diffSuffix = scoreDiffs.length > 0 ? ` — ${scoreDiffs.join(', ')}` : ''
       addTimeline(m, {
         date: now,
         type: 'assessment',
-        summary: `Completed ${event.assessmentType} assessment`,
+        summary: `Completed ${event.assessmentType} assessment${diffSuffix}`,
       })
       break
     }

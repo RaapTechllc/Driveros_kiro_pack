@@ -11,6 +11,8 @@ import { getLastWeekSummary, generateWeeklyPlan, type WeeklySummary, type Weekly
 import { createAction } from '@/lib/data/actions'
 import { createMeeting } from '@/lib/data/meetings'
 import { getActiveNorthStar } from '@/lib/data/north-star'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
+import { usePageVisibleData } from '@/hooks/usePageVisibleData'
 import type { Action, NorthStar } from '@/lib/supabase/types'
 
 interface ProposedAction {
@@ -185,6 +187,17 @@ export default function PitStopPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [isApproving, setIsApproving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const fireMemoryEvent = useMemoryEvent()
+
+  // Expose pit-stop state to AI coach
+  usePageVisibleData({
+    completionRate: summary?.completionRate ?? null,
+    completedCount: summary?.completed?.length ?? 0,
+    missedCount: summary?.missed?.length ?? 0,
+    hasPlan: !!plan,
+    planActionCount: plan?.actions?.length ?? 0,
+    northStarGoal: northStar?.goal ?? null,
+  })
 
   useEffect(() => {
     const loadData = async () => {
@@ -248,6 +261,13 @@ export default function PitStopPage() {
         decisions: { approved_actions: plan.actions.length },
         action_ids: []
       }, currentOrg?.id, user.id)
+
+      // Update AI coach memory
+      fireMemoryEvent({
+        type: 'meeting_held',
+        meetingType: 'Pit Stop',
+        decisions: plan.actions.map(a => a.title),
+      })
 
       // Reset for next week
       setPlan(null)

@@ -1,16 +1,27 @@
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { saveGeneratedPlan } from '@/lib/year-board-generator'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 
 interface EmptyStateProps {
   onPlanCreated: () => void
 }
 
 export function EmptyState({ onPlanCreated }: EmptyStateProps) {
+  const fireMemoryEvent = useMemoryEvent()
+
   const handleGeneratePlan = () => {
     // Generate plan with sample North Star (in real app, would get from existing goals)
     const sampleNorthStarId = 'north-star-2026'
     saveGeneratedPlan(sampleNorthStarId)
+
+    // Update AI coach memory
+    fireMemoryEvent({
+      type: 'meeting_held',
+      meetingType: 'Year Planning',
+      decisions: ['Generated annual year board plan with quarterly milestones'],
+    })
+
     onPlanCreated()
   }
 
