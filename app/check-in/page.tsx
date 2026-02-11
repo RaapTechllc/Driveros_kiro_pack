@@ -9,6 +9,7 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { createCheckIn, getTodayCheckIn } from '@/lib/data/check-ins'
 import type { CheckIn } from '@/lib/supabase/types'
 import { useMemoryEvent } from '@/hooks/useMemoryEvent'
+import { usePageVisibleData } from '@/hooks/usePageVisibleData'
 
 export default function CheckInPage() {
   const { user } = useAuth()
@@ -40,6 +41,15 @@ export default function CheckInPage() {
 
     loadTodayCheckIn()
   }, [user, currentOrg?.id])
+
+  // Expose check-in state to AI coach
+  usePageVisibleData({
+    hasExistingCheckIn: !!existingCheckIn,
+    actionsCompleted,
+    blocker: blocker.trim() || null,
+    winOrLesson: winOrLesson.trim() || null,
+    submitted: success,
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

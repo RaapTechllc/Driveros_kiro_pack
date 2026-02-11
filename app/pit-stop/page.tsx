@@ -12,6 +12,7 @@ import { createAction } from '@/lib/data/actions'
 import { createMeeting } from '@/lib/data/meetings'
 import { getActiveNorthStar } from '@/lib/data/north-star'
 import { useMemoryEvent } from '@/hooks/useMemoryEvent'
+import { usePageVisibleData } from '@/hooks/usePageVisibleData'
 import type { Action, NorthStar } from '@/lib/supabase/types'
 
 interface ProposedAction {
@@ -187,6 +188,16 @@ export default function PitStopPage() {
   const [isApproving, setIsApproving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fireMemoryEvent = useMemoryEvent()
+
+  // Expose pit-stop state to AI coach
+  usePageVisibleData({
+    completionRate: summary?.completionRate ?? null,
+    completedCount: summary?.completed?.length ?? 0,
+    missedCount: summary?.missed?.length ?? 0,
+    hasPlan: !!plan,
+    planActionCount: plan?.actions?.length ?? 0,
+    northStarGoal: northStar?.goal ?? null,
+  })
 
   useEffect(() => {
     const loadData = async () => {

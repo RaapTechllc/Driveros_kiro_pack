@@ -3,8 +3,7 @@
 import { useCallback } from 'react'
 import type { MemoryEvent } from '@/lib/ai/types'
 import { loadMemory, saveMemory, processMemoryEvent } from '@/lib/ai'
-
-const ORG_ID = 'default'
+import { useOrg } from '@/components/providers/OrgProvider'
 
 /**
  * Hook to fire memory events from any component.
@@ -17,11 +16,14 @@ const ORG_ID = 'default'
  * The AI coach will pick up the new context on its next interaction.
  */
 export function useMemoryEvent() {
+  const { currentOrg } = useOrg()
+  const orgId = currentOrg?.id || 'default'
+
   const fireEvent = useCallback((event: MemoryEvent) => {
-    const memory = loadMemory(ORG_ID)
+    const memory = loadMemory(orgId)
     const updated = processMemoryEvent(memory, event)
     saveMemory(updated)
-  }, [])
+  }, [orgId])
 
   return fireEvent
 }

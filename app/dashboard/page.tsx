@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
 import { Download, AlertTriangle, CheckCircle, Clock, Target, FileText, Database, Table, Camera } from 'lucide-react'
+import { usePageVisibleData } from '@/hooks/usePageVisibleData'
 
 export default function DashboardPage() {
   const [auditResult, setAuditResult] = useState<FullAuditResult | null>(null)
@@ -91,6 +92,28 @@ export default function DashboardPage() {
 
     loadCheckInStatus()
   }, [user, currentOrg?.id])
+
+  // Expose dashboard data to AI coach for page-aware context
+  const isFullAuditLoaded = !!auditResult
+  usePageVisibleData(
+    auditResult
+      ? {
+          gear: auditResult.gear?.number,
+          engines: auditResult.engines?.map(e => ({ name: e.name, score: e.score })),
+          acceleratorKpi: auditResult.accelerator?.kpi,
+          doNowCount: auditResult.actions?.do_now?.length ?? 0,
+          doNextCount: auditResult.actions?.do_next?.length ?? 0,
+          checkInComplete,
+        }
+      : flashResult
+        ? {
+            gear: flashResult.gear_estimate?.number,
+            acceleratorKpi: flashResult.accelerator?.kpi,
+            quickWinCount: flashResult.quick_wins?.length ?? 0,
+            checkInComplete,
+          }
+        : {}
+  )
 
   const clearAllData = () => {
     if (isDemoMode) {

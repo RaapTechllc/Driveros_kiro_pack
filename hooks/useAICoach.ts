@@ -9,8 +9,11 @@ import {
   loadChatHistory,
   saveChatHistory,
   bootstrapMemoryFromStorage,
+  addCoachNote,
   getProactiveNudge,
 } from '@/lib/ai'
+import { useOrg } from '@/components/providers/OrgProvider'
+import { getVisibleData } from '@/hooks/usePageVisibleData'
 
 /**
  * Map pathname to PageId for page-aware context
@@ -61,10 +64,43 @@ function pageIdToDescription(pageId: PageId): string {
   return descriptions[pageId]
 }
 
-const ORG_ID = 'default' // In production, pull from OrgProvider context
+/**
+ * Patterns that indicate a coach observation worth saving.
+ * We extract the sentence containing these patterns.
+ */
+const COACH_NOTE_PATTERNS = [
+  /I notice[d]?\s+(.{10,120})/i,
+  /It looks like\s+(.{10,120})/i,
+  /Your\s+\w+\s+(?:engine|score|trend)\s+(?:is|has|dropped|improved|went)\s+(.{10,80})/i,
+  /pattern I['']?m seeing[:\s]+(.{10,120})/i,
+  /recurring (?:blocker|issue|theme)[:\s]+(.{10,120})/i,
+]
+
+/**
+ * Extract coach observations from an AI response.
+ * Returns up to 2 observations per response to avoid note bloat.
+ */
+function extractCoachNotes(content: string): string[] {
+  const notes: string[] = []
+  for (const pattern of COACH_NOTE_PATTERNS) {
+    const match = content.match(pattern)
+    if (match) {
+      // Take the full matched phrase, clean up trailing punctuation artifacts
+      const note = match[0].replace(/[*_`]/g, '').trim()
+      if (note.length >= 15 && !notes.some(n => n === note)) {
+        notes.push(note)
+      }
+    }
+    if (notes.length >= 2) break
+  }
+  return notes
+}
 
 export function useAICoach() {
   const pathname = usePathname()
+  const { currentOrg } = useOrg()
+  const orgId = currentOrg?.id || 'default'
+
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -72,25 +108,31 @@ export function useAICoach() {
   const [proactiveNudge, setProactiveNudge] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const initializedRef = useRef(false)
+  const orgIdRef = useRef(orgId)
 
-  // Initialize memory and chat history on mount
+  // Track orgId changes
   useEffect(() => {
-    if (initializedRef.current) return
+    orgIdRef.current = orgId
+  }, [orgId])
+
+  // Initialize memory and chat history on mount (or when org changes)
+  useEffect(() => {
+    if (initializedRef.current && orgIdRef.current === orgId) return
     initializedRef.current = true
 
-    let m = loadMemory(ORG_ID)
+    let m = loadMemory(orgId)
     // If memory is empty, bootstrap from existing localStorage data
     if (m.engineSnapshot.assessmentCount === 0 && !m.profile.industry) {
-      m = bootstrapMemoryFromStorage(ORG_ID)
+      m = bootstrapMemoryFromStorage(orgId)
       saveMemory(m)
     }
     setMemory(m)
 
-    const history = loadChatHistory(ORG_ID)
+    const history = loadChatHistory(orgId)
     if (history.length > 0) {
       setMessages(history)
     }
-  }, [])
+  }, [orgId])
 
   // Update proactive nudge when page changes
   useEffect(() => {
@@ -106,9 +148,11 @@ export function useAICoach() {
 
   const getPageContext = useCallback((): PageContext => {
     const pageId = pathToPageId(pathname)
+    const visibleData = getVisibleData()
     return {
       pageId,
       description: pageIdToDescription(pageId),
+      ...(Object.keys(visibleData).length > 0 && { visibleData }),
     }
   }, [pathname])
 
@@ -213,12 +257,26 @@ export function useAICoach() {
         }
       }
 
+      // Extract coach notes from the AI response
+      if (fullContent && memory) {
+        const notes = extractCoachNotes(fullContent)
+        if (notes.length > 0) {
+          let updatedMemory = memory
+          for (const note of notes) {
+            updatedMemory = addCoachNote(updatedMemory, note)
+          }
+          saveMemory(updatedMemory)
+          setMemory(updatedMemory)
+        }
+      }
+
       // Save final state
+      const currentOrgId = orgIdRef.current
       const finalMessages = updatedMessages.concat({
         ...assistantMessage,
         content: fullContent,
       })
-      saveChatHistory(ORG_ID, finalMessages)
+      saveChatHistory(currentOrgId, finalMessages)
       setMessages(finalMessages)
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
@@ -244,8 +302,9 @@ export function useAICoach() {
   }, [])
 
   const clearChat = useCallback(() => {
+    const currentOrgId = orgIdRef.current
     setMessages([])
-    saveChatHistory(ORG_ID, [])
+    saveChatHistory(currentOrgId, [])
   }, [])
 
   const toggleOpen = useCallback(() => {
