@@ -6,6 +6,7 @@ import { OrgProvider } from '@/components/providers/OrgProvider'
 import { MigrationProvider } from '@/components/providers/MigrationProvider'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ChatWidget } from '@/components/ai/ChatWidget'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -51,6 +52,7 @@ export default function RootLayout({
                 <MigrationProvider>
                   <AppLayout>
                     {children}
+                    <ChatWidget />
                   </AppLayout>
                 </MigrationProvider>
               </OrgProvider>

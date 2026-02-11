@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { createCheckIn, getTodayCheckIn } from '@/lib/data/check-ins'
 import type { CheckIn } from '@/lib/supabase/types'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 
 export default function CheckInPage() {
   const { user } = useAuth()
@@ -19,6 +20,7 @@ export default function CheckInPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const fireMemoryEvent = useMemoryEvent()
 
   useEffect(() => {
     const loadTodayCheckIn = async () => {
@@ -60,6 +62,13 @@ export default function CheckInPage() {
         }
       )
       setSuccess(true)
+
+      // Update AI memory with check-in data
+      fireMemoryEvent({
+        type: 'check_in',
+        blocker: blocker.trim() || undefined,
+        win: winOrLesson.trim() || undefined,
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save check-in')
     } finally {

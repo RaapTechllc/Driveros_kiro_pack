@@ -6,9 +6,11 @@ import { InstantAnalysis } from '@/components/flash-scan/InstantAnalysis'
 import { analyzeFlashScan } from '@/lib/flash-analysis'
 import { FlashScanData, FlashScanResult } from '@/lib/types'
 import { useFormSubmit } from '@/hooks/useFormSubmit'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 
 export default function FlashScanPage() {
   const [result, setResult] = useState<FlashScanResult | null>(null)
+  const fireMemoryEvent = useMemoryEvent()
   const { submitState, progress, handleSubmit } = useFormSubmit({
     minLoadingTime: 1200,
     successDuration: 800
@@ -31,6 +33,25 @@ export default function FlashScanPage() {
     })
 
     if (analysisResult) {
+      // Update AI memory with assessment results
+      fireMemoryEvent({
+        type: 'profile_updated',
+        industry: data.industry,
+        sizeBand: data.size_band,
+        role: data.role,
+      })
+      fireMemoryEvent({
+        type: 'north_star_changed',
+        newGoal: data.north_star,
+        newConstraint: data.top_constraint,
+      })
+      fireMemoryEvent({
+        type: 'assessment_completed',
+        assessmentType: 'flash',
+        scores: {},
+        gear: analysisResult.gear_estimate?.number as 1 | 2 | 3 | 4 | 5 | undefined,
+      })
+
       // Small delay before showing results for smooth transition
       setTimeout(() => setResult(analysisResult), 200)
     }
