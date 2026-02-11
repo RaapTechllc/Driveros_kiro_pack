@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { ActionStatus, cycleStatus, getActionStatus, setActionStatus } from '@/lib/action-status'
 import { getTeamRoster, getAssignedMember, assignAction, addTeamMember, TeamMember } from '@/lib/team-roster'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 import { Clock, User, Zap, CheckCircle2, RotateCw, Plus, LucideIcon } from 'lucide-react'
+import type { FrameworkEngineName } from '@/lib/types'
 
 interface ActionCardProps {
   title: string
@@ -32,6 +34,7 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
   const [roster, setRoster] = useState<TeamMember[]>([])
   const [newName, setNewName] = useState('')
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const fireMemoryEvent = useMemoryEvent()
 
   useEffect(() => {
     setAssignee(getAssignedMember(title))
@@ -46,6 +49,15 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
       setStatus(next)
       setActionStatus(title, next)
       setIsTransitioning(false)
+
+      // Update AI coach memory when action is completed
+      if (next === 'done') {
+        fireMemoryEvent({
+          type: 'action_completed',
+          actionTitle: title,
+          engine: engine as FrameworkEngineName,
+        })
+      }
     }, 200)
   }
 

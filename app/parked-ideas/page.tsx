@@ -9,6 +9,7 @@ import { AlertCircle, Trash2 } from 'lucide-react'
 import { createAction } from '@/lib/data/actions'
 import { deleteParkedIdea, getParkedIdeas } from '@/lib/data/parked-ideas'
 import { getActiveNorthStar } from '@/lib/data/north-star'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 import type { ParkedIdea } from '@/lib/supabase/types'
 
 export default function ParkedIdeasPage() {
@@ -19,6 +20,7 @@ export default function ParkedIdeasPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const fireMemoryEvent = useMemoryEvent()
 
   useEffect(() => {
     const loadIdeas = async () => {
@@ -81,6 +83,13 @@ export default function ParkedIdeasPage() {
       )
       await deleteParkedIdea(idea.id)
       setIdeas((prev) => prev.filter((item) => item.id !== idea.id))
+
+      // Update AI coach memory — promoting an idea is a prioritization decision
+      fireMemoryEvent({
+        type: 'meeting_held',
+        meetingType: 'Prioritization',
+        decisions: [`Promoted parked idea to action: ${idea.title}`],
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to promote idea')
     } finally {
