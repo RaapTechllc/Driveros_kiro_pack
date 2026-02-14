@@ -3,6 +3,9 @@ const nextConfig = {
   // Enable React strict mode for better error detection
   reactStrictMode: true,
 
+  // Required for Docker standalone build (see Dockerfile)
+  output: 'standalone',
+
   // Remove X-Powered-By header for security
   poweredByHeader: false,
 
@@ -58,7 +61,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'", // unsafe-inline needed for Tailwind
               "img-src 'self' data: blob:",
               "font-src 'self' data:",
-              "connect-src 'self'",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'"
