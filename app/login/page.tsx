@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
+import { createClient } from '@/lib/supabase/client'
 import { Loader2, AlertCircle, Car } from 'lucide-react'
 
 export default function LoginPage() {
@@ -31,6 +32,27 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password)
+      
+      // Check if user has an organization, redirect to onboarding if not
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Check for existing membership/org
+        const { data: membership } = await supabase
+          .from('memberships')
+          .select('*, orgs(*)')
+          .eq('user_id', user.id)
+          .limit(1)
+          .single()
+
+        if (!membership) {
+          // No org yet - redirect to onboarding
+          router.push('/onboarding')
+          return
+        }
+      }
+      
       router.push(returnTo)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in')

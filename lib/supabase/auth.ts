@@ -17,6 +17,11 @@ export interface AuthUser {
 export async function signUp(email: string, password: string, name?: string) {
   const supabase = createClient()
 
+  // Get the base URL for redirect after email confirmation
+  const baseUrl = typeof window !== 'undefined' 
+    ? window.location.origin 
+    : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:4005'
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -24,6 +29,8 @@ export async function signUp(email: string, password: string, name?: string) {
       data: {
         name,
       },
+      // Redirect to auth callback after email confirmation
+      emailRedirectTo: `${baseUrl}/auth/callback`,
     },
   })
 

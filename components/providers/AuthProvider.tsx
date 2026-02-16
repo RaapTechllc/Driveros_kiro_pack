@@ -185,11 +185,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signUp = async (email: string, password: string, name?: string) => {
     if (!supabase) throw new Error('Auth not available in demo mode')
 
+    // Get the base URL for redirect after email confirmation
+    const baseUrl = typeof window !== 'undefined'
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:4005'
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { name },
+        // Redirect to auth callback after email confirmation
+        emailRedirectTo: `${baseUrl}/auth/callback`,
       },
     })
 

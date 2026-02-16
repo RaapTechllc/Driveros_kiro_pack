@@ -72,6 +72,7 @@ export const publicRoutes = [
   '/reset-password',
   '/pricing',
   '/help',
+  '/auth/callback',
 ]
 
 /**

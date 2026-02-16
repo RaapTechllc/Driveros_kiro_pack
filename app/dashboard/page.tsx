@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { FullAuditResult } from '@/lib/full-audit-analysis'
 import { FlashScanResult } from '@/lib/types'
 import { loadImportedActions, loadImportedGoals, transformImportedActions, transformImportedGoals } from '@/lib/imported-data'
@@ -25,6 +26,7 @@ import { Download, AlertTriangle, CheckCircle, Clock, Target, FileText, Database
 import { usePageVisibleData } from '@/hooks/usePageVisibleData'
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [auditResult, setAuditResult] = useState<FullAuditResult | null>(null)
   const [flashResult, setFlashResult] = useState<FlashScanResult | null>(null)
   const [importedActions, setImportedActions] = useState<ReturnType<typeof transformImportedActions>>([])
@@ -35,8 +37,15 @@ export default function DashboardPage() {
   const [snapshotSaved, setSnapshotSaved] = useState(false)
   const [actionFilters, setActionFilters] = useState<ActionFilters>({ engine: 'all', owner: 'all', status: 'all' })
   const { currentOrg } = useOrg()
-  const { user } = useAuth()
+  const { user, isDemoMode: authIsDemoMode, isLoading } = useAuth()
   const [checkInComplete, setCheckInComplete] = useState(false)
+
+  // Redirect to onboarding if no org and not in demo mode
+  useEffect(() => {
+    if (!isLoading && !authIsDemoMode && !currentOrg && user) {
+      router.replace('/onboarding')
+    }
+  }, [isLoading, authIsDemoMode, currentOrg, user, router])
 
   useEffect(() => {
     const demoMode = localStorage.getItem('demo-mode') === 'true'
