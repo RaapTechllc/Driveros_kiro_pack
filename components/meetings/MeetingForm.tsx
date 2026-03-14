@@ -5,6 +5,7 @@ import { parseTranscript, validateTranscript, convertToQuickWins, ExtractedMeeti
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { FileText, Keyboard, Upload, Sparkles, AlertCircle, CheckCircle, Gauge } from 'lucide-react'
+import { useMemoryEvent } from '@/hooks/useMemoryEvent'
 
 type InputMode = 'manual' | 'transcript'
 
@@ -20,6 +21,7 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
   const [formData, setFormData] = useState<MeetingFormData>({})
   const [notes, setNotes] = useState('')
   const [decisions, setDecisions] = useState<string[]>([''])
+  const fireMemoryEvent = useMemoryEvent()
 
   // Transcript-related state
   const [transcript, setTranscript] = useState('')
@@ -61,6 +63,14 @@ export function MeetingForm({ template, acceleratorKPI, onComplete, onBack }: Me
     }
 
     saveMeetingNotes(template.type, finalNotes, cleanDecisions, actions)
+
+    // Fire memory event for meeting completion
+    fireMemoryEvent({
+      type: 'meeting_held',
+      meetingType: template.title || template.type,
+      decisions: cleanDecisions.slice(0, 5),
+    })
+
     onComplete(actions)
   }
 

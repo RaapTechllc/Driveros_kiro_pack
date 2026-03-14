@@ -50,10 +50,17 @@ export function ActionCard({ title, why, owner_role, eta_days, engine, source = 
       setActionStatus(title, next)
       setIsTransitioning(false)
 
-      // Update AI coach memory when action is completed
+      // Update AI coach memory when action status changes
       if (next === 'done') {
         fireMemoryEvent({
           type: 'action_completed',
+          actionTitle: title,
+          engine: engine as FrameworkEngineName,
+        })
+      } else if (status === 'done' && next === 'todo') {
+        // Cycling from done back to todo = effectively abandoned/reset
+        fireMemoryEvent({
+          type: 'action_abandoned',
           actionTitle: title,
           engine: engine as FrameworkEngineName,
         })

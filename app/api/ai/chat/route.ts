@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server'
-import { buildSystemPrompt } from '@/lib/ai/prompts'
+import { buildSystemPromptWithPlugins } from '@/lib/ai/prompts'
 import type { ChatRequest } from '@/lib/ai/types'
+import { getIndustryPlugin } from '@/lib/industries'
+import type { GearNumber } from '@/lib/types'
 
 /**
  * POST /api/ai/chat
@@ -39,8 +41,18 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Build the system prompt with memory and page context
-  const systemPrompt = buildSystemPrompt(memory, pageContext)
+  // Build industry-specific context if available
+  let industryContext: string | undefined
+  if (memory.profile.industry) {
+    const plugin = getIndustryPlugin(memory.profile.industry.toLowerCase())
+    if (plugin) {
+      const gear = (memory.profile.currentGear || 2) as GearNumber
+      industryContext = plugin.getPromptContext(gear)
+    }
+  }
+
+  // Build the system prompt with memory, page context, and plugins
+  const systemPrompt = buildSystemPromptWithPlugins(memory, pageContext, industryContext)
 
   // Limit conversation history to last 20 messages to control token usage
   const recentMessages = messages.slice(-20).map(m => ({

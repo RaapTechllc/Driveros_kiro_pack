@@ -23,5 +23,6 @@ export {
 
 export {
   buildSystemPrompt,
+  buildSystemPromptWithPlugins,
   getProactiveNudge,
 } from './prompts'

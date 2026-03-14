@@ -6,18 +6,41 @@
  */
 
 import type { CompanyMemory, PageContext } from './types'
+import type { GearNumber } from '@/lib/types'
 
 /**
  * Build the full system prompt for the AI coach.
  * Combines the base persona, company memory context, and page-specific guidance.
  */
-export function buildSystemPrompt(memory: CompanyMemory, pageContext: PageContext): string {
+export function buildSystemPrompt(
+  memory: CompanyMemory,
+  pageContext: PageContext,
+  options?: { industryContext?: string; brandContext?: string }
+): string {
   return [
     BASE_PERSONA,
     buildMemoryContext(memory),
+    options?.industryContext || '',
+    options?.brandContext || '',
     buildPageGuidance(pageContext),
     RESPONSE_RULES,
   ].filter(Boolean).join('\n\n---\n\n')
+}
+
+/**
+ * Build industry-aware system prompt.
+ * Call this from the chat API when industry plugin is available.
+ */
+export function buildSystemPromptWithPlugins(
+  memory: CompanyMemory,
+  pageContext: PageContext,
+  industryPromptContext?: string,
+  brandPromptContext?: string,
+): string {
+  return buildSystemPrompt(memory, pageContext, {
+    industryContext: industryPromptContext,
+    brandContext: brandPromptContext,
+  })
 }
 
 // ============================================================================
@@ -207,6 +230,7 @@ const RESPONSE_RULES = `## Response Rules
 /**
  * Generate a proactive nudge based on current state.
  * Returns null if no nudge is appropriate.
+ * Checks: time-based, score-based, streak-based, and contextual nudges.
  */
 export function getProactiveNudge(memory: CompanyMemory, pageContext: PageContext): string | null {
   // Don't nudge on landing/pricing/help pages
@@ -222,8 +246,46 @@ export function getProactiveNudge(memory: CompanyMemory, pageContext: PageContex
     return null
   }
 
-  // Engine score dropped
-  const downEngines = Object.entries(memory.engineSnapshot.trends)
+  // === STREAK-BASED NUDGES (highest priority — habits matter most) ===
+
+  // Streak about to break (1-2 day streak, on check-in page)
+  if (memory.checkInInsights.currentStreak > 0 && memory.checkInInsights.currentStreak <= 2 && pageContext.pageId === 'check-in') {
+    return `You're on a ${memory.checkInInsights.currentStreak}-day streak. Keep it going — consistency beats intensity. Let's knock out today's check-in.`
+  }
+
+  // Strong streak celebration
+  if (memory.checkInInsights.currentStreak >= 7 && pageContext.pageId === 'dashboard') {
+    return `**${memory.checkInInsights.currentStreak}-day check-in streak!** That's the kind of discipline that separates Gear 2 from Gear 3 founders. Keep building the habit.`
+  }
+
+  // No check-ins yet but has assessment data
+  if (memory.checkInInsights.totalCheckIns === 0 && memory.engineSnapshot.assessmentCount > 0 && pageContext.pageId === 'dashboard') {
+    return 'You have engine scores but no daily check-ins yet. The check-in is 60 seconds — it\'s how I track your momentum and catch problems early. Try one today?'
+  }
+
+  // === SCORE-BASED ALERTS ===
+
+  // Engine dropped >10 points
+  const scores = memory.engineSnapshot.scores
+  const trends = memory.engineSnapshot.trends
+  const criticalDropEngines: string[] = []
+  for (const [engine, trend] of Object.entries(trends)) {
+    if (trend === 'down') {
+      const score = scores[engine as keyof typeof scores]
+      if (score !== undefined && score < 40) {
+        criticalDropEngines.push(engine)
+      }
+    }
+  }
+
+  if (criticalDropEngines.length > 0 && pageContext.pageId === 'dashboard') {
+    const engine = criticalDropEngines[0]
+    const score = scores[engine as keyof typeof scores]
+    return `**Warning:** Your **${engine}** engine is at ${score}/100 and trending down. This needs attention before it drags other engines with it. Want me to diagnose the root cause?`
+  }
+
+  // Engine score dropped (general)
+  const downEngines = Object.entries(trends)
     .filter(([, trend]) => trend === 'down')
     .map(([engine]) => engine)
 
@@ -231,7 +293,52 @@ export function getProactiveNudge(memory: CompanyMemory, pageContext: PageContex
     return `Your **${downEngines[0]}** engine is trending down. Want to dig into what's driving that?`
   }
 
-  // Recurring blocker
+  // Gear regression risk — multiple engines below 40
+  const lowEngines = Object.entries(scores).filter(([, score]) => score !== undefined && score < 40)
+  if (lowEngines.length >= 2 && pageContext.pageId === 'dashboard') {
+    const names = lowEngines.map(([e]) => e).join(' and ')
+    return `**Gear regression risk.** ${names} are both below 40. When multiple engines stall, you risk slipping back a Gear. Let's prioritize the quick wins.`
+  }
+
+  // All engines above 70 — time to level up
+  const allScores = Object.values(scores).filter((s): s is number => s !== undefined)
+  if (allScores.length >= 5 && allScores.every(s => s >= 70) && pageContext.pageId === 'dashboard') {
+    const gear = memory.profile.currentGear
+    if (gear && gear < 5) {
+      return `All engines above 70 — you might be ready to push toward **Gear ${gear + 1}**. Want to review what that transition looks like?`
+    }
+  }
+
+  // === TIME-BASED CHECKS ===
+
+  // Meeting overdue — no meetings in last 14 days
+  const recentMeetings = memory.timeline.filter(t => t.type === 'meeting')
+  if (recentMeetings.length > 0 && pageContext.pageId === 'meetings') {
+    const lastMeeting = recentMeetings[recentMeetings.length - 1]
+    const daysSince = Math.floor((Date.now() - new Date(lastMeeting.date).getTime()) / 86400000)
+    if (daysSince > 14) {
+      return `It's been **${daysSince} days** since your last meeting. Weekly Pit Stops keep your team aligned and your Accelerator moving. Time to schedule one?`
+    }
+  }
+
+  // No meetings at all
+  if (recentMeetings.length === 0 && memory.engineSnapshot.assessmentCount > 0 && pageContext.pageId === 'meetings') {
+    return 'No meeting history yet. Start with a weekly **Pit Stop** — 30 minutes to review your Accelerator and clear blockers. It\'s the highest-ROI meeting you can run.'
+  }
+
+  // Assessment getting stale — last assessment >30 days ago
+  if (memory.engineSnapshot.lastAssessmentDate && pageContext.pageId === 'dashboard') {
+    const daysSinceAssessment = Math.floor(
+      (Date.now() - new Date(memory.engineSnapshot.lastAssessmentDate).getTime()) / 86400000
+    )
+    if (daysSinceAssessment > 30) {
+      return `Your last assessment was **${daysSinceAssessment} days ago**. Business conditions change — want to run a fresh audit to see if your scores have shifted?`
+    }
+  }
+
+  // === CONTEXTUAL NUDGES ===
+
+  // Recurring blocker on check-in page
   if (memory.checkInInsights.recurringBlockers.length > 0 && pageContext.pageId === 'check-in') {
     const blocker = memory.checkInInsights.recurringBlockers[memory.checkInInsights.recurringBlockers.length - 1]
     return `I keep seeing "${blocker}" come up in your check-ins. Should we turn this into a do_now action and tackle it head on?`
@@ -240,6 +347,28 @@ export function getProactiveNudge(memory: CompanyMemory, pageContext: PageContex
   // Many abandoned actions
   if (memory.actionInsights.totalAbandoned > 3 && pageContext.pageId === 'actions') {
     return `You've abandoned ${memory.actionInsights.totalAbandoned} actions. Are we generating tasks that don't fit how you work? Let's adjust.`
+  }
+
+  // Weak engines on full-audit page
+  if (memory.actionInsights.weakEngines.length > 0 && pageContext.pageId === 'full-audit') {
+    const weak = memory.actionInsights.weakEngines[0]
+    return `Heads up: you tend to abandon **${weak}** actions. When you audit this engine, let's make sure the actions are realistic for your capacity.`
+  }
+
+  // North star not set
+  if (!memory.profile.northStar && memory.engineSnapshot.assessmentCount > 0 && pageContext.pageId === 'year-board') {
+    return 'You have engine scores but no **North Star** set. Every action should connect to your ultimate goal — let\'s define it.'
+  }
+
+  // Year board with no North Star
+  if (!memory.profile.northStar && pageContext.pageId === 'year-board') {
+    return 'Start your Year Board by setting a **North Star** — the single goal that makes everything else easier or unnecessary.'
+  }
+
+  // Pit stop with good data
+  if (pageContext.pageId === 'pit-stop' && memory.checkInInsights.recurringBlockers.length > 0) {
+    const blocker = memory.checkInInsights.recurringBlockers[memory.checkInInsights.recurringBlockers.length - 1]
+    return `For your Pit Stop: "${blocker}" keeps coming up. Make it agenda item #1 — recurring blockers are profit leaks.`
   }
 
   return null
